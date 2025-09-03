@@ -3,11 +3,6 @@ export default () => ({
   nodeEnv: process.env.NODE_ENV || 'development',
   frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
 
-  baby: {
-    dueDate: process.env.BABY_DUE_DATE,
-    name: process.env.BABY_NAME,
-  },
-
   database: {
     type: 'sqlite',
     database: process.env.DATABASE_PATH || 'database.sqlite',

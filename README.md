@@ -16,12 +16,14 @@ A beautiful personal website for sharing baby registry information and photos wi
 ## Tech Stack
 
 ### Frontend
+
 - **Next.js 14** - React framework with App Router
 - **TypeScript** - Type-safe development
 - **Tailwind CSS** - Utility-first CSS framework
 - **Responsive Design** - Mobile-first approach
 
 ### Backend
+
 - **NestJS** - Progressive Node.js framework
 - **TypeScript** - Type-safe backend development
 - **TypeORM** - Database ORM with SQLite
@@ -58,37 +60,35 @@ claraburgess.com/
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn package manager
 
 ### Environment Setup
 
 1. **Copy environment template:**
+
    ```bash
    cd backend
    cp env.example .env
    ```
 
 2. **Edit .env file** with your configuration:
+
    ```bash
    # Server Configuration
    PORT=3001
    NODE_ENV=development
-   
+
    # Frontend Configuration
    FRONTEND_URL=http://localhost:3000
-   
-   # Baby Information (for privacy, keep these secure)
-   BABY_NAME=Clara
-   BABY_DUE_DATE=2025-12-19
-   
+
    # Database Configuration
    DATABASE_PATH=database.sqlite
-   
+
    # JWT Configuration
    JWT_SECRET=your-super-secret-jwt-key-change-in-production
    JWT_EXPIRES_IN=24h
-   
+
    # Cloudinary Configuration
    CLOUDINARY_CLOUD_NAME=your_cloud_name
    CLOUDINARY_API_KEY=your_api_key
@@ -99,16 +99,19 @@ claraburgess.com/
 ### Backend Setup
 
 1. **Navigate to backend directory:**
+
    ```bash
    cd backend
    ```
 
 2. **Install dependencies:**
+
    ```bash
    npm install
    ```
 
 3. **Start the development server:**
+
    ```bash
    npm run start:dev
    ```
@@ -118,16 +121,19 @@ claraburgess.com/
 ### Frontend Setup
 
 1. **Navigate to frontend directory:**
+
    ```bash
    cd frontend
    ```
 
 2. **Install dependencies:**
+
    ```bash
    npm install
    ```
 
 3. **Start the development server:**
+
    ```bash
    npm run dev
    ```
@@ -139,7 +145,6 @@ claraburgess.com/
 The application uses NestJS ConfigModule for environment-based configuration:
 
 - **Environment Variables**: All configuration is driven by environment variables
-- **Baby Information**: Due date and name stored securely in environment variables
 - **Type Safety**: Full TypeScript support for configuration values
 - **Development/Production**: Different settings for different environments
 - **Security**: Sensitive values like JWT secrets are configurable
@@ -147,29 +152,33 @@ The application uses NestJS ConfigModule for environment-based configuration:
 ## API Endpoints
 
 ### Public API
+
 - `GET /api/registry` - Get all registry items
 - `GET /api/photos` - Get all photos
 - `GET /api/baby-info` - Get baby information (name, due date)
 - `PUT /api/registry/:id/toggle-purchased` - Toggle purchased status
 
 ### Admin API (Protected)
+
 - `POST /api/admin/registry` - Create new registry item
 - `PUT /api/admin/registry/:id` - Update registry item
 - `DELETE /api/admin/registry/:id` - Delete registry item
 
 ### Photo Management (Protected)
+
 - `POST /api/photos` - Upload new photo
 - `PUT /api/photos/:id` - Update photo details
 - `DELETE /api/photos/:id` - Delete photo
 
 ### Authentication
+
 - `POST /api/auth/login` - Admin login
 
 ## Admin Access
 
 - **URL**: `/admin`
 - **Default Credentials**: `admin/admin123`
-- **Features**: 
+- **Features**:
   - Add, edit, delete registry items
   - Upload, manage photos
   - Tabbed interface for easy navigation
@@ -190,15 +199,10 @@ The application uses NestJS ConfigModule for environment-based configuration:
 
 ## Customization
 
-### Update Baby Information
-Modify the `backend/.env` file:
-```bash
-BABY_NAME=YourBabyName
-BABY_DUE_DATE=YYYY-MM-DD
-```
-
 ### Environment Configuration
+
 Modify the `backend/.env` file to change:
+
 - Server port
 - Database path
 - JWT secrets
@@ -207,16 +211,19 @@ Modify the `backend/.env` file to change:
 - Cloudinary settings
 
 ### Styling
+
 The site uses Tailwind CSS. Customize colors, fonts, and layout in the component files.
 
 ## Deployment
 
 ### Frontend (Vercel)
+
 1. Push your code to GitHub
 2. Connect your repository to Vercel
 3. Deploy automatically
 
 ### Backend (Railway/Heroku)
+
 1. Set up environment variables
 2. Deploy using your preferred platform
 3. Update the API proxy in `next.config.ts`
@@ -227,7 +234,7 @@ This is a personal project, but feel free to suggest improvements or report issu
 
 ## License
 
-Personal project - not for commercial use.
+This project is licensed under the MIT License. See the LICENSE file for details.
 
 ---
 
