@@ -1,23 +1,23 @@
-import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Photo } from '../photos/entities/photo.entity';
 
 @Injectable()
-export class PhotoSeedService implements OnApplicationBootstrap {
+export class PhotoSeedService implements OnModuleInit {
   constructor(
     @InjectRepository(Photo)
     private photosRepository: Repository<Photo>,
   ) {}
 
-  async onApplicationBootstrap() {
+  async onModuleInit() {
     await this.seedPhotos();
   }
 
   async seedPhotos() {
     const existingPhotos = await this.photosRepository.count();
     if (existingPhotos > 0) {
-      console.log('Photos already exist, skipping seed');
+      Logger.log('Photos already exist, skipping seed');
       return;
     }
 
@@ -56,6 +56,6 @@ export class PhotoSeedService implements OnApplicationBootstrap {
       await this.photosRepository.save(photoEntity);
     }
 
-    console.log(`Seeded ${seedPhotos.length} photos`);
+    Logger.log(`Seeded ${seedPhotos.length} photos`);
   }
 }

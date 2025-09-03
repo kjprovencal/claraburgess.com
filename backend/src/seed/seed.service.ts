@@ -1,23 +1,23 @@
-import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { RegistryItem } from '../registry/entities/registry-item.entity';
 
 @Injectable()
-export class SeedService implements OnApplicationBootstrap {
+export class SeedService implements OnModuleInit {
   constructor(
     @InjectRepository(RegistryItem)
     private registryItemsRepository: Repository<RegistryItem>,
   ) {}
 
-  async onApplicationBootstrap() {
+  async onModuleInit() {
     await this.seedRegistryItems();
   }
 
   async seedRegistryItems() {
     const existingItems = await this.registryItemsRepository.count();
     if (existingItems > 0) {
-      console.log('Registry items already exist, skipping seed');
+      Logger.log('Registry items already exist, skipping seed');
       return;
     }
 
@@ -77,6 +77,6 @@ export class SeedService implements OnApplicationBootstrap {
       await this.registryItemsRepository.save(registryItem);
     }
 
-    console.log(`Seeded ${seedItems.length} registry items`);
+    Logger.log(`Seeded ${seedItems.length} registry items`);
   }
 }
