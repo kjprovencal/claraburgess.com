@@ -1,55 +1,56 @@
 "use client";
 
-import React, { useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
+import React, { useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import Loading from "@components/Loading";
 
 interface ResetPasswordForm {
   newPassword: string;
   confirmPassword: string;
 }
 
-export default function ResetPasswordPage() {
+function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const token = searchParams.get('token');
-  
+  const token = searchParams.get("token");
+
   const [form, setForm] = useState<ResetPasswordForm>({
-    newPassword: '',
-    confirmPassword: '',
+    newPassword: "",
+    confirmPassword: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
+    setError("");
+    setSuccess("");
 
     if (!token) {
-      setError('Reset token is missing. Please use the link from your email.');
+      setError("Reset token is missing. Please use the link from your email.");
       return;
     }
 
     // Validation
     if (form.newPassword !== form.confirmPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       return;
     }
 
     if (form.newPassword.length < 8) {
-      setError('Password must be at least 8 characters long');
+      setError("Password must be at least 8 characters long");
       return;
     }
 
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/auth/reset-password', {
-        method: 'POST',
+      const response = await fetch("/api/auth/reset-password", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           token: token,
@@ -63,13 +64,13 @@ export default function ResetPasswordPage() {
         setSuccess(data.message);
         // Redirect to login after 3 seconds
         setTimeout(() => {
-          router.push('/login');
+          router.push("/login");
         }, 3000);
       } else {
-        setError(data.message || 'Password reset failed');
+        setError(data.message || "Password reset failed");
       }
     } catch (error) {
-      setError('Network error. Please try again.');
+      setError("Network error. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -136,7 +137,10 @@ export default function ResetPasswordPage() {
             )}
 
             <div>
-              <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="newPassword"
+                className="block text-sm font-medium text-gray-700"
+              >
                 New Password
               </label>
               <div className="mt-1">
@@ -155,7 +159,10 @@ export default function ResetPasswordPage() {
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Confirm New Password
               </label>
               <div className="mt-1">
@@ -179,7 +186,7 @@ export default function ResetPasswordPage() {
                 disabled={isLoading}
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isLoading ? 'Resetting password...' : 'Reset Password'}
+                {isLoading ? "Resetting password..." : "Reset Password"}
               </button>
             </div>
           </form>
@@ -195,5 +202,13 @@ export default function ResetPasswordPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <ResetPasswordForm />
+    </Suspense>
   );
 }
