@@ -41,7 +41,7 @@ export default function Home() {
             <div className="relative mb-8">
               <Image
                 src="/main.jpg"
-                alt="Clara&apos;s Baby Registry"
+                alt="Clara's Baby Registry"
                 width={200}
                 height={200}
                 priority

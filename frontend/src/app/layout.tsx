@@ -8,7 +8,7 @@ import "./globals.css";
 const tgnd = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Clara&apos;s Baby Registry",
+  title: "Clara's Baby Registry",
   description: "Welcome to Clara&apos;s world! Baby registry and photo gallery.",
 };
 
