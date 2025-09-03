@@ -13,7 +13,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-APP_NAME="clara-baby-registry-backend"
+APP_NAME="claraburgess.com"
 APP_DIR="/opt/$APP_NAME"
 SERVICE_NAME="$APP_NAME"
 USER_NAME="clara-app"
@@ -61,8 +61,8 @@ install_nodejs() {
     echo -e "${BLUE}📦 Installing Node.js and npm...${NC}"
     
     if ! command -v node &> /dev/null; then
-        echo "Installing Node.js 20.x..."
-        curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+        echo "Installing Node.js 22.x..."
+        curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
         sudo apt-get install -y nodejs
         
         # Verify installation
@@ -74,9 +74,9 @@ install_nodejs() {
     fi
 }
 
-# Function to install PM2 globally
+# Function to install PM2 and NestJS CLI globally
 install_pm2() {
-    echo -e "${BLUE}📦 Installing PM2 process manager...${NC}"
+    echo -e "${BLUE}📦 Installing PM2 process manager and NestJS CLI...${NC}"
     
     if ! command -v pm2 &> /dev/null; then
         sudo npm install -g pm2
@@ -84,6 +84,13 @@ install_pm2() {
         sudo systemctl enable pm2-$USER_NAME
     else
         echo -e "${GREEN}✅ PM2 already installed${NC}"
+    fi
+    
+    if ! command -v nest &> /dev/null; then
+        echo "Installing NestJS CLI globally..."
+        sudo npm install -g @nestjs/cli
+    else
+        echo -e "${GREEN}✅ NestJS CLI already installed${NC}"
     fi
 }
 
@@ -136,7 +143,7 @@ deploy_application() {
     # Install dependencies
     echo "Installing production dependencies..."
     cd "$APP_DIR"
-    sudo -u "$USER_NAME" npm ci --only=production
+    sudo -u "$USER_NAME" npm ci --only=production --omit=dev
     
     # Build application
     echo "Building application..."
@@ -357,7 +364,7 @@ update_application() {
     
     # Install dependencies
     cd "$APP_DIR"
-    sudo -u "$USER_NAME" npm ci --only=production
+    sudo -u "$USER_NAME" npm ci --only=production --omit=dev
     
     # Build application
     sudo -u "$USER_NAME" npm run build
