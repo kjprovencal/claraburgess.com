@@ -30,7 +30,7 @@ function AdminContent() {
           <div className="mb-8">
             <h1 className="text-3xl font-bold dark:text-gray-800">Admin Panel</h1>
             <p className="text-gray-600 mt-1">
-              Managing Clara's registry and photos
+              Managing Clara&apos;s registry and photos
             </p>
           </div>
 

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Photo } from "@types";
 import { FaTrash } from "react-icons/fa";
 import { authenticatedFetch } from "@utils/auth";
+import Image from "next/image";
 
 type PhotoForm = Pick<Photo, "alt" | "caption" | "date" | "category">;
 
@@ -199,11 +200,16 @@ export default function PhotoGalleryManager() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
           {photos.map((photo) => (
-            <div key={photo.id} className="border rounded-lg overflow-hidden">
-              <img
+            <div
+              key={photo.id}
+              className="border rounded-lg overflow-hidden relative"
+            >
+              <Image
                 src={photo.url}
                 alt={photo.alt}
-                className="w-full h-48 object-cover"
+                width={32}
+                height={32}
+                objectFit="cover"
               />
               <div className="p-4">
                 <h3 className="font-semibold text-gray-800 mb-2 dark:text-gray-900">

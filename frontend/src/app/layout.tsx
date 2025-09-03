@@ -8,8 +8,8 @@ import "./globals.css";
 const tgnd = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Clara's Baby Registry",
-  description: "Welcome to Clara's world! Baby registry and photo gallery.",
+  title: "Clara&apos;s Baby Registry",
+  description: "Welcome to Clara&apos;s world! Baby registry and photo gallery.",
 };
 
 export default function RootLayout({

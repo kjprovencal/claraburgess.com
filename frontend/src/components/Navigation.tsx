@@ -133,7 +133,7 @@ export default function Navigation() {
           {/* Mobile Header */}
           <div className="flex items-center justify-between py-4">
             <div className="text-lg font-semibold text-gray-800">
-              Clara's World
+              Clara&apos;s World
             </div>
             <button
               onClick={toggleMobileMenu}

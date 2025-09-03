@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 
 export default function AboutUsPage() {
   return (
@@ -27,16 +26,16 @@ export default function AboutUsPage() {
             
             <div className="max-w-4xl mx-auto text-center">
               <p className="text-lg text-gray-600 leading-relaxed mb-6">
-                We're Natalie and Kyle, and we're absolutely thrilled to be welcoming our first child, Clara, into the world! 
+                We&apos;re Natalie and Kyle, and we&apos;re absolutely thrilled to be welcoming our first child, Clara, into the world! 
                 Our journey to parenthood has been filled with love, excitement, and countless moments of joy.
               </p>
               <p className="text-lg text-gray-600 leading-relaxed mb-6">
                 We met and fell in love, building a life together filled with adventures, laughter, and dreams of starting a family. 
-                Now that dream is becoming reality, and we couldn't be more grateful for the love and support of our family and friends.
+                Now that dream is becoming reality, and we couldn&apos;t be more grateful for the love and support of our family and friends.
               </p>
               <p className="text-lg text-gray-600 leading-relaxed">
-                As we prepare for Clara's arrival, we're learning that parenthood is about more than just diapers and sleepless nights—it's about 
-                creating a home filled with love, teaching values, and watching our little one grow into the amazing person she's meant to be.
+                As we prepare for Clara&apos;s arrival, we&apos;re learning that parenthood is about more than just diapers and sleepless nights—it&apos;s about 
+                creating a home filled with love, teaching values, and watching our little one grow into the amazing person she&apos;s meant to be.
               </p>
             </div>
           </div>
@@ -67,11 +66,11 @@ export default function AboutUsPage() {
                   </p>
                   <p className="text-gray-600 leading-relaxed mb-4">
                     As a private nanny, Natalie has years of experience caring for children of all ages, which gives her incredible 
-                    insight into child development, behavior, and the daily rhythms of family life. She's been absolutely amazing 
+                    insight into child development, behavior, and the daily rhythms of family life. She&apos;s been absolutely amazing 
                     throughout this pregnancy, embracing every moment with grace and excitement.
                   </p>
                   <p className="text-gray-600 leading-relaxed">
-                    Her maternal instincts are already shining through as she carefully plans and prepares for Clara's arrival. 
+                    Her maternal instincts are already shining through as she carefully plans and prepares for Clara&apos;s arrival. 
                     Clara is so lucky to have such an experienced and loving mama!
                   </p>
                 </div>
@@ -115,8 +114,8 @@ export default function AboutUsPage() {
                   </p>
                   <p className="text-gray-600 leading-relaxed mb-4">
                     As a software developer, Kyle brings his analytical mind, problem-solving skills, and attention to detail 
-                    to everything he does. Throughout this pregnancy, he's been incredibly supportive, attending every appointment, 
-                    reading parenting books, and already practicing his dad jokes (much to Natalie's amusement).
+                    to everything he does. Throughout this pregnancy, he&apos;s been incredibly supportive, attending every appointment, 
+                    reading parenting books, and already practicing his dad jokes (much to Natalie&apos;s amusement).
                   </p>
                   <p className="text-gray-600 leading-relaxed">
                     His dedication, patience, and sense of humor will make him an amazing father. 
@@ -154,7 +153,7 @@ export default function AboutUsPage() {
                   </div>
                   <h3 className="text-lg font-semibold text-gray-800 mb-2">Growth & Learning</h3>
                   <p className="text-gray-600 text-sm">
-                    We're committed to learning and growing as parents, embracing challenges, and always striving to be better.
+                    We&apos;re committed to learning and growing as parents, embracing challenges, and always striving to be better.
                   </p>
                 </div>
                 
@@ -164,7 +163,7 @@ export default function AboutUsPage() {
                   </div>
                   <h3 className="text-lg font-semibold text-gray-800 mb-2">Family First</h3>
                   <p className="text-gray-600 text-sm">
-                    Family is our foundation. We'll create a home filled with laughter, traditions, and endless love.
+                    Family is our foundation. We&apos;ll create a home filled with laughter, traditions, and endless love.
                   </p>
                 </div>
               </div>
@@ -178,16 +177,16 @@ export default function AboutUsPage() {
             </h2>
             <div className="max-w-3xl mx-auto">
               <p className="text-lg text-gray-600 leading-relaxed mb-6">
-                As we count down the days until Clara's arrival, we're filled with excitement and gratitude. 
-                We can't wait to hold her in our arms, watch her first smile, hear her first laugh, and experience all the 
+                As we count down the days until Clara&apos;s arrival, we&apos;re filled with excitement and gratitude. 
+                We can&apos;t wait to hold her in our arms, watch her first smile, hear her first laugh, and experience all the 
                 beautiful moments that parenthood brings.
               </p>
               <p className="text-lg text-gray-600 leading-relaxed mb-6">
-                We're so thankful for the love and support of our family and friends during this special time. 
+                We&apos;re so thankful for the love and support of our family and friends during this special time. 
                 Your encouragement, advice, and excitement mean the world to us.
               </p>
               <p className="text-lg text-gray-600 leading-relaxed">
-                Thank you for being part of our journey to parenthood. We can't wait to introduce you to our little miracle, Clara!
+                Thank you for being part of our journey to parenthood. We can&apos;t wait to introduce you to our little miracle, Clara!
               </p>
             </div>
           </div>

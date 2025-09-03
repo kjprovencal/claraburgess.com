@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface RegisterForm {
   username: string;
@@ -13,40 +13,40 @@ interface RegisterForm {
 
 export default function RegisterPage() {
   const router = useRouter();
-  
+
   const [form, setForm] = useState<RegisterForm>({
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
+    setError("");
+    setSuccess("");
 
     // Validation
     if (form.password !== form.confirmPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       return;
     }
 
     if (form.password.length < 8) {
-      setError('Password must be at least 8 characters long');
+      setError("Password must be at least 8 characters long");
       return;
     }
 
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           username: form.username,
@@ -62,14 +62,14 @@ export default function RegisterPage() {
         if (!data.requiresApproval) {
           // If user is pre-approved, redirect to login after 3 seconds
           setTimeout(() => {
-            router.push('/login');
+            router.push("/login");
           }, 3000);
         }
       } else {
-        setError(data.message || 'Registration failed');
+        setError(data.message || "Registration failed");
       }
     } catch (error) {
-      setError('Network error. Please try again.');
+      setError("Network error. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -89,7 +89,7 @@ export default function RegisterPage() {
           Create your account
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
-          Or{' '}
+          Or{" "}
           <Link
             href="/login"
             className="font-medium text-pink-600 hover:text-pink-500"
@@ -98,7 +98,9 @@ export default function RegisterPage() {
           </Link>
         </p>
         <p className="mt-2 text-center text-sm text-gray-600">
-          For Clara's privacy, we require all accounts to be approved by an administrator. Please sign up and wait for approval. Let us know if you have any issues!
+          For Clara&apos;s privacy, we require all accounts to be approved by an
+          administrator. Please sign up and wait for approval. Let us know if
+          you have any issues!
         </p>
       </div>
 
@@ -118,7 +120,10 @@ export default function RegisterPage() {
             )}
 
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="username"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Username
               </label>
               <div className="mt-1">
@@ -136,7 +141,10 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Email address
               </label>
               <div className="mt-1">
@@ -155,7 +163,10 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Password
               </label>
               <div className="mt-1">
@@ -174,7 +185,10 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Confirm Password
               </label>
               <div className="mt-1">
@@ -198,7 +212,7 @@ export default function RegisterPage() {
                 disabled={isLoading}
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isLoading ? 'Creating account...' : 'Create account'}
+                {isLoading ? "Creating account..." : "Create account"}
               </button>
             </div>
           </form>
@@ -217,12 +231,14 @@ export default function RegisterPage() {
 
             <div className="mt-6 text-sm text-gray-600">
               <p className="mb-2">
-                <strong>Pre-approved accounts:</strong> If an admin has created a pre-approved account 
-                for your email, you can complete registration by setting a password and username.
+                <strong>Pre-approved accounts:</strong> If an admin has created
+                a pre-approved account for your email, you can complete
+                registration by setting a password and username.
               </p>
               <p>
-                <strong>New accounts:</strong> If you're creating a new account, it will require 
-                admin approval before you can log in. Contact an administrator to get pre-approved.
+                <strong>New accounts:</strong> If you&apos;re creating a new
+                account, it will require admin approval before you can log in.
+                Contact an administrator to get pre-approved.
               </p>
             </div>
           </div>

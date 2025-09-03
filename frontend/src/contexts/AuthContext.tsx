@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { isTokenExpired, forceLogout } from '@utils/auth';
+import { isTokenExpired } from '@utils/auth';
 
 interface User {
   id: string;

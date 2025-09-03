@@ -41,7 +41,7 @@ export default function Home() {
             <div className="relative mb-8">
               <Image
                 src="/main.jpg"
-                alt="Clara's Baby Registry"
+                alt="Clara&apos;s Baby Registry"
                 width={200}
                 height={200}
                 priority
@@ -50,7 +50,7 @@ export default function Home() {
             </div>
 
             <h1 className="text-5xl font-bold text-center mb-4 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-              Welcome to Clara's World!
+              Welcome to Clara&apos;s World!
             </h1>
 
             <p className="text-xl max-w-2xl text-center text-gray-600 leading-relaxed mx-auto">
@@ -60,8 +60,8 @@ export default function Home() {
               <br />
               <br />
               This website is our way of keeping friends and family connected during
-              this special time. Whether you're here to help with our registry or
-              just want to see how we're doing, we're grateful for your love and
+              this special time. Whether you&apos;re here to help with our registry or
+              just want to see how we&apos;re doing, we&apos;re grateful for your love and
               support.
             </p>
           </div>
@@ -69,7 +69,7 @@ export default function Home() {
           {/* Countdown Timer */}
           <div className="w-full max-w-2xl mx-auto mb-12">
             <h2 className="text-2xl font-semibold text-center mb-6 text-gray-800 dark:text-gray-200">
-              Counting Down to Clara's Arrival
+              Counting Down to Clara&apos;s Arrival
             </h2>
             <div className="text-center">
               <div className="bg-gradient-to-br from-pink-500 to-purple-500 text-white text-2xl font-bold py-4 px-2 rounded-lg shadow-lg">
@@ -90,7 +90,7 @@ export default function Home() {
                     Baby Registry
                   </h3>
                   <p className="text-blue-600">
-                    Help us prepare for Clara's arrival with items from
+                    Help us prepare for Clara&apos;s arrival with items from
                     our carefully curated registry
                   </p>
                 </div>
@@ -123,7 +123,7 @@ export default function Home() {
                     About Clara Burgess
                   </h3>
                   <p className="text-purple-600">
-                    Learn more about Clara's namesake and the Burgess lineage
+                    Learn more about Clara&apos;s namesake and the Burgess lineage
                   </p>
                 </div>
               </div>

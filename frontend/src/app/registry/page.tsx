@@ -5,7 +5,7 @@ import Image from "next/image";
 import ProtectedRoute from "@components/ProtectedRoute";
 import { RegistryItem } from "@types";
 import { formatPrice } from "@utils/priceFormat";
-import { FaTimes, FaSearch, FaInfoCircle } from "react-icons/fa";
+import { FaTimes, FaSearch } from "react-icons/fa";
 
 type PurchaseModalData = {
   hasPurchased: boolean;
@@ -249,10 +249,11 @@ function RegistryContent() {
           <div className="relative">
             <div className="text-center mb-8">
               <h1 className="text-4xl font-bold mb-4 dark:text-gray-800">
-                Clara's Registry
+                Clara&apos;s Registry
               </h1>
               <p className="text-lg text-gray-600 mb-6">
-                Thank you for helping us prepare for our little one's arrival!
+                Thank you for helping us prepare for our little one&apos;s
+                arrival!
               </p>
 
               {/* Registry Stats */}
@@ -508,7 +509,7 @@ function RegistryContent() {
                       className="w-full bg-blue-500 text-white py-3 px-4 rounded-lg hover:bg-blue-600 transition-colors text-left"
                     >
                       <div className="font-medium">
-                        I'm gifting something similar/pre-owned
+                        I&apos;m gifting something similar/pre-owned
                       </div>
                       <div className="text-sm opacity-90">
                         Different item or used version
@@ -557,7 +558,7 @@ function RegistryContent() {
                     {purchaseModalData.giftType === "similar" && (
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Please describe the item you're gifting
+                          Please describe the item you&apos;re gifting
                         </label>
                         <textarea
                           value={purchaseModalData.similarItemDescription}
@@ -612,7 +613,7 @@ function RegistryContent() {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Address for "Thank You" card (optional)
+                        Address for &ldquo;Thank You&rdquo; card (optional)
                       </label>
                       <textarea
                         value={purchaseModalData.thankYouAddress}

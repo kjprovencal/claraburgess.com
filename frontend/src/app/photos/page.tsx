@@ -85,7 +85,7 @@ function PhotosContent() {
           <div className="relative">
             <div className="text-center mb-8">
               <h1 className="text-4xl font-bold mb-4 text-gray-800 dark:text-gray-200">
-                Clara's Photo Gallery
+                Clara&apos;s Photo Gallery
               </h1>
               <p className="text-lg text-gray-600 mb-6">
                 Watch our journey as we prepare to welcome our little miracle
