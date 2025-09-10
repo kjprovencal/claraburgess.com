@@ -53,8 +53,10 @@ export async function DELETE(
   request: NextRequest,
   { params }: RouteContext<"/api/admin/registry/[id]">
 ) {
+  console.log("🔍 Admin DELETE route hit for ID:", await params);
   try {
     const { id } = await params;
+    console.log("🔍 Processing DELETE for ID:", id);
 
     const authHeader = request.headers.get("authorization");
 
@@ -65,16 +67,18 @@ export async function DELETE(
       );
     }
 
-    const response = await fetch(
-      `${process.env.BACKEND_URL || "http://localhost:3001"}/api/admin/registry/${id}`,
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: authHeader,
-        },
-      }
-    );
+    const backendUrl = `${process.env.BACKEND_URL || "http://localhost:3001"}/api/admin/registry/${id}`;
+    console.log("🔍 Calling backend URL:", backendUrl);
+    
+    const response = await fetch(backendUrl, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: authHeader,
+      },
+    });
+    
+    console.log("🔍 Backend response status:", response.status);
 
     if (response.ok) {
       return new NextResponse(null, { status: 204 });
