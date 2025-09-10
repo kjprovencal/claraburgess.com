@@ -1,4 +1,17 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, HttpCode, HttpStatus, UseInterceptors, UploadedFile, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  HttpCode,
+  HttpStatus,
+  UseInterceptors,
+  UploadedFile,
+  UseGuards,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PhotosService } from './photos.service';
 import { CreatePhotoDto, UpdatePhotoDto } from './dto/photos.dto';
@@ -26,7 +39,13 @@ export class PhotosController {
   @Get(':id/optimized')
   async getOptimizedPhoto(
     @Param('id') id: string,
-    @Body() options: { width?: number; height?: number; crop?: string; quality?: string }
+    @Body()
+    options: {
+      width?: number;
+      height?: number;
+      crop?: string;
+      quality?: string;
+    },
   ) {
     const url = await this.photosService.getOptimizedPhotoUrl(id, options);
     return { url };
@@ -38,14 +57,17 @@ export class PhotosController {
   @HttpCode(HttpStatus.CREATED)
   async createPhoto(
     @Body() createPhotoDto: CreatePhotoDto,
-    @UploadedFile() file?: Express.Multer.File
+    @UploadedFile() file?: Express.Multer.File,
   ) {
     return this.photosService.createPhoto(createPhotoDto, file);
   }
 
   @Put(':id')
   @UseGuards(JwtAuthGuard)
-  async updatePhoto(@Param('id') id: string, @Body() updatePhotoDto: UpdatePhotoDto) {
+  async updatePhoto(
+    @Param('id') id: string,
+    @Body() updatePhotoDto: UpdatePhotoDto,
+  ) {
     return this.photosService.updatePhoto(id, updatePhotoDto);
   }
 

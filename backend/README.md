@@ -1,98 +1,204 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Clara's World - Backend API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A NestJS backend application for Clara's World, a baby registry and personal website for Clara. This provides user authentication, photo management, and registry functionality for family and friends to stay connected with Clara's journey.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Features
 
-## Description
+- **User Authentication**: JWT-based authentication with admin approval workflow
+- **Email Notifications**: SMTP integration for user registration and approval notifications
+- **Photo Management**: Cloudinary integration for photo uploads and management
+- **Registry System**: Baby registry functionality for Clara's needs
+- **Admin Panel**: User management and approval system
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Quick Start
 
-## Project setup
+### Prerequisites
+
+- Node.js (v18 or higher)
+- npm or yarn
+- Email account (Gmail with OAuth 2.0 or custom domain with SMTP)
+- Cloudinary account (for photo storage)
+
+### Installation
+
+1. Clone the repository and navigate to the backend directory:
 
 ```bash
-$ npm install
+cd backend
+npm install
 ```
 
-## Compile and run the project
+2. Copy the environment template and configure your settings:
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+cp env.example .env
 ```
 
-## Run tests
+3. Update the `.env` file with your configuration:
+
+```env
+# Server Configuration
+PORT=3001
+NODE_ENV=development
+
+# Frontend Configuration
+FRONTEND_URL=http://localhost:3000
+
+# Database Configuration
+DATABASE_PATH=database.sqlite
+
+# JWT Configuration
+JWT_SECRET=your-super-secret-jwt-key-change-in-production
+JWT_EXPIRES_IN=24h
+
+# Cloudinary Configuration
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+CLOUDINARY_FOLDER=claras-world
+
+# Email Configuration (Gmail OAuth 2.0)
+EMAIL_SERVICE=gmail
+EMAIL_USER=your_gmail_address@gmail.com
+GMAIL_CLIENT_ID=your_client_id
+GMAIL_CLIENT_SECRET=your_client_secret
+GMAIL_REFRESH_TOKEN=your_refresh_token
+FROM_EMAIL=your_gmail_address@gmail.com
+ADMIN_EMAIL=admin@clarasworld.com
+```
+
+### Running the Application
 
 ```bash
-# unit tests
-$ npm run test
+# Development mode
+npm run start:dev
 
-# e2e tests
-$ npm run test:e2e
+# Production mode
+npm run start:prod
 
-# test coverage
-$ npm run test:cov
+# Build the application
+npm run build
+```
+
+## Email Notifications
+
+The application includes comprehensive email notifications using Gmail OAuth 2.0:
+
+- **Admin Notifications**: When new users register
+- **User Approval**: Welcome emails when users are approved
+- **User Rejection**: Notification emails with rejection reasons
+
+See [EMAIL_SETUP.md](./EMAIL_SETUP.md) for detailed setup instructions.
+
+### Testing Email Configuration
+
+Run the email test script to verify your email setup:
+
+```bash
+node test-email.js
+```
+
+### Email Setup Options
+
+**Option 1: Gmail OAuth 2.0 (Recommended for Gmail accounts)**
+```bash
+node generate-refresh-token.js
+```
+
+**Option 2: Custom Domain SMTP (For custom domain emails)**
+See [CUSTOM_EMAIL_SETUP.md](./CUSTOM_EMAIL_SETUP.md) for detailed instructions.
+
+## API Endpoints
+
+### Authentication
+
+- `POST /auth/login` - User login
+- `POST /auth/register` - User registration
+- `POST /auth/approve-user` - Approve/reject user (admin only)
+- `GET /auth/pending-users` - Get pending users (admin only)
+- `GET /auth/all-users` - Get all users (admin only)
+
+### Photos
+
+- `GET /photos` - Get all photos
+- `POST /photos` - Upload new photo (authenticated)
+- `PUT /photos/:id` - Update photo (authenticated)
+- `DELETE /photos/:id` - Delete photo (authenticated)
+
+### Registry
+
+- `GET /registry` - Get registry items
+- `POST /registry` - Create registry item (admin only)
+- `PUT /registry/:id` - Update registry item (admin only)
+- `DELETE /registry/:id` - Delete registry item (admin only)
+
+## Database
+
+The application uses SQLite for development and can be configured for PostgreSQL in production. The database is automatically created on first run.
+
+### Default Admin User
+
+A default admin user is created automatically:
+
+- Username: `admin`
+- Password: `admin123`
+- Email: `admin@clarasworld.com`
+
+**Important**: Change the default admin password in production!
+
+## Development
+
+### Project Structure
+
+```
+src/
+├── auth/           # Authentication module
+├── email/          # Email service module
+├── photos/         # Photo management module
+├── registry/       # Registry module
+├── admin/          # Admin functionality
+├── config/         # Configuration files
+└── main.ts         # Application entry point
+```
+
+### Available Scripts
+
+```bash
+# Development
+npm run start:dev
+
+# Build
+npm run build
+
+# Production
+npm run start:prod
+
+# Linting
+npm run lint
+
+# Testing
+npm run test
+npm run test:e2e
+npm run test:cov
 ```
 
 ## Deployment
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for production deployment instructions.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Security Considerations
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+- Change default admin credentials
+- Use strong JWT secrets
+- Configure CORS properly
+- Set up domain authentication for SendGrid
+- Use HTTPS in production
+- Regularly update dependencies
 
 ## Support
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+For issues and questions, please check the documentation or contact the development team.
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+This project is private and personal for Clara's World.

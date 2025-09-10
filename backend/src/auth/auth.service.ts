@@ -4,6 +4,7 @@ import {
   ConflictException,
   NotFoundException,
   BadRequestException,
+  Logger,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -17,15 +18,19 @@ import {
   RequestPasswordResetDto,
   ResetPasswordDto,
 } from './dto/auth.dto';
+import { EmailService } from '../email/email.service';
 import * as bcrypt from 'bcryptjs';
 import * as crypto from 'crypto';
 
 @Injectable()
 export class AuthService implements OnApplicationBootstrap {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private jwtService: JwtService,
+    private emailService: EmailService,
   ) {}
 
   async onApplicationBootstrap() {
@@ -134,6 +139,23 @@ export class AuthService implements OnApplicationBootstrap {
 
     const savedUser = await this.usersRepository.save(user);
 
+    // Send notification email to admin about new user registration
+    try {
+      await this.emailService.sendAdminNewUserNotification(
+        savedUser.email,
+        savedUser.username,
+      );
+      this.logger.log(
+        `Admin notification sent for new user: ${savedUser.username}`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Failed to send admin notification for user ${savedUser.username}:`,
+        error,
+      );
+      // Don't fail registration if email fails
+    }
+
     // Return user info without password
     const { password, ...result } = savedUser;
     return {
@@ -168,6 +190,32 @@ export class AuthService implements OnApplicationBootstrap {
     }
 
     await this.usersRepository.save(user);
+
+    // Send email notification to user about approval/rejection
+    try {
+      if (approveDto.status === UserStatus.APPROVED) {
+        await this.emailService.sendUserApprovalNotification(
+          user.email,
+          user.username,
+        );
+        this.logger.log(`Approval notification sent to user: ${user.username}`);
+      } else if (approveDto.status === UserStatus.REJECTED) {
+        await this.emailService.sendUserRejectionNotification(
+          user.email,
+          user.username,
+          user.rejectionReason,
+        );
+        this.logger.log(
+          `Rejection notification sent to user: ${user.username}`,
+        );
+      }
+    } catch (error) {
+      this.logger.error(
+        `Failed to send notification to user ${user.username}:`,
+        error,
+      );
+      // Don't fail approval if email fails
+    }
 
     const { password, ...result } = user;
     return result;
@@ -291,7 +339,7 @@ export class AuthService implements OnApplicationBootstrap {
       const hashedPassword = await bcrypt.hash('admin123', 10);
       const adminUser = this.usersRepository.create({
         username: 'admin',
-        email: 'admin@claraburgess.com',
+        email: 'admin@clarasworld.com',
         password: hashedPassword,
         role: 'admin',
         status: UserStatus.APPROVED,
@@ -310,7 +358,10 @@ export class AuthService implements OnApplicationBootstrap {
 
     if (!user) {
       // Don't reveal if email exists or not for security
-      return { message: 'If an account with that email exists, a password reset link has been sent.' };
+      return {
+        message:
+          'If an account with that email exists, a password reset link has been sent.',
+      };
     }
 
     // Generate reset token
@@ -325,17 +376,18 @@ export class AuthService implements OnApplicationBootstrap {
     // In a real application, you would send an email here
     // For now, we'll just return the token (in production, remove this)
     console.log(`Password reset token for ${user.email}: ${resetToken}`);
-    
-    return { 
-      message: 'If an account with that email exists, a password reset link has been sent.',
+
+    return {
+      message:
+        'If an account with that email exists, a password reset link has been sent.',
       token: resetToken, // Remove this in production
-      expiresAt: resetExpires
+      expiresAt: resetExpires,
     };
   }
 
   async resetPassword(resetDto: ResetPasswordDto) {
     const user = await this.usersRepository.findOne({
-      where: { 
+      where: {
         passwordResetToken: resetDto.token,
         passwordResetExpires: Not(IsNull()),
       },
@@ -355,6 +407,9 @@ export class AuthService implements OnApplicationBootstrap {
     user.passwordResetExpires = undefined;
     await this.usersRepository.save(user);
 
-    return { message: 'Password has been reset successfully. You can now log in with your new password.' };
+    return {
+      message:
+        'Password has been reset successfully. You can now log in with your new password.',
+    };
   }
 }

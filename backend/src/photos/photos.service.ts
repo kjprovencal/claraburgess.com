@@ -15,7 +15,7 @@ export class PhotosService {
 
   async getAllPhotos(): Promise<Photo[]> {
     return this.photosRepository.find({
-      order: { date: 'DESC' }
+      order: { date: 'DESC' },
     });
   }
 
@@ -27,7 +27,10 @@ export class PhotosService {
     return photo;
   }
 
-  async createPhoto(createPhotoDto: CreatePhotoDto, file?: Express.Multer.File): Promise<Photo> {
+  async createPhoto(
+    createPhotoDto: CreatePhotoDto,
+    file?: Express.Multer.File,
+  ): Promise<Photo> {
     let photoData = { ...createPhotoDto };
 
     if (file) {
@@ -43,7 +46,10 @@ export class PhotosService {
     return this.photosRepository.save(newPhoto);
   }
 
-  async updatePhoto(id: string, updatePhotoDto: UpdatePhotoDto): Promise<Photo> {
+  async updatePhoto(
+    id: string,
+    updatePhotoDto: UpdatePhotoDto,
+  ): Promise<Photo> {
     const photo = await this.getPhotoById(id);
     Object.assign(photo, updatePhotoDto);
     return this.photosRepository.save(photo);
@@ -51,7 +57,7 @@ export class PhotosService {
 
   async deletePhoto(id: string): Promise<void> {
     const photo = await this.getPhotoById(id);
-    
+
     // Delete from Cloudinary if publicId exists
     if (photo.publicId) {
       try {
@@ -60,7 +66,7 @@ export class PhotosService {
         console.error('Failed to delete from Cloudinary:', error);
       }
     }
-    
+
     await this.photosRepository.remove(photo);
   }
 
@@ -70,22 +76,25 @@ export class PhotosService {
     }
     return this.photosRepository.find({
       where: { category },
-      order: { date: 'DESC' }
+      order: { date: 'DESC' },
     });
   }
 
-  async getOptimizedPhotoUrl(id: string, options: {
-    width?: number;
-    height?: number;
-    crop?: string;
-    quality?: string;
-  } = {}): Promise<string> {
+  async getOptimizedPhotoUrl(
+    id: string,
+    options: {
+      width?: number;
+      height?: number;
+      crop?: string;
+      quality?: string;
+    } = {},
+  ): Promise<string> {
     const photo = await this.getPhotoById(id);
-    
+
     if (photo.publicId) {
       return this.cloudinaryService.getOptimizedUrl(photo.publicId, options);
     }
-    
+
     return photo.url; // Fallback to original URL
   }
 }

@@ -12,11 +12,13 @@ This guide will help you deploy Clara's Baby Registry backend to Digital Ocean.
 ## Quick Start
 
 1. **Upload the deployment script to your Droplet:**
+
    ```bash
    scp deploy-digitalocean.sh root@your-droplet-ip:/root/
    ```
 
 2. **SSH into your Droplet:**
+
    ```bash
    ssh root@your-droplet-ip
    ```
@@ -175,7 +177,7 @@ sudo tee /etc/nginx/sites-available/claraburgess > /dev/null <<EOF
 server {
     listen 80;
     server_name yourdomain.com;  # Update with your actual domain
-    
+
     location / {
         proxy_pass http://localhost:3001;
         proxy_http_version 1.1;
@@ -286,28 +288,32 @@ curl http://your-droplet-ip:3001/health
 ### Common Issues
 
 1. **Port already in use:**
+
    ```bash
    sudo netstat -tlnp | grep :3001
    sudo lsof -i :3001
    ```
 
 2. **Permission denied:**
+
    ```bash
    sudo chown -R clara-app:clara-app /opt/claraburgess
    sudo chown -R clara-app:clara-app /var/log/claraburgess
    ```
 
 3. **PM2 not starting on boot:**
+
    ```bash
    sudo -u clara-app pm2 startup systemd -u clara-app --hp /opt/claraburgess
    sudo systemctl enable pm2-clara-app
    ```
 
 4. **Database connection issues:**
+
    ```bash
    # Check database file permissions
    ls -la /opt/claraburgess/database.sqlite
-   
+
    # Check database file exists
    sudo -u clara-app test -f /opt/claraburgess/database.sqlite
    ```

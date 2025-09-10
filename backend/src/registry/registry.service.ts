@@ -2,7 +2,10 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { RegistryItem } from './entities/registry-item.entity';
-import { CreateRegistryItemDto, UpdateRegistryItemDto } from './dto/registry.dto';
+import {
+  CreateRegistryItemDto,
+  UpdateRegistryItemDto,
+} from './dto/registry.dto';
 
 @Injectable()
 export class RegistryService {
@@ -13,7 +16,7 @@ export class RegistryService {
 
   async getAllItems(): Promise<RegistryItem[]> {
     return this.registryItemsRepository.find({
-      order: { createdAt: 'DESC' }
+      order: { createdAt: 'DESC' },
     });
   }
 
@@ -25,12 +28,17 @@ export class RegistryService {
     return item;
   }
 
-  async createItem(createItemDto: CreateRegistryItemDto): Promise<RegistryItem> {
+  async createItem(
+    createItemDto: CreateRegistryItemDto,
+  ): Promise<RegistryItem> {
     const newItem = this.registryItemsRepository.create(createItemDto);
     return this.registryItemsRepository.save(newItem);
   }
 
-  async updateItem(id: string, updateItemDto: UpdateRegistryItemDto): Promise<RegistryItem> {
+  async updateItem(
+    id: string,
+    updateItemDto: UpdateRegistryItemDto,
+  ): Promise<RegistryItem> {
     const item = await this.getItemById(id);
     Object.assign(item, updateItemDto);
     return this.registryItemsRepository.save(item);

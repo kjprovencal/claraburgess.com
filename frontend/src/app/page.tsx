@@ -151,7 +151,7 @@ export default function Home() {
               Have Questions?
             </h3>
             <p className="text-gray-600">
-              Feel free to reach out to us directly, or use the contact form below.
+              Feel free to reach out to us directly, or use the link below to send us an email.
             </p>
             <div className="mt-4 flex justify-center gap-4">
               <Link
