@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     if (!response.ok) {
       return NextResponse.json(
         { error: "Invalid credentials" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     console.error("Login API error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -1,17 +1,20 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    
+
     // Forward the request to the backend
-    const response = await fetch(`${process.env.BACKEND_URL || 'http://localhost:3001'}/auth/reset-password`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
+    const response = await fetch(
+      `${process.env.BACKEND_URL || "http://localhost:3001"}/auth/reset-password`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
       },
-      body: JSON.stringify(body),
-    });
+    );
 
     const data = await response.json();
 
@@ -19,15 +22,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(data);
     } else {
       return NextResponse.json(
-        { message: data.message || 'Failed to reset password' },
-        { status: response.status }
+        { message: data.message || "Failed to reset password" },
+        { status: response.status },
       );
     }
   } catch (error) {
-    console.error('Reset password error:', error);
+    console.error("Reset password error:", error);
     return NextResponse.json(
-      { message: 'Internal server error' },
-      { status: 500 }
+      { message: "Internal server error" },
+      { status: 500 },
     );
   }
 }

@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
         headers: {
           "Content-Type": "application/json",
         },
-      }
+      },
     );
 
     const data = await response.json();
@@ -20,14 +20,14 @@ export async function GET(request: NextRequest) {
     } else {
       return NextResponse.json(
         { message: data.message || "Failed to fetch registry items" },
-        { status: response.status }
+        { status: response.status },
       );
     }
   } catch (error) {
     console.error("Registry GET error:", error);
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(body),
-      }
+      },
     );
 
     const data = await response.json();
@@ -55,14 +55,14 @@ export async function POST(request: NextRequest) {
     } else {
       return NextResponse.json(
         { message: data.message || "Failed to create registry item" },
-        { status: response.status }
+        { status: response.status },
       );
     }
   } catch (error) {
     console.error("Registry POST error:", error);
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

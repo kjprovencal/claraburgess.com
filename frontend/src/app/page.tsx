@@ -18,7 +18,7 @@ export default function Home() {
   if (durationInMonths > 0) {
     const leftoverDays = dayjs(dueDate).diff(
       dayjs().add(durationInMonths, "months"),
-      "days"
+      "days",
     );
     durationText = `${durationInMonths} months`;
     if (leftoverDays > 0) {
@@ -34,7 +34,7 @@ export default function Home() {
       <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 border border-gray-100 relative overflow-hidden">
         {/* Subtle Background Pattern - Full Height */}
         <div className="absolute inset-0 bg-gradient-to-br from-pink-50/30 via-transparent to-blue-50/30 pointer-events-none"></div>
-        
+
         <div className="relative">
           {/* Hero Section */}
           <div className="text-center mb-12">
@@ -54,15 +54,15 @@ export default function Home() {
             </h1>
 
             <p className="text-xl max-w-2xl text-center text-gray-600 leading-relaxed mx-auto">
-              We are so excited to welcome our precious daughter Clara{" "}
-              into this world! Here you can find our baby registry, browse photos of
-              our journey, and share in our joy.
+              We are so excited to welcome our precious daughter Clara into this
+              world! Here you can find our baby registry, browse photos of our
+              journey, and share in our joy.
               <br />
               <br />
-              This website is our way of keeping friends and family connected during
-              this special time. Whether you&apos;re here to help with our registry or
-              just want to see how we&apos;re doing, we&apos;re grateful for your love and
-              support.
+              This website is our way of keeping friends and family connected
+              during this special time. Whether you&apos;re here to help with
+              our registry or just want to see how we&apos;re doing, we&apos;re
+              grateful for your love and support.
             </p>
           </div>
 
@@ -90,8 +90,8 @@ export default function Home() {
                     Baby Registry
                   </h3>
                   <p className="text-blue-600">
-                    Help us prepare for Clara&apos;s arrival with items from
-                    our carefully curated registry
+                    Help us prepare for Clara&apos;s arrival with items from our
+                    carefully curated registry
                   </p>
                 </div>
               </div>
@@ -107,8 +107,7 @@ export default function Home() {
                     Photo Gallery
                   </h3>
                   <p className="text-pink-600">
-                    Follow our journey through pregnancy and watch Clara{" "}
-                    grow
+                    Follow our journey through pregnancy and watch Clara grow
                   </p>
                 </div>
               </div>
@@ -123,7 +122,8 @@ export default function Home() {
                     About Clara Burgess
                   </h3>
                   <p className="text-purple-600">
-                    Learn more about Clara&apos;s namesake and the Burgess lineage
+                    Learn more about Clara&apos;s namesake and the Burgess
+                    lineage
                   </p>
                 </div>
               </div>
@@ -151,7 +151,8 @@ export default function Home() {
               Have Questions?
             </h3>
             <p className="text-gray-600">
-              Feel free to reach out to us directly, or use the link below to send us an email.
+              Feel free to reach out to us directly, or use the link below to
+              send us an email.
             </p>
             <div className="mt-4 flex justify-center gap-4">
               <Link

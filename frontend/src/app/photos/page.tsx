@@ -43,7 +43,8 @@ function PhotosContent() {
   };
 
   const filteredPhotos = photos.filter(
-    (photo) => selectedCategory === "All" || photo.category === selectedCategory
+    (photo) =>
+      selectedCategory === "All" || photo.category === selectedCategory,
   );
 
   if (loading) {
@@ -81,7 +82,7 @@ function PhotosContent() {
         <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 border border-gray-100 relative overflow-hidden">
           {/* Subtle Background Pattern - Full Height */}
           <div className="absolute inset-0 bg-gradient-to-br from-pink-50/30 via-transparent to-blue-50/30 pointer-events-none"></div>
-          
+
           <div className="relative">
             <div className="text-center mb-8">
               <h1 className="text-4xl font-bold mb-4 text-gray-800 dark:text-gray-200">
@@ -136,7 +137,9 @@ function PhotosContent() {
                         {new Date(photo.date).toLocaleDateString()}
                       </span>
                     </div>
-                    <h3 className="font-semibold text-gray-800 mb-2">{photo.alt}</h3>
+                    <h3 className="font-semibold text-gray-800 mb-2">
+                      {photo.alt}
+                    </h3>
                     <p className="text-sm text-gray-600 line-clamp-2">
                       {photo.caption}
                     </p>

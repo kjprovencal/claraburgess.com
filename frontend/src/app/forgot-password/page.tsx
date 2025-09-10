@@ -40,7 +40,7 @@ export default function ForgotPasswordPage() {
         // In development, show the token for testing
         if (data.token) {
           setSuccess(
-            `${data.message} (Development: Reset token: ${data.token})`
+            `${data.message} (Development: Reset token: ${data.token})`,
           );
         }
       } else {

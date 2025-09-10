@@ -37,53 +37,65 @@ export default function Navigation() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Desktop Navigation */}
         <div className="hidden md:flex gap-6 lg:gap-8 text-base lg:text-lg font-semibold py-4 lg:py-6 justify-center">
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className={`transition-all duration-200 hover:text-pink-600 ${
-              isActive("/") ? "text-pink-600" : "text-gray-700 hover:text-gray-900"
+              isActive("/")
+                ? "text-pink-600"
+                : "text-gray-700 hover:text-gray-900"
             }`}
           >
             Home
           </Link>
           {user ? (
             <>
-              <Link 
-                href="/about-me" 
+              <Link
+                href="/about-me"
                 className={`transition-all duration-200 hover:text-pink-600 ${
-                  isActive("/about-me") ? "text-pink-600" : "text-gray-700 hover:text-gray-900"
+                  isActive("/about-me")
+                    ? "text-pink-600"
+                    : "text-gray-700 hover:text-gray-900"
                 }`}
               >
                 About Clara
               </Link>
-              <Link 
-                href="/about-us" 
+              <Link
+                href="/about-us"
                 className={`transition-all duration-200 hover:text-pink-600 ${
-                  isActive("/about-us") ? "text-pink-600" : "text-gray-700 hover:text-gray-900"
+                  isActive("/about-us")
+                    ? "text-pink-600"
+                    : "text-gray-700 hover:text-gray-900"
                 }`}
               >
                 About Us
               </Link>
-              <Link 
-                href="/registry" 
+              <Link
+                href="/registry"
                 className={`transition-all duration-200 hover:text-pink-600 ${
-                  isActive("/registry") ? "text-pink-600" : "text-gray-700 hover:text-gray-900"
+                  isActive("/registry")
+                    ? "text-pink-600"
+                    : "text-gray-700 hover:text-gray-900"
                 }`}
               >
                 Registry
               </Link>
-              <Link 
-                href="/photos" 
+              <Link
+                href="/photos"
                 className={`transition-all duration-200 hover:text-pink-600 ${
-                  isActive("/photos") ? "text-pink-600" : "text-gray-700 hover:text-gray-900"
+                  isActive("/photos")
+                    ? "text-pink-600"
+                    : "text-gray-700 hover:text-gray-900"
                 }`}
               >
                 Photos
               </Link>
               {isAdmin && (
-                <Link 
-                  href="/admin" 
+                <Link
+                  href="/admin"
                   className={`transition-all duration-200 hover:text-pink-700 ${
-                    isActive("/admin") ? "text-pink-700" : "text-pink-600 hover:text-pink-700"
+                    isActive("/admin")
+                      ? "text-pink-700"
+                      : "text-pink-600 hover:text-pink-700"
                   }`}
                 >
                   Admin
@@ -108,18 +120,22 @@ export default function Navigation() {
             </>
           ) : (
             <>
-              <Link 
-                href="/login" 
+              <Link
+                href="/login"
                 className={`transition-all duration-200 hover:text-pink-700 ${
-                  isActive("/login") ? "text-pink-700" : "text-pink-600 hover:text-pink-700"
+                  isActive("/login")
+                    ? "text-pink-700"
+                    : "text-pink-600 hover:text-pink-700"
                 }`}
               >
                 Login
               </Link>
-              <Link 
-                href="/register" 
+              <Link
+                href="/register"
                 className={`transition-all duration-200 hover:text-blue-700 ${
-                  isActive("/register") ? "text-blue-700" : "text-blue-600 hover:text-blue-700"
+                  isActive("/register")
+                    ? "text-blue-700"
+                    : "text-blue-600 hover:text-blue-700"
                 }`}
               >
                 Sign Up
@@ -152,12 +168,12 @@ export default function Navigation() {
           {isMobileMenuOpen && (
             <div className="absolute top-full left-0 right-0 bg-white border-b border-gray-200 shadow-lg rounded-b-2xl">
               <div className="px-4 py-4 space-y-3">
-                <Link 
-                  href="/" 
+                <Link
+                  href="/"
                   onClick={closeMobileMenu}
                   className={`block py-2 px-3 rounded-lg transition-all duration-200 ${
-                    isActive("/") 
-                      ? "bg-pink-50 text-pink-600" 
+                    isActive("/")
+                      ? "bg-pink-50 text-pink-600"
                       : "text-gray-700 hover:bg-gray-50"
                   }`}
                 >
@@ -165,57 +181,57 @@ export default function Navigation() {
                 </Link>
                 {user ? (
                   <>
-                    <Link 
-                      href="/about-me" 
+                    <Link
+                      href="/about-me"
                       onClick={closeMobileMenu}
                       className={`block py-2 px-3 rounded-lg transition-all duration-200 ${
-                        isActive("/about-me") 
-                          ? "bg-pink-50 text-pink-600" 
+                        isActive("/about-me")
+                          ? "bg-pink-50 text-pink-600"
                           : "text-gray-700 hover:bg-gray-50"
                       }`}
                     >
                       About Clara
                     </Link>
-                    <Link 
-                      href="/about-us" 
+                    <Link
+                      href="/about-us"
                       onClick={closeMobileMenu}
                       className={`block py-2 px-3 rounded-lg transition-all duration-200 ${
-                        isActive("/about-us") 
-                          ? "bg-pink-50 text-pink-600" 
+                        isActive("/about-us")
+                          ? "bg-pink-50 text-pink-600"
                           : "text-gray-700 hover:bg-gray-50"
                       }`}
                     >
                       About Us
                     </Link>
-                    <Link 
-                      href="/registry" 
+                    <Link
+                      href="/registry"
                       onClick={closeMobileMenu}
                       className={`block py-2 px-3 rounded-lg transition-all duration-200 ${
-                        isActive("/registry") 
-                          ? "bg-pink-50 text-pink-600" 
+                        isActive("/registry")
+                          ? "bg-pink-50 text-pink-600"
                           : "text-gray-700 hover:bg-gray-50"
                       }`}
                     >
                       Registry
                     </Link>
-                    <Link 
-                      href="/photos" 
+                    <Link
+                      href="/photos"
                       onClick={closeMobileMenu}
                       className={`block py-2 px-3 rounded-lg transition-all duration-200 ${
-                        isActive("/photos") 
-                          ? "bg-pink-50 text-pink-600" 
+                        isActive("/photos")
+                          ? "bg-pink-50 text-pink-600"
                           : "text-gray-700 hover:bg-gray-50"
                       }`}
                     >
                       Photos
                     </Link>
-                                        {isAdmin && (
-                      <Link 
-                        href="/admin" 
+                    {isAdmin && (
+                      <Link
+                        href="/admin"
                         onClick={closeMobileMenu}
                         className={`block py-2 px-3 rounded-lg transition-all duration-200 ${
-                          isActive("/admin") 
-                            ? "bg-pink-50 text-pink-600" 
+                          isActive("/admin")
+                            ? "bg-pink-50 text-pink-600"
                             : "text-gray-700 hover:bg-gray-50"
                         }`}
                       >
@@ -230,8 +246,8 @@ export default function Navigation() {
                         }}
                         disabled={isLoading}
                         className={`w-full text-left py-2 px-3 rounded-lg transition-colors duration-200 ${
-                          isLoading 
-                            ? "opacity-50 cursor-not-allowed text-gray-500" 
+                          isLoading
+                            ? "opacity-50 cursor-not-allowed text-gray-500"
                             : "text-red-600 hover:bg-red-50 hover:text-red-700"
                         }`}
                       >
@@ -240,31 +256,31 @@ export default function Navigation() {
                             <LoadingSpinner size="sm" color="pink" />
                             <span>Logging out...</span>
                           </div>
-                          ) : (
-                            "Logout"
-                          )}
+                        ) : (
+                          "Logout"
+                        )}
                       </button>
                     </div>
                   </>
                 ) : (
                   <>
-                    <Link 
-                      href="/login" 
+                    <Link
+                      href="/login"
                       onClick={closeMobileMenu}
                       className={`block py-2 px-3 rounded-lg transition-all duration-200 ${
-                        isActive("/login") 
-                          ? "bg-pink-50 text-pink-600" 
+                        isActive("/login")
+                          ? "bg-pink-50 text-pink-600"
                           : "text-gray-700 hover:bg-gray-50"
                       }`}
                     >
                       Login
                     </Link>
-                    <Link 
-                      href="/register" 
+                    <Link
+                      href="/register"
                       onClick={closeMobileMenu}
                       className={`block py-2 px-3 rounded-lg transition-all duration-200 ${
-                        isActive("/register") 
-                          ? "bg-pink-50 text-blue-600" 
+                        isActive("/register")
+                          ? "bg-pink-50 text-blue-600"
                           : "text-blue-600 hover:bg-blue-50"
                       }`}
                     >

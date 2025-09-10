@@ -22,10 +22,14 @@ export default function ProtectedRoute({
       if (!user) {
         // Store the intended destination and redirect to login
         const returnUrl = encodeURIComponent(pathname);
-        console.log(`🔒 Protected route accessed: ${pathname}, redirecting to login with returnTo=${returnUrl}`);
+        console.log(
+          `🔒 Protected route accessed: ${pathname}, redirecting to login with returnTo=${returnUrl}`,
+        );
         router.push(`/login?returnTo=${returnUrl}`);
       } else if (requireAdmin && !isAdmin) {
-        console.log(`🚫 Admin access required for ${pathname}, redirecting to home`);
+        console.log(
+          `🚫 Admin access required for ${pathname}, redirecting to home`,
+        );
         router.push("/");
       }
     }

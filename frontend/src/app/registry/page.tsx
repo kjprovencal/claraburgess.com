@@ -57,7 +57,7 @@ function RegistryContent() {
       orderNumber: "",
       thankYouAddress: "",
       similarItemDescription: "",
-    }
+    },
   );
   const [modalStep, setModalStep] = useState<
     "purchase-question" | "additional-info"
@@ -116,7 +116,7 @@ function RegistryContent() {
   };
 
   const handlePurchaseQuestion = (
-    giftType: "purchased" | "similar" | "none"
+    giftType: "purchased" | "similar" | "none",
   ) => {
     setPurchaseModalData((prev) => ({
       ...prev,
@@ -156,7 +156,7 @@ function RegistryContent() {
     } catch (err) {
       console.error("Error submitting purchase info:", err);
       alert(
-        "There was an error submitting your information. Please try again."
+        "There was an error submitting your information. Please try again.",
       );
     }
   };

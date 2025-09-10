@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { getTokenExpiration } from '@utils/auth';
+import { useEffect, useState } from "react";
+import { getTokenExpiration } from "@utils/auth";
 
 export default function TokenExpiryWarning() {
   const [timeUntilExpiry, setTimeUntilExpiry] = useState<number | null>(null);
@@ -14,7 +14,7 @@ export default function TokenExpiryWarning() {
 
       const now = Date.now();
       const timeLeft = expiryTime.getTime() - now;
-      
+
       // Show warning when less than 30 minutes left
       if (timeLeft < 30 * 60 * 1000 && timeLeft > 0) {
         setShowWarning(true);
@@ -28,7 +28,7 @@ export default function TokenExpiryWarning() {
 
     checkExpiry();
     const interval = setInterval(checkExpiry, 60000); // Check every minute
-    
+
     return () => clearInterval(interval);
   }, []);
 

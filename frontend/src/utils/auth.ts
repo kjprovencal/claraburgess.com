@@ -83,7 +83,7 @@ export const getAuthHeaders = () => {
  */
 export const authenticatedFetch = async (
   url: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
 ) => {
   // Check if token is expired before making the request
   if (isTokenExpired()) {

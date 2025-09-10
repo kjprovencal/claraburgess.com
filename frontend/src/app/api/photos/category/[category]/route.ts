@@ -1,19 +1,22 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { category: string } }
+  { params }: { params: { category: string } },
 ) {
   try {
     const { category } = params;
 
     // Forward the request to the backend
-    const response = await fetch(`${process.env.BACKEND_URL || 'http://localhost:3001'}/api/photos/category/${category}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
+    const response = await fetch(
+      `${process.env.BACKEND_URL || "http://localhost:3001"}/api/photos/category/${category}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
       },
-    });
+    );
 
     const data = await response.json();
 
@@ -21,15 +24,15 @@ export async function GET(
       return NextResponse.json(data);
     } else {
       return NextResponse.json(
-        { message: data.message || 'Failed to fetch photos by category' },
-        { status: response.status }
+        { message: data.message || "Failed to fetch photos by category" },
+        { status: response.status },
       );
     }
   } catch (error) {
-    console.error('Photos GET by category error:', error);
+    console.error("Photos GET by category error:", error);
     return NextResponse.json(
-      { message: 'Internal server error' },
-      { status: 500 }
+      { message: "Internal server error" },
+      { status: 500 },
     );
   }
 }

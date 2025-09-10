@@ -28,8 +28,8 @@ function LoginForm() {
         const returnUrl = returnTo !== "/" ? returnTo : getReturnUrl();
         console.log(
           `✅ Login successful, redirecting to: ${decodeURIComponent(
-            returnUrl
-          )}`
+            returnUrl,
+          )}`,
         );
         router.push(decodeURIComponent(returnUrl));
       } else {

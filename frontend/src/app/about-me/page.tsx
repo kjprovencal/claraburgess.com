@@ -78,7 +78,8 @@ function AboutMeContent() {
                   <p className="text-sm text-gray-500 mb-2">(Grandfather)</p>
                   <div className="text-sm text-gray-600">
                     <p>
-                      <strong>Born:</strong> November 25, 1960 in Camp Springs, Maryland
+                      <strong>Born:</strong> November 25, 1960 in Camp Springs,
+                      Maryland
                     </p>
                   </div>
                   {/* <Image src="/images/scott.jpg" alt="Scott" width={100} height={100} /> */}
@@ -101,10 +102,12 @@ function AboutMeContent() {
                   </p>
                   <div className="text-sm text-gray-600">
                     <p>
-                      <strong>Born:</strong> February 24, 1931 in Chatham, Massachusetts
+                      <strong>Born:</strong> February 24, 1931 in Chatham,
+                      Massachusetts
                     </p>
                     <p>
-                      <strong>Died:</strong> May 3, 2023 in Chatham, Massachusetts
+                      <strong>Died:</strong> May 3, 2023 in Chatham,
+                      Massachusetts
                     </p>
                   </div>
                   {/* <Image src="/images/gordon.jpg" alt="Gordon" width={100} height={100} /> */}
@@ -127,10 +130,12 @@ function AboutMeContent() {
                   </p>
                   <div className="text-sm text-gray-600">
                     <p>
-                      <strong>Born:</strong> February 22, 1905 in Chatham, Massachusetts
+                      <strong>Born:</strong> February 22, 1905 in Chatham,
+                      Massachusetts
                     </p>
                     <p>
-                      <strong>Died:</strong> April 24, 1997 in Chatham, Massachusetts
+                      <strong>Died:</strong> April 24, 1997 in Chatham,
+                      Massachusetts
                     </p>
                   </div>
                   {/* <Image src="/images/harriet.jpg" alt="Harriet" width={100} height={100} /> */}
@@ -153,10 +158,12 @@ function AboutMeContent() {
                   </p>
                   <div className="text-sm text-gray-600">
                     <p>
-                      <strong>Born:</strong> June 24, 1868 in Chatham, Massachusetts
+                      <strong>Born:</strong> June 24, 1868 in Chatham,
+                      Massachusetts
                     </p>
                     <p>
-                      <strong>Died:</strong> March 7, 1941 in Chatham, Massachusetts
+                      <strong>Died:</strong> March 7, 1941 in Chatham,
+                      Massachusetts
                     </p>
                   </div>
                   {/* <Image src="/images/og-clara.jpg" alt="Original Clara Burgess" width={100} height={100} /> */}

@@ -1,19 +1,22 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const { id } = params;
 
     // Forward the request to the backend
-    const response = await fetch(`${process.env.BACKEND_URL || 'http://localhost:3001'}/api/registry/${id}/toggle-purchased`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
+    const response = await fetch(
+      `${process.env.BACKEND_URL || "http://localhost:3001"}/api/registry/${id}/toggle-purchased`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
       },
-    });
+    );
 
     const data = await response.json();
 
@@ -21,15 +24,15 @@ export async function PUT(
       return NextResponse.json(data);
     } else {
       return NextResponse.json(
-        { message: data.message || 'Failed to toggle purchased status' },
-        { status: response.status }
+        { message: data.message || "Failed to toggle purchased status" },
+        { status: response.status },
       );
     }
   } catch (error) {
-    console.error('Registry toggle purchased error:', error);
+    console.error("Registry toggle purchased error:", error);
     return NextResponse.json(
-      { message: 'Internal server error' },
-      { status: 500 }
+      { message: "Internal server error" },
+      { status: 500 },
     );
   }
 }

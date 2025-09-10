@@ -32,7 +32,8 @@ html {
 }
 
 /* Prevent layout shifts during page transitions */
-html, body {
+html,
+body {
   height: 100%;
 }
 
@@ -57,7 +58,9 @@ html, body {
 
 /* Smooth transitions */
 * {
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-property:
+    color, background-color, border-color, text-decoration-color, fill, stroke,
+    opacity, box-shadow, transform, filter, backdrop-filter;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }
@@ -71,7 +74,9 @@ html, body {
 .page-transition-enter-active {
   opacity: 1;
   transform: translateY(0);
-  transition: opacity 300ms ease-in-out, transform 300ms ease-in-out;
+  transition:
+    opacity 300ms ease-in-out,
+    transform 300ms ease-in-out;
 }
 
 .page-transition-exit {
@@ -82,7 +87,9 @@ html, body {
 .page-transition-exit-active {
   opacity: 0;
   transform: translateY(-10px);
-  transition: opacity 300ms ease-in-out, transform 300ms ease-in-out;
+  transition:
+    opacity 300ms ease-in-out,
+    transform 300ms ease-in-out;
 }
 
 /* Focus styles */

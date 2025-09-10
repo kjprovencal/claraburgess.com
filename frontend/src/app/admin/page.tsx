@@ -16,7 +16,9 @@ export default function AdminPage() {
 }
 
 function AdminContent() {
-  const [activeTab, setActiveTab] = useState<"registry" | "photos" | "users">("registry");
+  const [activeTab, setActiveTab] = useState<"registry" | "photos" | "users">(
+    "registry",
+  );
 
   return (
     <div className="mb-16">
@@ -24,11 +26,13 @@ function AdminContent() {
       <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 border border-gray-100 relative overflow-hidden">
         {/* Subtle Background Pattern - Full Height */}
         <div className="absolute inset-0 bg-gradient-to-br from-pink-50/30 via-transparent to-blue-50/30 pointer-events-none"></div>
-        
+
         <div className="relative">
           <TokenExpiryWarning />
           <div className="mb-8">
-            <h1 className="text-3xl font-bold dark:text-gray-800">Admin Panel</h1>
+            <h1 className="text-3xl font-bold dark:text-gray-800">
+              Admin Panel
+            </h1>
             <p className="text-gray-600 mt-1">
               Managing Clara&apos;s registry and photos
             </p>

@@ -74,7 +74,7 @@ export default function RegistryManager() {
           throw new Error(
             `Failed to upload image: ${
               uploadErr instanceof Error ? uploadErr.message : "Unknown error"
-            }`
+            }`,
           );
         }
       } else if (registryForm.imageUrl) {
@@ -95,7 +95,7 @@ export default function RegistryManager() {
             ...registryForm,
             imageUrl: finalImageUrl,
           }),
-        }
+        },
       );
 
       console.log("📥 Response status:", response.status, response.statusText);
@@ -199,10 +199,10 @@ export default function RegistryManager() {
       // Get current order of items
       const sortedItems = [...registryItems].sort((a, b) => a.order - b.order);
       const draggedIndex = sortedItems.findIndex(
-        (item) => item.id === draggedItem.id
+        (item) => item.id === draggedItem.id,
       );
       const targetIndex = sortedItems.findIndex(
-        (item) => item.id === targetItem.id
+        (item) => item.id === targetItem.id,
       );
 
       // Calculate new order values
@@ -228,7 +228,7 @@ export default function RegistryManager() {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ order: newOrder }),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -269,7 +269,7 @@ export default function RegistryManager() {
       {
         method: "POST",
         body: formData,
-      }
+      },
     );
 
     if (!response.ok) {
@@ -483,8 +483,8 @@ export default function RegistryManager() {
                   ? "Updating..."
                   : "Adding..."
                 : isEditing
-                ? "Update Item"
-                : "Add Item"}
+                  ? "Update Item"
+                  : "Add Item"}
             </button>
           </div>
         </form>

@@ -15,11 +15,11 @@ export default function PageTransition({ children }: PageTransitionProps) {
 
   useEffect(() => {
     setIsTransitioning(true);
-    
+
     // Small delay to show the transition
     const timer = setTimeout(() => {
       setIsTransitioning(false);
-      setKey(prev => prev + 1);
+      setKey((prev) => prev + 1);
     }, 100);
 
     return () => clearTimeout(timer);
@@ -42,7 +42,7 @@ export default function PageTransition({ children }: PageTransitionProps) {
             : "opacity-100 transform translate-y-0"
         }`}
         style={{
-          willChange: isTransitioning ? 'opacity, transform' : 'auto'
+          willChange: isTransitioning ? "opacity, transform" : "auto",
         }}
       >
         {children}

@@ -9,7 +9,8 @@ const tgnd = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Clara's Baby Registry",
-  description: "Welcome to Clara&apos;s world! Baby registry and photo gallery.",
+  description:
+    "Welcome to Clara&apos;s world! Baby registry and photo gallery.",
 };
 
 export default function RootLayout({
@@ -25,9 +26,7 @@ export default function RootLayout({
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <Navigation />
               <PageTransition>
-                <div className="w-full max-w-6xl mx-auto">
-                  {children}
-                </div>
+                <div className="w-full max-w-6xl mx-auto">{children}</div>
               </PageTransition>
             </div>
           </div>
