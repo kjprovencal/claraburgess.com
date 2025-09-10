@@ -83,12 +83,12 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-[calc(100vh-200px)]">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+    <div className="flex flex-col lg:flex-row justify-center items-center min-h-[calc(100vh-200px)] gap-8 px-4">
+      <div className="w-full max-w-md lg:w-96 lg:max-w-none">
+        <h2 className="text-center lg:text-left text-3xl font-extrabold text-gray-900">
           Create your account
         </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
+        <p className="mt-2 text-center lg:text-left text-sm text-gray-600">
           Or{" "}
           <Link
             href="/login"
@@ -97,14 +97,14 @@ export default function RegisterPage() {
             sign in to your existing account
           </Link>
         </p>
-        <p className="mt-2 text-center text-sm text-gray-600">
+        <p className="mt-2 text-center lg:text-left text-sm text-gray-600">
           For Clara&apos;s privacy, we require all accounts to be approved by an
           administrator. Please sign up and wait for approval. Let us know if
           you have any issues!
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+      <div className="w-full max-w-md lg:w-96 lg:max-w-none">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
             {error && (
