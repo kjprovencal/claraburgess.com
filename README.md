@@ -17,7 +17,7 @@ A beautiful personal website for sharing baby registry information and photos wi
 
 ### Frontend
 
-- **Next.js 14** - React framework with App Router
+- **Next.js 15** - React framework with App Router
 - **TypeScript** - Type-safe development
 - **Tailwind CSS** - Utility-first CSS framework
 - **Responsive Design** - Mobile-first approach
@@ -39,6 +39,8 @@ claraburgess.com/
 ├── frontend/                 # Next.js frontend application
 │   ├── src/app/             # App Router pages
 │   │   ├── page.tsx         # Landing page
+│   │   ├── about-me/        # About Me page
+│   │   ├── about-us/        # About Us page
 │   │   ├── registry/        # Baby registry page
 │   │   ├── photos/          # Photo gallery page
 │   │   └── admin/           # Admin panel

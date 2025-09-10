@@ -16,7 +16,7 @@ A NestJS backend application for Clara's World, a baby registry and personal web
 
 - Node.js (v18 or higher)
 - npm or yarn
-- Email account (Gmail with OAuth 2.0 or custom domain with SMTP)
+- Email account
 - Cloudinary account (for photo storage)
 
 ### Installation
@@ -101,6 +101,7 @@ node test-email.js
 ### Email Setup Options
 
 **Option 1: Gmail OAuth 2.0 (Recommended for Gmail accounts)**
+
 ```bash
 node generate-refresh-token.js
 ```
