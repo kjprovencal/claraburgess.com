@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { category: string } },
+  { params }: RouteContext<"/api/photos/category/[category]">
 ) {
   try {
-    const { category } = params;
+    const { category } = await params;
 
     // Forward the request to the backend
     const response = await fetch(
@@ -15,7 +15,7 @@ export async function GET(
         headers: {
           "Content-Type": "application/json",
         },
-      },
+      }
     );
 
     const data = await response.json();
@@ -25,14 +25,14 @@ export async function GET(
     } else {
       return NextResponse.json(
         { message: data.message || "Failed to fetch photos by category" },
-        { status: response.status },
+        { status: response.status }
       );
     }
   } catch (error) {
     console.error("Photos GET by category error:", error);
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

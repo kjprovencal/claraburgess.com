@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: RouteContext<"/api/photos/[id]">
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // Forward the request to the backend
     const response = await fetch(
@@ -15,7 +15,7 @@ export async function GET(
         headers: {
           "Content-Type": "application/json",
         },
-      },
+      }
     );
 
     const data = await response.json();
@@ -25,24 +25,24 @@ export async function GET(
     } else {
       return NextResponse.json(
         { message: data.message || "Failed to fetch photo" },
-        { status: response.status },
+        { status: response.status }
       );
     }
   } catch (error) {
     console.error("Photos GET by ID error:", error);
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: RouteContext<"/api/photos/[id]">
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // Get the authorization header from the request
     const authHeader = request.headers.get("authorization");
@@ -50,7 +50,7 @@ export async function PUT(
     if (!authHeader) {
       return NextResponse.json(
         { message: "Authorization header required" },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -66,7 +66,7 @@ export async function PUT(
           Authorization: authHeader,
         },
         body: JSON.stringify(body),
-      },
+      }
     );
 
     const data = await response.json();
@@ -76,24 +76,24 @@ export async function PUT(
     } else {
       return NextResponse.json(
         { message: data.message || "Failed to update photo" },
-        { status: response.status },
+        { status: response.status }
       );
     }
   } catch (error) {
     console.error("Photos PUT error:", error);
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: RouteContext<"/api/photos/[id]">
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // Get the authorization header from the request
     const authHeader = request.headers.get("authorization");
@@ -101,7 +101,7 @@ export async function DELETE(
     if (!authHeader) {
       return NextResponse.json(
         { message: "Authorization header required" },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -114,7 +114,7 @@ export async function DELETE(
           "Content-Type": "application/json",
           Authorization: authHeader,
         },
-      },
+      }
     );
 
     if (response.ok) {
@@ -123,14 +123,14 @@ export async function DELETE(
       const data = await response.json();
       return NextResponse.json(
         { message: data.message || "Failed to delete photo" },
-        { status: response.status },
+        { status: response.status }
       );
     }
   } catch (error) {
     console.error("Photos DELETE error:", error);
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

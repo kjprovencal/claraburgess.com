@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: RouteContext<"/api/registry/[id]/toggle-purchased">
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // Forward the request to the backend
     const response = await fetch(
@@ -15,7 +15,7 @@ export async function PUT(
         headers: {
           "Content-Type": "application/json",
         },
-      },
+      }
     );
 
     const data = await response.json();
@@ -25,14 +25,14 @@ export async function PUT(
     } else {
       return NextResponse.json(
         { message: data.message || "Failed to toggle purchased status" },
-        { status: response.status },
+        { status: response.status }
       );
     }
   } catch (error) {
     console.error("Registry toggle purchased error:", error);
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

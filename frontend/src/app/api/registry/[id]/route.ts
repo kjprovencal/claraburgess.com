@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: RouteContext<"/api/registry/[id]">
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // Forward the request to the backend
     const response = await fetch(
@@ -15,7 +15,7 @@ export async function GET(
         headers: {
           "Content-Type": "application/json",
         },
-      },
+      }
     );
 
     const data = await response.json();
@@ -25,24 +25,24 @@ export async function GET(
     } else {
       return NextResponse.json(
         { message: data.message || "Failed to fetch registry item" },
-        { status: response.status },
+        { status: response.status }
       );
     }
   } catch (error) {
     console.error("Registry GET by ID error:", error);
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: RouteContext<"/api/registry/[id]">
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
 
     // Forward the request to the backend
@@ -54,7 +54,7 @@ export async function PUT(
           "Content-Type": "application/json",
         },
         body: JSON.stringify(body),
-      },
+      }
     );
 
     const data = await response.json();
@@ -64,24 +64,24 @@ export async function PUT(
     } else {
       return NextResponse.json(
         { message: data.message || "Failed to update registry item" },
-        { status: response.status },
+        { status: response.status }
       );
     }
   } catch (error) {
     console.error("Registry PUT error:", error);
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: RouteContext<"/api/registry/[id]">
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // Forward the request to the backend
     const response = await fetch(
@@ -91,7 +91,7 @@ export async function DELETE(
         headers: {
           "Content-Type": "application/json",
         },
-      },
+      }
     );
 
     if (response.ok) {
@@ -100,14 +100,14 @@ export async function DELETE(
       const data = await response.json();
       return NextResponse.json(
         { message: data.message || "Failed to delete registry item" },
-        { status: response.status },
+        { status: response.status }
       );
     }
   } catch (error) {
     console.error("Registry DELETE error:", error);
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: RouteContext<"/api/photos/[id]/optimized">
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const { searchParams } = new URL(request.url);
 
     // Extract optimization parameters from query string
@@ -39,14 +39,14 @@ export async function GET(
     } else {
       return NextResponse.json(
         { message: data.message || "Failed to get optimized photo" },
-        { status: response.status },
+        { status: response.status }
       );
     }
   } catch (error) {
     console.error("Photos optimized GET error:", error);
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
