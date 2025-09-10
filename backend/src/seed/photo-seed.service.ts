@@ -1,6 +1,7 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ConfigService } from '@nestjs/config';
 import { Photo } from '../photos/entities/photo.entity';
 
 @Injectable()
@@ -8,10 +9,19 @@ export class PhotoSeedService implements OnModuleInit {
   constructor(
     @InjectRepository(Photo)
     private photosRepository: Repository<Photo>,
+    private configService: ConfigService,
   ) {}
 
   async onModuleInit() {
-    await this.seedPhotos();
+    // Only seed in development or if explicitly enabled
+    const shouldSeed = this.configService.get<string>('NODE_ENV') === 'development' || 
+                      this.configService.get<string>('ENABLE_SEEDING') === 'true';
+    
+    if (shouldSeed) {
+      await this.seedPhotos();
+    } else {
+      Logger.log('Photo seeding disabled in production. Set ENABLE_SEEDING=true to enable.');
+    }
   }
 
   async seedPhotos() {

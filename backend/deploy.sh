@@ -134,9 +134,15 @@ EOF
 deploy_application() {
     echo -e "${BLUE}🚀 Deploying application...${NC}"
     
-    # Copy application files
+    # Backup existing database if it exists
+    if [ -f "$APP_DIR/database.sqlite" ]; then
+        echo "Backing up existing database..."
+        sudo cp "$APP_DIR/database.sqlite" "$APP_DIR/database.sqlite.backup.$(date +%Y%m%d_%H%M%S)"
+    fi
+    
+    # Copy application files (excluding database)
     echo "Copying application files..."
-    sudo cp -r backend/* "$APP_DIR/"
+    sudo rsync -av --exclude='database.sqlite' backend/ "$APP_DIR/"
     sudo chown -R "$USER_NAME:$USER_NAME" "$APP_DIR"
     
     # Install dependencies
@@ -358,8 +364,19 @@ update_application() {
     # Stop application
     sudo -u "$USER_NAME" pm2 stop "$APP_NAME"
     
-    # Pull latest code (if using git)
-    # cd "$APP_DIR" && git pull origin main
+    # Backup existing database if it exists
+    if [ -f "$APP_DIR/database.sqlite" ]; then
+        echo "Backing up existing database..."
+        sudo cp "$APP_DIR/database.sqlite" "$APP_DIR/database.sqlite.backup.$(date +%Y%m%d_%H%M%S)"
+    fi
+    
+    # Pull latest code
+    cd "$APP_DIR" && git pull origin main
+    
+    # Copy new files (excluding database)
+    echo "Updating application files..."
+    sudo rsync -av --exclude='database.sqlite' backend/ "$APP_DIR/"
+    sudo chown -R "$USER_NAME:$USER_NAME" "$APP_DIR"
     
     # Install dependencies
     cd "$APP_DIR"

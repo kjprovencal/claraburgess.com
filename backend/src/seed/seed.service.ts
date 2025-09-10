@@ -1,6 +1,7 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ConfigService } from '@nestjs/config';
 import { RegistryItem } from '../registry/entities/registry-item.entity';
 
 @Injectable()
@@ -8,10 +9,19 @@ export class SeedService implements OnModuleInit {
   constructor(
     @InjectRepository(RegistryItem)
     private registryItemsRepository: Repository<RegistryItem>,
+    private configService: ConfigService,
   ) {}
 
   async onModuleInit() {
-    await this.seedRegistryItems();
+    // Only seed in development or if explicitly enabled
+    const shouldSeed = this.configService.get<string>('NODE_ENV') === 'development' || 
+                      this.configService.get<string>('ENABLE_SEEDING') === 'true';
+    
+    if (shouldSeed) {
+      await this.seedRegistryItems();
+    } else {
+      Logger.log('Seeding disabled in production. Set ENABLE_SEEDING=true to enable.');
+    }
   }
 
   async seedRegistryItems() {
