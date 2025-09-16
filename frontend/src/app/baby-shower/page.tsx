@@ -1,8 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import React, { useState } from "react";
 import {
-  BsCake2,
   BsCalendar3,
   BsClock,
   BsFillPinMapFill,
@@ -85,13 +85,13 @@ export default function BabyShowerPage() {
               </h1>
 
               <p className="text-xl text-gray-600 mb-8">
-                We're so excited to celebrate with you! We'll send you a
-                confirmation email shortly.
+                We&apos;re so excited to celebrate with you! We&apos;ll send you
+                a confirmation email shortly.
               </p>
 
               <div className="bg-gradient-to-r from-pink-100 to-blue-100 rounded-2xl p-6 mb-8">
                 <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-                  What's Next?
+                  What&apos;s Next?
                 </h2>
                 <div className="text-left space-y-3">
                   <div className="flex items-center gap-3">
@@ -109,27 +109,27 @@ export default function BabyShowerPage() {
                   <div className="flex items-center gap-3">
                     <BsGift className="w-5 h-5 text-purple-500" />
                     <span className="text-gray-700">
-                      Check out our registry if you'd like to bring a gift
+                      Check out our registry if you&apos;d like to bring a gift
                     </span>
                   </div>
                 </div>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <a
+                <Link
                   href="/registry"
                   className="inline-flex items-center gap-2 px-6 py-3 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-colors"
                 >
                   <BsGift className="w-4 h-4" />
                   View Registry
-                </a>
-                <a
+                </Link>
+                <Link
                   href="/"
                   className="inline-flex items-center gap-2 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
                 >
                   <FaBaby className="w-4 h-4" />
                   Back to Home
-                </a>
+                </Link>
               </div>
             </div>
           </div>
@@ -163,7 +163,8 @@ export default function BabyShowerPage() {
               </h1>
 
               <p className="text-xl max-w-2xl text-center text-gray-600 leading-relaxed mx-auto mb-8">
-                You're invited to celebrate the upcoming arrival of Clara B!
+                You&apos;re invited to celebrate the upcoming arrival of Clara
+                B!
               </p>
             </div>
 
@@ -221,8 +222,8 @@ export default function BabyShowerPage() {
                       Activities
                     </h3>
                     <p className="text-gray-600">
-                      Mingling, scrapbooking, and celebrating Clara's upcoming
-                      arrival
+                      Mingling, scrapbooking, and celebrating Clara&apos;s
+                      upcoming arrival
                     </p>
                   </div>
                 </div>
@@ -305,7 +306,7 @@ export default function BabyShowerPage() {
                         className="w-4 h-4 text-pink-500 focus:ring-pink-500"
                       />
                       <span className="text-gray-700 font-medium">
-                        Yes, I'll be there! 🎉
+                        Yes, I&apos;ll be there! 🎉
                       </span>
                     </label>
 
@@ -320,7 +321,7 @@ export default function BabyShowerPage() {
                         className="w-4 h-4 text-pink-500 focus:ring-pink-500"
                       />
                       <span className="text-gray-700 font-medium">
-                        Sorry, I can't make it 😔
+                        Sorry, I can&apos;t make it 😔
                       </span>
                     </label>
                   </div>
@@ -413,15 +414,15 @@ export default function BabyShowerPage() {
             <div className="text-center mt-12">
               <p className="text-gray-600 mb-4">
                 Questions? Contact us at{" "}
-                <a
+                <Link
                   href="mailto:admin@claraburgess.com"
                   className="text-pink-600 hover:text-pink-700 font-medium"
                 >
                   admin@claraburgess.com
-                </a>
+                </Link>
               </p>
               <p className="text-sm text-gray-500">
-                We can't wait to celebrate with you! 💕
+                We can&apos;t wait to celebrate with you! 💕
               </p>
             </div>
           </div>
