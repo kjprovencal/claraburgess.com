@@ -373,9 +373,7 @@ export class AuthService implements OnApplicationBootstrap {
     user.passwordResetExpires = resetExpires;
     await this.usersRepository.save(user);
 
-    // In a real application, you would send an email here
-    // For now, we'll just return the token (in production, remove this)
-    console.log(`Password reset token for ${user.email}: ${resetToken}`);
+    this.emailService.sendPasswordResetEmail(user.email, resetToken);
 
     return {
       message:

@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as nodemailer from 'nodemailer';
+import { ZohoMailApiService } from './zoho-mail-api.service';
 
 export interface EmailTemplate {
   subject: string;
@@ -11,94 +11,29 @@ export interface EmailTemplate {
 @Injectable()
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);
-  private readonly fromEmail: string;
   private readonly adminEmail: string;
-  private transporter: nodemailer.Transporter;
 
-  constructor(private configService: ConfigService) {
-    this.fromEmail =
-      this.configService.get<string>('FROM_EMAIL') ||
-      'noreply@claraburgess.com';
+  constructor(
+    private configService: ConfigService,
+    private zohoMailApiService: ZohoMailApiService,
+  ) {
     this.adminEmail =
       this.configService.get<string>('ADMIN_EMAIL') || 'admin@claraburgess.com';
-
-    // Initialize transporter asynchronously
-    this.initializeTransporter().catch((error) => {
-      this.logger.error('Failed to initialize email transporter:', error);
-    });
-  }
-
-  private async initializeTransporter() {
-    const emailUser = this.configService.get<string>('EMAIL_USER');
-    const emailPassword = this.configService.get<string>('EMAIL_PASSWORD');
-    const smtpHost = this.configService.get<string>('SMTP_HOST');
-    const smtpPort = this.configService.get<string>('SMTP_PORT');
-    const smtpSecure = this.configService.get<string>('SMTP_SECURE') === 'true';
-
-    if (emailUser && emailPassword) {
-      // Use SMTP with username/password
-      this.initializeSMTP(
-        emailUser,
-        emailPassword,
-        smtpHost,
-        smtpPort,
-        smtpSecure,
-      );
-    } else {
-      this.logger.warn(
-        'Email credentials not found. Email notifications will be disabled.',
-      );
-      this.logger.warn(
-        'Required: EMAIL_USER and either EMAIL_PASSWORD or Gmail OAuth credentials',
-      );
-    }
-  }
-
-  private initializeSMTP(
-    user: string,
-    password: string,
-    host?: string,
-    port?: string,
-    secure?: boolean,
-  ) {
-    try {
-      const config: any = {
-        auth: {
-          user: user,
-          pass: password,
-        },
-      };
-
-      if (host) {
-        // Custom SMTP server
-        config.host = host;
-        config.port = port ? parseInt(port) : 587;
-        config.secure = secure || false;
-      }
-
-      this.transporter = nodemailer.createTransport(config);
-      this.logger.log(`Email service initialized with SMTP`);
-    } catch (error) {
-      this.logger.error(`Failed to initialize SMTP:`, error);
-    }
   }
 
   async sendEmail(to: string, template: EmailTemplate): Promise<boolean> {
-    if (!this.transporter) {
-      this.logger.warn('Email transporter not initialized. Cannot send email.');
-      return false;
-    }
-
     try {
-      const mailOptions = {
-        from: this.fromEmail,
-        to,
+      if (!(await this.zohoMailApiService.isReady()))
+        throw new Error('Zoho OAuth is not configured');
+      this.logger.log('Using Zoho OAuth for email sending');
+      const result = await this.zohoMailApiService.sendEmail({
+        toAddress: to,
         subject: template.subject,
-        text: template.text,
-        html: template.html,
-      };
+        content: template.html,
+        mailFormat: 'html',
+      });
 
-      await this.transporter.sendMail(mailOptions);
+      if (!result.success) throw new Error(result.error);
       this.logger.log(`Email sent successfully to ${to}`);
       return true;
     } catch (error) {
@@ -130,6 +65,14 @@ export class EmailService {
   ): Promise<boolean> {
     const template = this.getAdminNewUserTemplate(userEmail, username);
     return this.sendEmail(this.adminEmail, template);
+  }
+
+  async sendPasswordResetEmail(
+    userEmail: string,
+    resetToken: string,
+  ): Promise<boolean> {
+    const template = this.getPasswordResetTemplate(resetToken);
+    return this.sendEmail(userEmail, template);
   }
 
   private getUserApprovalTemplate(username: string): EmailTemplate {
@@ -292,6 +235,33 @@ export class EmailService {
 
       Best regards,
       Clara's World System
+    `;
+
+    return { subject, html, text };
+  }
+
+  private getPasswordResetTemplate(resetToken: string): EmailTemplate {
+    const subject = "Password Reset Request - Clara's World";
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h2 style="color: #333; text-align: center;">Password Reset Request</h2>
+
+        <p>Hello,</p>
+
+        <p>A password reset request has been made for your account. Please click the link below to reset your password:</p>
+
+        <a href="${this.getFrontendUrl()}/reset-password?token=${resetToken}">Reset Password</a>
+      </div>
+    `;
+
+    const text = `
+      Password Reset Request - Clara's World
+
+      Hello,
+
+      A password reset request has been made for your account. Please click the link below to reset your password:
+
+      ${this.getFrontendUrl()}/reset-password?token=${resetToken}
     `;
 
     return { subject, html, text };

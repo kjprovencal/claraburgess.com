@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import ProtectedRoute from "@components/ProtectedRoute";
 import RegistryManager from "./components/RegistryManager";
 import PhotoGalleryManager from "./components/PhotoGalleryManager";
 import UserManager from "./components/UserManager";
 import TokenExpiryWarning from "@components/TokenExpiryWarning";
+import ZohoManager from "@/app/admin/components/ZohoManager";
 
 export default function AdminPage() {
   return (
@@ -16,9 +18,17 @@ export default function AdminPage() {
 }
 
 function AdminContent() {
-  const [activeTab, setActiveTab] = useState<"registry" | "photos" | "users">(
-    "registry",
-  );
+  const searchParams = useSearchParams();
+  const [activeTab, setActiveTab] = useState<
+    "registry" | "photos" | "users" | "email"
+  >("registry");
+
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab && ["registry", "photos", "users", "email"].includes(tab)) {
+      setActiveTab(tab as "registry" | "photos" | "users" | "email");
+    }
+  }, [searchParams]);
 
   return (
     <div className="mb-16">
@@ -69,11 +79,22 @@ function AdminContent() {
             >
               Users
             </button>
+            <button
+              onClick={() => setActiveTab("email")}
+              className={`px-4 py-2 rounded-md font-medium ${
+                activeTab === "email"
+                  ? "bg-pink-500 text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:cursor-pointer"
+              }`}
+            >
+              Email Setup
+            </button>
           </div>
 
           {activeTab === "registry" && <RegistryManager />}
           {activeTab === "photos" && <PhotoGalleryManager />}
           {activeTab === "users" && <UserManager />}
+          {activeTab === "email" && <ZohoManager />}
         </div>
       </div>
     </div>
