@@ -26,12 +26,10 @@ export class ZohoOAuthService {
     private readonly httpService: HttpService,
     private readonly oauthTokenService: OAuthTokenService,
   ) {
-    this.clientId = this.configService.get<string>('ZOHO_CLIENT_ID') || '';
+    this.clientId = this.configService.getOrThrow<string>('ZOHO_CLIENT_ID');
     this.clientSecret =
-      this.configService.get<string>('ZOHO_CLIENT_SECRET') || '';
-    this.scope =
-      this.configService.get<string>('ZOHO_SCOPE') ||
-      'ZohoMail.messages.CREATE,ZohoMail.messages.READ';
+      this.configService.getOrThrow<string>('ZOHO_CLIENT_SECRET');
+    this.scope = this.configService.getOrThrow<string>('ZOHO_SCOPE');
   }
 
   async fetchRefreshToken(code: string): Promise<void> {
@@ -56,12 +54,11 @@ export class ZohoOAuthService {
           .pipe(map((response) => response.data)),
       );
 
-
       Logger.log('Raw Zoho API response:', tokenData);
-      
+
       // Manual transformation to ensure proper field mapping
       const transformedData = plainToInstance(OAuthTokenDto, tokenData);
-      
+
       Logger.log('Token data after transformation:', transformedData);
       // store new tokens
       await this.oauthTokenService.storeTokens(transformedData);

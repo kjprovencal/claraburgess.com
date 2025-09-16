@@ -14,13 +14,16 @@ export class SeedService implements OnModuleInit {
 
   async onModuleInit() {
     // Only seed in development or if explicitly enabled
-    const shouldSeed = this.configService.get<string>('NODE_ENV') === 'development' || 
-                      this.configService.get<string>('ENABLE_SEEDING') === 'true';
-    
+    const shouldSeed =
+      this.configService.get<string>('NODE_ENV') === 'development' ||
+      this.configService.get<string>('ENABLE_SEEDING') === 'true';
+
     if (shouldSeed) {
       await this.seedRegistryItems();
     } else {
-      Logger.log('Seeding disabled in production. Set ENABLE_SEEDING=true to enable.');
+      Logger.log(
+        'Seeding disabled in production. Set ENABLE_SEEDING=true to enable.',
+      );
     }
   }
 

@@ -21,23 +21,51 @@ export class EmailService {
       this.configService.get<string>('ADMIN_EMAIL') || 'admin@claraburgess.com';
   }
 
-  async sendEmail(to: string, template: EmailTemplate): Promise<boolean> {
+  async sendEmail(to: string, template: EmailTemplate): Promise<boolean>;
+  async sendEmail(emailData: {
+    to: string;
+    subject: string;
+    template: string;
+    data: any;
+  }): Promise<boolean>;
+  async sendEmail(
+    toOrData:
+      | string
+      | { to: string; subject: string; template: string; data: any },
+    template?: EmailTemplate,
+  ): Promise<boolean> {
     try {
       if (!(await this.zohoMailApiService.isReady()))
         throw new Error('Zoho OAuth is not configured');
+
       this.logger.log('Using Zoho OAuth for email sending');
+
+      let emailTemplate: EmailTemplate;
+
+      if (typeof toOrData === 'string' && template) {
+        // Legacy method call
+        emailTemplate = template;
+      } else if (typeof toOrData === 'object') {
+        // New template-based method call
+        emailTemplate = this.getTemplate(toOrData.template, toOrData.data);
+      } else {
+        throw new Error('Invalid email parameters');
+      }
+
       const result = await this.zohoMailApiService.sendEmail({
-        toAddress: to,
-        subject: template.subject,
-        content: template.html,
+        toAddress: typeof toOrData === 'string' ? toOrData : toOrData.to,
+        subject: emailTemplate.subject,
+        content: emailTemplate.html,
         mailFormat: 'html',
       });
 
       if (!result.success) throw new Error(result.error);
-      this.logger.log(`Email sent successfully to ${to}`);
+      this.logger.log(
+        `Email sent successfully to ${typeof toOrData === 'string' ? toOrData : toOrData.to}`,
+      );
       return true;
     } catch (error) {
-      this.logger.error(`Failed to send email to ${to}:`, error);
+      this.logger.error(`Failed to send email:`, error);
       return false;
     }
   }
@@ -262,6 +290,134 @@ export class EmailService {
       A password reset request has been made for your account. Please click the link below to reset your password:
 
       ${this.getFrontendUrl()}/reset-password?token=${resetToken}
+    `;
+
+    return { subject, html, text };
+  }
+
+  private getTemplate(templateName: string, data: any): EmailTemplate {
+    switch (templateName) {
+      case 'baby-shower-confirmation':
+        return this.getBabyShowerConfirmationTemplate(data);
+      default:
+        throw new Error(`Template '${templateName}' not found`);
+    }
+  }
+
+  private getBabyShowerConfirmationTemplate(data: {
+    name: string;
+    guestCount: number;
+    eventDetails: {
+      date: string;
+      time: string;
+      location: string;
+      registryUrl: string;
+    };
+    dietaryRestrictions?: string;
+    message?: string;
+  }): EmailTemplate {
+    const subject = `Baby Shower RSVP Confirmation - Clara B's Celebration`;
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #fef7f7;">
+        <div style="background-color: white; border-radius: 15px; padding: 30px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+          <!-- Header -->
+          <div style="text-align: center; margin-bottom: 30px;">
+            <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #ff69b4, #8a2be2); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+              <span style="font-size: 40px;">👶</span>
+            </div>
+            <h1 style="color: #333; margin: 0; font-size: 28px; background: linear-gradient(135deg, #ff69b4, #8a2be2); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+              Baby Shower RSVP Confirmed!
+            </h1>
+            <p style="color: #666; margin: 10px 0 0; font-size: 16px;">
+              Thank you for confirming your attendance, ${data.name}!
+            </p>
+          </div>
+
+          <!-- Event Details -->
+          <div style="background: linear-gradient(135deg, #fef7f7, #f0f8ff); border-radius: 10px; padding: 25px; margin-bottom: 25px;">
+            <h2 style="color: #333; margin: 0 0 20px; text-align: center; font-size: 22px;">Event Details</h2>
+            
+            <div style="display: grid; gap: 15px;">
+              <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="width: 40px; height: 40px; background: #ff69b4; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                  <span style="color: white; font-size: 18px;">📅</span>
+                </div>
+                <div>
+                  <strong style="color: #333;">Date:</strong>
+                  <span style="color: #666; margin-left: 8px;">${data.eventDetails.date}</span>
+                </div>
+              </div>
+              
+              <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="width: 40px; height: 40px; background: #8a2be2; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                  <span style="color: white; font-size: 18px;">🕐</span>
+                </div>
+                <div>
+                  <strong style="color: #333;">Time:</strong>
+                  <span style="color: #666; margin-left: 8px;">${data.eventDetails.time}</span>
+                </div>
+              </div>
+              
+              <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="width: 40px; height: 40px; background: #32cd32; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                  <span style="color: white; font-size: 18px;">📍</span>
+                </div>
+                <div>
+                  <strong style="color: #333;">Location:</strong>
+                  <span style="color: #666; margin-left: 8px;">${data.eventDetails.location}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RSVP Details -->
+          <div style="background: #f8f9fa; border-radius: 10px; padding: 20px; margin-bottom: 25px;">
+            <h3 style="color: #333; margin: 0 0 15px; font-size: 18px;">Your RSVP Details</h3>
+            <p style="margin: 5px 0; color: #666;"><strong>Guests:</strong> ${data.guestCount} ${data.guestCount === 1 ? 'person' : 'people'}</p>
+            ${data.dietaryRestrictions ? `<p style="margin: 5px 0; color: #666;"><strong>Dietary Restrictions:</strong> ${data.dietaryRestrictions}</p>` : ''}
+            ${data.message ? `<p style="margin: 5px 0; color: #666;"><strong>Your Message:</strong> "${data.message}"</p>` : ''}
+          </div>
+
+          <!-- Registry Link -->
+          <div style="text-align: center; margin: 25px 0;">
+            <p style="color: #666; margin-bottom: 15px;">Gifts are optional but appreciated!</p>
+            <a href="${data.eventDetails.registryUrl}" 
+               style="background: linear-gradient(135deg, #ff69b4, #8a2be2); color: white; padding: 12px 24px; text-decoration: none; border-radius: 25px; display: inline-block; font-weight: bold; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+              🎁 View Registry
+            </a>
+          </div>
+
+          <!-- Footer -->
+          <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+            <p style="color: #666; margin: 0; font-size: 14px;">
+              We can't wait to celebrate with you! 💕<br>
+              Questions? Contact us at <a href="mailto:admin@claraburgess.com" style="color: #ff69b4;">admin@claraburgess.com</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const text = `
+      Baby Shower RSVP Confirmation - Clara B's Celebration
+
+      Thank you for confirming your attendance, ${data.name}!
+
+      EVENT DETAILS:
+      Date: ${data.eventDetails.date}
+      Time: ${data.eventDetails.time}
+      Location: ${data.eventDetails.location}
+
+      YOUR RSVP DETAILS:
+      Guests: ${data.guestCount} ${data.guestCount === 1 ? 'person' : 'people'}
+      ${data.dietaryRestrictions ? `Dietary Restrictions: ${data.dietaryRestrictions}` : ''}
+      ${data.message ? `Your Message: "${data.message}"` : ''}
+
+      Gifts are optional but appreciated! View our registry at: ${data.eventDetails.registryUrl}
+
+      We can't wait to celebrate with you! 💕
+      Questions? Contact us at admin@claraburgess.com
     `;
 
     return { subject, html, text };

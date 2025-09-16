@@ -31,7 +31,7 @@ export class ZohoMailApiService {
     private readonly configService: ConfigService,
   ) {
     this.apiDomain = 'https://mail.zoho.com/api';
-    this.accountId = this.configService.get<string>('ZOHO_ACCOUNT_ID') || '';
+    this.accountId = this.configService.getOrThrow<string>('ZOHO_ACCOUNT_ID');
   }
 
   /**

@@ -8,23 +8,38 @@ import {
   Param,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { RegistryService } from './registry.service';
 import {
   CreateRegistryItemDto,
   UpdateRegistryItemDto,
 } from './dto/registry.dto';
+import { RateLimitGuard } from '../rate-limit/guards/rate-limit.guard';
+import { RateLimit } from '../rate-limit/decorators/rate-limit.decorator';
 
 @Controller('api/registry')
 export class RegistryController {
   constructor(private readonly registryService: RegistryService) {}
 
   @Get()
+  @UseGuards(RateLimitGuard)
+  @RateLimit({
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    maxRequests: 30, // 30 requests per 5 minutes
+    endpoint: 'registry-read',
+  })
   async getAllItems() {
     return this.registryService.getAllItems();
   }
 
   @Get(':id')
+  @UseGuards(RateLimitGuard)
+  @RateLimit({
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    maxRequests: 30, // 30 requests per 5 minutes
+    endpoint: 'registry-read',
+  })
   async getItemById(@Param('id') id: string) {
     return this.registryService.getItemById(id);
   }

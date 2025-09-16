@@ -6,6 +6,7 @@ import ProtectedRoute from "@components/ProtectedRoute";
 import RegistryManager from "./components/RegistryManager";
 import PhotoGalleryManager from "./components/PhotoGalleryManager";
 import UserManager from "./components/UserManager";
+import RsvpManager from "./components/RsvpManager";
 import TokenExpiryWarning from "@components/TokenExpiryWarning";
 import ZohoManager from "@/app/admin/components/ZohoManager";
 
@@ -20,13 +21,13 @@ export default function AdminPage() {
 function AdminContent() {
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState<
-    "registry" | "photos" | "users" | "email"
+    "registry" | "photos" | "users" | "email" | "rsvp"
   >("registry");
 
   useEffect(() => {
     const tab = searchParams.get("tab");
-    if (tab && ["registry", "photos", "users", "email"].includes(tab)) {
-      setActiveTab(tab as "registry" | "photos" | "users" | "email");
+    if (tab && ["registry", "photos", "users", "email", "rsvp"].includes(tab)) {
+      setActiveTab(tab as "registry" | "photos" | "users" | "email" | "rsvp");
     }
   }, [searchParams]);
 
@@ -89,12 +90,23 @@ function AdminContent() {
             >
               Email Setup
             </button>
+            <button
+              onClick={() => setActiveTab("rsvp")}
+              className={`px-4 py-2 rounded-md font-medium ${
+                activeTab === "rsvp"
+                  ? "bg-pink-500 text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:cursor-pointer"
+              }`}
+            >
+              Baby Shower RSVPs
+            </button>
           </div>
 
           {activeTab === "registry" && <RegistryManager />}
           {activeTab === "photos" && <PhotoGalleryManager />}
           {activeTab === "users" && <UserManager />}
           {activeTab === "email" && <ZohoManager />}
+          {activeTab === "rsvp" && <RsvpManager />}
         </div>
       </div>
     </div>

@@ -7,15 +7,19 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
 
+  const frontendUrl = configService.getOrThrow<string>('FRONTEND_URL');
   // Enable CORS for frontend
-  app.enableCors(configService.get('cors'));
+  app.enableCors({
+    origin: frontendUrl,
+    credentials: true,
+  });
 
-  const port = configService.get<number>('port') || 3001;
+  const port = configService.getOrThrow<number>('PORT');
   await app.listen(port);
 
   console.log(`🚀 Backend server running on port ${port}`);
   console.log(`📊 Health check available at http://localhost:${port}/health`);
-  console.log(`🌍 Frontend URL: ${configService.get<string>('frontendUrl')}`);
+  console.log(`🌍 Frontend URL: ${frontendUrl}`);
   console.log(`🔐 Admin login: admin/admin123`);
   console.log(`🌱 Database will be seeded automatically on startup`);
 }

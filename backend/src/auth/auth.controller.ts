@@ -18,6 +18,8 @@ import {
   ResetPasswordDto,
 } from './dto/auth.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
+import { RateLimitGuard } from '../rate-limit/guards/rate-limit.guard';
+import { RateLimit } from '../rate-limit/decorators/rate-limit.decorator';
 import { UserStatus } from './entities/user.entity';
 
 interface RequestWithUser extends Request {
@@ -33,6 +35,13 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('login')
+  @UseGuards(RateLimitGuard)
+  @RateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    maxRequests: 5, // 5 login attempts per 15 minutes
+    blockDurationMs: 30 * 60 * 1000, // 30 minute block
+    endpoint: 'login',
+  })
   async login(@Body() loginDto: LoginDto) {
     const user = await this.authService.validateUser(
       loginDto.username,
@@ -45,6 +54,13 @@ export class AuthController {
   }
 
   @Post('register')
+  @UseGuards(RateLimitGuard)
+  @RateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    maxRequests: 3, // 3 registration attempts per hour
+    blockDurationMs: 2 * 60 * 60 * 1000, // 2 hour block
+    endpoint: 'register',
+  })
   async register(@Body() registerDto: RegisterDto) {
     return this.authService.register(registerDto);
   }
@@ -126,11 +142,25 @@ export class AuthController {
   }
 
   @Post('request-password-reset')
+  @UseGuards(RateLimitGuard)
+  @RateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    maxRequests: 3, // 3 password reset requests per hour
+    blockDurationMs: 2 * 60 * 60 * 1000, // 2 hour block
+    endpoint: 'password-reset-request',
+  })
   async requestPasswordReset(@Body() requestDto: RequestPasswordResetDto) {
     return this.authService.requestPasswordReset(requestDto);
   }
 
   @Post('reset-password')
+  @UseGuards(RateLimitGuard)
+  @RateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    maxRequests: 5, // 5 password reset attempts per 15 minutes
+    blockDurationMs: 30 * 60 * 1000, // 30 minute block
+    endpoint: 'password-reset',
+  })
   async resetPassword(@Body() resetDto: ResetPasswordDto) {
     return this.authService.resetPassword(resetDto);
   }

@@ -14,13 +14,16 @@ export class PhotoSeedService implements OnModuleInit {
 
   async onModuleInit() {
     // Only seed in development or if explicitly enabled
-    const shouldSeed = this.configService.get<string>('NODE_ENV') === 'development' || 
-                      this.configService.get<string>('ENABLE_SEEDING') === 'true';
-    
+    const shouldSeed =
+      this.configService.get<string>('NODE_ENV') === 'development' ||
+      this.configService.get<string>('ENABLE_SEEDING') === 'true';
+
     if (shouldSeed) {
       await this.seedPhotos();
     } else {
-      Logger.log('Photo seeding disabled in production. Set ENABLE_SEEDING=true to enable.');
+      Logger.log(
+        'Photo seeding disabled in production. Set ENABLE_SEEDING=true to enable.',
+      );
     }
   }
 

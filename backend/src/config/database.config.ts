@@ -8,9 +8,9 @@ export const getDatabaseConfig = (
   type: 'sqlite',
   database: join(
     process.cwd(),
-    configService.get<string>('database.database') || 'database.sqlite',
+    configService.get<string>('DB_PATH') || 'database.sqlite',
   ),
   entities: [join(__dirname, '../**/*.entity{.ts,.js}')],
-  synchronize: configService.get<boolean>('database.synchronize'),
-  logging: configService.get<boolean>('database.logging'),
+  synchronize: configService.get<string>('NODE_ENV') === 'development',
+  logging: configService.get<string>('NODE_ENV') === 'development',
 });

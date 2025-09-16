@@ -8,14 +8,14 @@ import { AuthModule } from './auth/auth.module';
 import { AdminModule } from './admin/admin.module';
 import { PhotosModule } from './photos/photos.module';
 import { SeedModule } from './seed/seed.module';
+import { BabyShowerModule } from './baby-shower/baby-shower.module';
 import { getDatabaseConfig } from './config/database.config';
-import configuration from './config/configuration';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [configuration],
+      envFilePath: ['.env.local', '.env'],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -28,6 +28,7 @@ import configuration from './config/configuration';
     AuthModule,
     AdminModule,
     SeedModule,
+    BabyShowerModule,
   ],
   controllers: [AppController],
   providers: [AppService],
