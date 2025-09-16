@@ -251,7 +251,11 @@ export default function RsvpManager() {
                             : "bg-yellow-100 text-yellow-800"
                         }`}
                       >
-                        {rsvp.emailSent ? "Sent" : rsvp.attending === "yes" ? "Pending" : "No"}
+                        {rsvp.emailSent
+                          ? "Sent"
+                          : rsvp.attending === "yes"
+                            ? "Pending"
+                            : "No"}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -305,7 +309,7 @@ export default function RsvpManager() {
                 )}
                 {rsvp.message && (
                   <p className="text-sm text-gray-600 mt-2">
-                    <strong>Message:</strong> "{rsvp.message}"
+                    <strong>Message:</strong> &quot;{rsvp.message}&quot;
                   </p>
                 )}
                 <p className="text-xs text-gray-500 mt-2">
