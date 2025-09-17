@@ -416,8 +416,9 @@ update_application() {
         sudo cp "$APP_DIR/database.sqlite" "$APP_DIR/database.sqlite.backup.$(date +%Y%m%d_%H%M%S)"
     fi
     
-    # Pull latest code
-    cd "$APP_DIR" && git pull origin main
+    # Pull latest code from source repository
+    echo "Pulling latest code from repository..."
+    cd "$PROJECT_ROOT" && git pull origin main
     
     # Copy new files (excluding database)
     echo "Updating application files..."
