@@ -14,11 +14,11 @@ NC='\033[0m' # No Color
 
 # Configuration
 APP_NAME="claraburgess.com"
-APP_DIR="$HOME/$APP_NAME"
+APP_DIR="/opt/$APP_NAME"
 SERVICE_NAME="$APP_NAME"
 USER_NAME="clara-app"
 LOG_DIR="/var/log/$APP_NAME"
-ENV_FILE="$APP_DIR/backend/.env"
+ENV_FILE="$APP_DIR/.env"
 
 echo -e "${BLUE}🚀 Digital Ocean Backend Deployment Script${NC}"
 echo "=============================================="
@@ -135,14 +135,19 @@ deploy_application() {
     echo -e "${BLUE}🚀 Deploying application...${NC}"
     
     # Backup existing database if it exists
-    if [ -f "$APP_DIR/backend/database.sqlite" ]; then
+    if [ -f "$APP_DIR/database.sqlite" ]; then
         echo "Backing up existing database..."
-        sudo cp "$APP_DIR/backend/database.sqlite" "$APP_DIR/backend/database.sqlite.backup.$(date +%Y%m%d_%H%M%S)"
+        sudo cp "$APP_DIR/database.sqlite" "$APP_DIR/database.sqlite.backup.$(date +%Y%m%d_%H%M%S)"
     fi
+    
+    # Copy application files (excluding database)
+    echo "Copying application files..."
+    sudo rsync -av --exclude='database.sqlite' backend/ "$APP_DIR/"
+    sudo chown -R "$USER_NAME:$USER_NAME" "$APP_DIR"
     
     # Install dependencies
     echo "Installing production dependencies..."
-    cd "$APP_DIR/backend"
+    cd "$APP_DIR"
     sudo -u "$USER_NAME" npm ci --only=production --omit=dev
     
     # Build application
@@ -158,12 +163,12 @@ deploy_application() {
 setup_pm2() {
     echo -e "${BLUE}🔧 Setting up PM2 ecosystem...${NC}"
     
-    sudo -u "$USER_NAME" tee "$APP_DIR/backend/ecosystem.config.js" > /dev/null <<EOF
+    sudo -u "$USER_NAME" tee "$APP_DIR/ecosystem.config.js" > /dev/null <<EOF
 module.exports = {
   apps: [{
     name: '$APP_NAME',
     script: 'dist/main.js',
-    cwd: '$APP_DIR/backend',
+    cwd: '$APP_DIR',
     instances: 1,
     exec_mode: 'cluster',
     env: {
@@ -194,7 +199,7 @@ start_application() {
     sudo -u "$USER_NAME" pm2 delete "$APP_NAME" 2>/dev/null || true
     
     # Start with PM2
-    cd "$APP_DIR/backend"
+    cd "$APP_DIR"
     sudo -u "$USER_NAME" pm2 start ecosystem.config.js
     
     # Save PM2 configuration
@@ -328,16 +333,21 @@ update_application() {
     sudo -u "$USER_NAME" pm2 stop "$APP_NAME"
     
     # Backup existing database if it exists
-    if [ -f "$APP_DIR/backend/database.sqlite" ]; then
+    if [ -f "$APP_DIR/database.sqlite" ]; then
         echo "Backing up existing database..."
-        sudo cp "$APP_DIR/backend/database.sqlite" "$APP_DIR/backend/database.sqlite.backup.$(date +%Y%m%d_%H%M%S)"
+        sudo cp "$APP_DIR/database.sqlite" "$APP_DIR/database.sqlite.backup.$(date +%Y%m%d_%H%M%S)"
     fi
     
     # Pull latest code
     cd "$APP_DIR" && git pull origin main
     
+    # Copy new files (excluding database)
+    echo "Updating application files..."
+    sudo rsync -av --exclude='database.sqlite' backend/ "$APP_DIR/"
+    sudo chown -R "$USER_NAME:$USER_NAME" "$APP_DIR"
+    
     # Install dependencies
-    cd "$APP_DIR/backend"
+    cd "$APP_DIR"
     sudo -u "$USER_NAME" npm ci --only=production --omit=dev
     
     # Build application
