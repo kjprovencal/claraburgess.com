@@ -159,36 +159,6 @@ deploy_application() {
     sudo chown -R "$USER_NAME:$USER_NAME" "$(dirname "$(grep DATABASE_PATH "$ENV_FILE" | cut -d'=' -f2)")"
 }
 
-# Function to create systemd service
-create_systemd_service() {
-    echo -e "${BLUE}🔧 Creating systemd service...${NC}"
-    
-    sudo tee "/etc/systemd/system/$SERVICE_NAME.service" > /dev/null <<EOF
-[Unit]
-Description=Clara's Baby Registry Backend
-After=network.target
-
-[Service]
-Type=simple
-User=$USER_NAME
-WorkingDirectory=$APP_DIR
-Environment=NODE_ENV=production
-Environment=PORT=3001
-ExecStart=/usr/bin/node dist/main.js
-Restart=always
-RestartSec=10
-StandardOutput=append:/var/log/$APP_NAME/app.log
-StandardError=append:/var/log/$APP_NAME/error.log
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-    sudo systemctl daemon-reload
-    sudo systemctl enable "$SERVICE_NAME"
-    echo -e "${GREEN}✅ Systemd service created and enabled${NC}"
-}
-
 # Function to setup PM2 ecosystem
 setup_pm2() {
     echo -e "${BLUE}🔧 Setting up PM2 ecosystem...${NC}"
@@ -199,7 +169,7 @@ module.exports = {
     name: '$APP_NAME',
     script: 'dist/main.js',
     cwd: '$APP_DIR',
-    instances: 'max',
+    instances: 1,
     exec_mode: 'cluster',
     env: {
       NODE_ENV: 'production',
@@ -224,8 +194,9 @@ EOF
 start_application() {
     echo -e "${BLUE}🚀 Starting application...${NC}"
     
-    # Stop existing service if running
-    sudo systemctl stop "$SERVICE_NAME" 2>/dev/null || true
+    # Stop any existing PM2 processes
+    sudo -u "$USER_NAME" pm2 stop "$APP_NAME" 2>/dev/null || true
+    sudo -u "$USER_NAME" pm2 delete "$APP_NAME" 2>/dev/null || true
     
     # Start with PM2
     cd "$APP_DIR"
@@ -308,13 +279,10 @@ show_status() {
     echo -e "${GREEN}✅ PM2 Status:${NC}"
     sudo -u "$USER_NAME" pm2 status
     
-    echo -e "\n${GREEN}✅ Systemd Service Status:${NC}"
-    sudo systemctl status "$SERVICE_NAME" --no-pager -l
-    
     echo -e "\n${GREEN}✅ Application Logs:${NC}"
-    echo "Application logs: $LOG_DIR/app.log"
-    echo "Error logs: $LOG_DIR/error.log"
     echo "PM2 logs: $LOG_DIR/out.log"
+    echo "Error logs: $LOG_DIR/error.log"
+    echo "Combined logs: $LOG_DIR/combined.log"
     
     echo -e "\n${GREEN}✅ Health Check:${NC}"
     echo "Backend: http://localhost:3001/health"
@@ -405,7 +373,6 @@ main() {
             install_pm2
             setup_environment
             deploy_application
-            create_systemd_service
             setup_pm2
             start_application
             setup_firewall
@@ -423,13 +390,11 @@ main() {
         stop)
             echo -e "${BLUE}🛑 Stopping application...${NC}"
             sudo -u "$USER_NAME" pm2 stop "$APP_NAME"
-            sudo systemctl stop "$SERVICE_NAME"
             echo -e "${GREEN}✅ Application stopped${NC}"
             ;;
         restart)
             echo -e "${BLUE}🔄 Restarting application...${NC}"
             sudo -u "$USER_NAME" pm2 restart "$APP_NAME"
-            sudo systemctl restart "$SERVICE_NAME"
             echo -e "${GREEN}✅ Application restarted${NC}"
             ;;
         status)

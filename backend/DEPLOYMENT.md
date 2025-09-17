@@ -114,7 +114,7 @@ module.exports = {
     name: 'claraburgess',
     script: 'dist/main.js',
     cwd: '/opt/claraburgess',
-    instances: 'max',
+    instances: 1,
     exec_mode: 'cluster',
     env: {
       NODE_ENV: 'production',
