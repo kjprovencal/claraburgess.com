@@ -11,6 +11,6 @@ export const getDatabaseConfig = (
     configService.get<string>('DB_PATH') || 'database.sqlite',
   ),
   entities: [join(__dirname, '../**/*.entity{.ts,.js}')],
-  synchronize: configService.get<string>('NODE_ENV') === 'development',
+  synchronize: true,
   logging: configService.get<string>('NODE_ENV') === 'development',
 });
