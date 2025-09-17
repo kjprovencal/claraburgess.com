@@ -108,6 +108,59 @@ setup_npm_cache() {
     sudo -u "$USER_NAME" npm config set prefer-offline true
     sudo -u "$USER_NAME" npm config set audit false
     sudo -u "$USER_NAME" npm config set fund false
+    sudo -u "$USER_NAME" npm config set progress false
+    sudo -u "$USER_NAME" npm config set loglevel error
+}
+
+# Function to check if we can do an incremental install
+check_incremental_install() {
+    if [ -f "$APP_DIR/package-lock.json" ] && [ -d "$APP_DIR/node_modules" ]; then
+        echo "🔄 Attempting incremental install (faster)..."
+        return 0
+    else
+        echo "🆕 Full install required (no existing node_modules)..."
+        return 1
+    fi
+}
+
+# Function to run optimized npm install
+run_optimized_install() {
+    echo "📦 Installing dependencies (this may take a few minutes)..."
+    
+    if check_incremental_install; then
+        # Try incremental install first (faster)
+        echo "🔄 Running incremental install..."
+        timeout 300 sudo -u "$USER_NAME" npm install \
+          --prefer-offline \
+          --no-audit \
+          --no-fund \
+          --progress=false \
+          --loglevel=error \
+          --maxsockets=1 \
+          --prefer-dedupe || {
+            echo "⚠️ Incremental install failed, falling back to clean install..."
+            sudo -u "$USER_NAME" rm -rf node_modules package-lock.json
+            timeout 600 sudo -u "$USER_NAME" npm ci \
+              --prefer-offline \
+              --no-audit \
+              --no-fund \
+              --progress=false \
+              --loglevel=error \
+              --maxsockets=1 \
+              --prefer-dedupe
+        }
+    else
+        # Full clean install
+        echo "🆕 Running clean install..."
+        timeout 600 sudo -u "$USER_NAME" npm ci \
+          --prefer-offline \
+          --no-audit \
+          --no-fund \
+          --progress=false \
+          --loglevel=error \
+          --maxsockets=1 \
+          --prefer-dedupe
+    fi
 }
 
 # Function to setup environment file
@@ -164,7 +217,12 @@ deploy_application() {
     # Install all dependencies (including dev dependencies for build)
     echo "Installing dependencies..."
     cd "$APP_DIR"
-    sudo -u "$USER_NAME" npm ci --prefer-offline --no-audit --no-fund
+    
+    # Set up npm cache for faster installs
+    setup_npm_cache
+    
+    # Use optimized npm install
+    run_optimized_install
     
     # Build application
     echo "Building application..."
@@ -172,7 +230,8 @@ deploy_application() {
     
     # Clean up dev dependencies after build
     echo "Cleaning up dev dependencies..."
-    sudo -u "$USER_NAME" npm prune --production --no-audit --no-fund
+    echo "🧹 Cleaning up dev dependencies..."
+    timeout 300 sudo -u "$USER_NAME" npm prune --production --no-audit --no-fund --loglevel=error
     
     # Create database directory and set permissions
     sudo mkdir -p "$(dirname "$(grep DATABASE_PATH "$ENV_FILE" | cut -d'=' -f2)")"
@@ -368,7 +427,12 @@ update_application() {
     # Install all dependencies (including dev dependencies for build)
     echo "Installing dependencies..."
     cd "$APP_DIR"
-    sudo -u "$USER_NAME" npm ci --prefer-offline --no-audit --no-fund
+    
+    # Set up npm cache for faster installs
+    setup_npm_cache
+    
+    # Use optimized npm install
+    run_optimized_install
     
     # Build application
     echo "Building application..."
@@ -376,7 +440,8 @@ update_application() {
     
     # Clean up dev dependencies after build
     echo "Cleaning up dev dependencies..."
-    sudo -u "$USER_NAME" npm prune --production --no-audit --no-fund
+    echo "🧹 Cleaning up dev dependencies..."
+    timeout 300 sudo -u "$USER_NAME" npm prune --production --no-audit --no-fund --loglevel=error
     
     # Start application
     sudo -u "$USER_NAME" pm2 start ecosystem.config.js
