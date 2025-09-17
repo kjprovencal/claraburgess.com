@@ -97,8 +97,8 @@ install_pm2() {
 # Function to optimize npm for faster installs
 setup_npm_cache() {
     echo "Setting up npm cache for faster installs..."
-    sudo -u "$USER_NAME" mkdir -p ~/.npm
-    sudo -u "$USER_NAME" npm config set cache ~/.npm --global
+    sudo -u "$USER_NAME" mkdir -p /home/$USER_NAME/.npm
+    sudo -u "$USER_NAME" npm config set cache /home/$USER_NAME/.npm --global
     sudo -u "$USER_NAME" npm config set prefer-offline true
     sudo -u "$USER_NAME" npm config set audit false
     sudo -u "$USER_NAME" npm config set fund false
