@@ -154,7 +154,7 @@ deploy_application() {
     
     # Copy application files (excluding database)
     echo "Copying application files..."
-    sudo rsync -av --exclude='database.sqlite' backend/ "$APP_DIR/"
+    sudo rsync -av --exclude='database.sqlite' ./backend/ "$APP_DIR/"
     sudo chown -R "$USER_NAME:$USER_NAME" "$APP_DIR"
     
     # Install all dependencies (including dev dependencies for build)
@@ -358,7 +358,7 @@ update_application() {
     
     # Copy new files (excluding database)
     echo "Updating application files..."
-    sudo rsync -av --exclude='database.sqlite' backend/ "$APP_DIR/"
+    sudo rsync -av --exclude='database.sqlite' ./backend/ "$APP_DIR/"
     sudo chown -R "$USER_NAME:$USER_NAME" "$APP_DIR"
     
     # Install all dependencies (including dev dependencies for build)
