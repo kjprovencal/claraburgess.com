@@ -139,22 +139,8 @@ export class AuthService implements OnApplicationBootstrap {
 
     const savedUser = await this.usersRepository.save(user);
 
-    // Send notification email to admin about new user registration
-    try {
-      await this.emailService.sendAdminNewUserNotification(
-        savedUser.email,
-        savedUser.username,
-      );
-      this.logger.log(
-        `Admin notification sent for new user: ${savedUser.username}`,
-      );
-    } catch (error) {
-      this.logger.error(
-        `Failed to send admin notification for user ${savedUser.username}:`,
-        error,
-      );
-      // Don't fail registration if email fails
-    }
+    // Send notification email to admin about new user registration (optional)
+    this.sendAdminNotificationAsync(savedUser.email, savedUser.username);
 
     // Return user info without password
     const { password, ...result } = savedUser;
@@ -409,5 +395,29 @@ export class AuthService implements OnApplicationBootstrap {
       message:
         'Password has been reset successfully. You can now log in with your new password.',
     };
+  }
+
+  /**
+   * Send admin notification asynchronously without blocking registration
+   */
+  private sendAdminNotificationAsync(userEmail: string, username: string): void {
+    // Run email notification in the background without awaiting
+    setImmediate(async () => {
+      try {
+        await this.emailService.sendAdminNewUserNotification(
+          userEmail,
+          username,
+        );
+        this.logger.log(
+          `Admin notification sent for new user: ${username}`,
+        );
+      } catch (error) {
+        this.logger.warn(
+          `Failed to send admin notification for user ${username} (registration still successful):`,
+          error.message || error,
+        );
+        // Email failure doesn't affect registration success
+      }
+    });
   }
 }

@@ -57,8 +57,8 @@ export class AuthController {
   @UseGuards(RateLimitGuard)
   @RateLimit({
     windowMs: 60 * 60 * 1000, // 1 hour
-    maxRequests: 3, // 3 registration attempts per hour
-    blockDurationMs: 2 * 60 * 60 * 1000, // 2 hour block
+    maxRequests: 10, // 10 registration attempts per hour (more reasonable for legitimate users)
+    blockDurationMs: 30 * 60 * 1000, // 30 minute block (shorter duration)
     endpoint: 'register',
   })
   async register(@Body() registerDto: RegisterDto) {
@@ -145,8 +145,8 @@ export class AuthController {
   @UseGuards(RateLimitGuard)
   @RateLimit({
     windowMs: 60 * 60 * 1000, // 1 hour
-    maxRequests: 3, // 3 password reset requests per hour
-    blockDurationMs: 2 * 60 * 60 * 1000, // 2 hour block
+    maxRequests: 5, // 5 password reset requests per hour (more reasonable)
+    blockDurationMs: 30 * 60 * 1000, // 30 minute block (shorter duration)
     endpoint: 'password-reset-request',
   })
   async requestPasswordReset(@Body() requestDto: RequestPasswordResetDto) {
