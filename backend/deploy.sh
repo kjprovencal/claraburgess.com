@@ -5,6 +5,10 @@
 
 set -e  # Exit on any error
 
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -154,7 +158,7 @@ deploy_application() {
     
     # Copy application files (excluding database)
     echo "Copying application files..."
-    sudo rsync -av --exclude='database.sqlite' ./backend/ "$APP_DIR/"
+    sudo rsync -av --exclude='database.sqlite' "$PROJECT_ROOT/backend/" "$APP_DIR/"
     sudo chown -R "$USER_NAME:$USER_NAME" "$APP_DIR"
     
     # Install all dependencies (including dev dependencies for build)
@@ -358,7 +362,7 @@ update_application() {
     
     # Copy new files (excluding database)
     echo "Updating application files..."
-    sudo rsync -av --exclude='database.sqlite' ./backend/ "$APP_DIR/"
+    sudo rsync -av --exclude='database.sqlite' "$PROJECT_ROOT/backend/" "$APP_DIR/"
     sudo chown -R "$USER_NAME:$USER_NAME" "$APP_DIR"
     
     # Install all dependencies (including dev dependencies for build)
