@@ -94,6 +94,16 @@ install_pm2() {
     fi
 }
 
+# Function to optimize npm for faster installs
+setup_npm_cache() {
+    echo "Setting up npm cache for faster installs..."
+    sudo -u "$USER_NAME" mkdir -p ~/.npm
+    sudo -u "$USER_NAME" npm config set cache ~/.npm --global
+    sudo -u "$USER_NAME" npm config set prefer-offline true
+    sudo -u "$USER_NAME" npm config set audit false
+    sudo -u "$USER_NAME" npm config set fund false
+}
+
 # Function to setup environment file
 setup_environment() {
     echo -e "${BLUE}🔧 Setting up environment configuration...${NC}"
@@ -148,7 +158,7 @@ deploy_application() {
     # Install all dependencies (including dev dependencies for build)
     echo "Installing dependencies..."
     cd "$APP_DIR"
-    sudo -u "$USER_NAME" npm ci
+    sudo -u "$USER_NAME" npm ci --prefer-offline --no-audit --no-fund
     
     # Build application
     echo "Building application..."
@@ -156,7 +166,7 @@ deploy_application() {
     
     # Clean up dev dependencies after build
     echo "Cleaning up dev dependencies..."
-    sudo -u "$USER_NAME" npm prune --production
+    sudo -u "$USER_NAME" npm prune --production --no-audit --no-fund
     
     # Create database directory and set permissions
     sudo mkdir -p "$(dirname "$(grep DATABASE_PATH "$ENV_FILE" | cut -d'=' -f2)")"
@@ -352,7 +362,7 @@ update_application() {
     # Install all dependencies (including dev dependencies for build)
     echo "Installing dependencies..."
     cd "$APP_DIR"
-    sudo -u "$USER_NAME" npm ci
+    sudo -u "$USER_NAME" npm ci --prefer-offline --no-audit --no-fund
     
     # Build application
     echo "Building application..."
@@ -360,7 +370,7 @@ update_application() {
     
     # Clean up dev dependencies after build
     echo "Cleaning up dev dependencies..."
-    sudo -u "$USER_NAME" npm prune --production
+    sudo -u "$USER_NAME" npm prune --production --no-audit --no-fund
     
     # Start application
     sudo -u "$USER_NAME" pm2 start ecosystem.config.js
@@ -381,6 +391,7 @@ main() {
             install_nodejs
             install_pm2
             setup_environment
+            setup_npm_cache
             deploy_application
             setup_pm2
             start_application
@@ -413,6 +424,7 @@ main() {
             show_logs
             ;;
         update)
+            setup_npm_cache
             update_application
             ;;
         nginx)
