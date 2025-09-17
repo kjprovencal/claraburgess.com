@@ -173,8 +173,7 @@ module.exports = {
     name: '$APP_NAME',
     script: 'dist/main.js',
     cwd: '$APP_DIR',
-    instances: 1,
-    exec_mode: 'cluster',
+    exec_mode: 'fork',
     env: {
       NODE_ENV: 'production',
       PORT: 3001
