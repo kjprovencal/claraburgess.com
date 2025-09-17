@@ -145,14 +145,18 @@ deploy_application() {
     sudo rsync -av --exclude='database.sqlite' backend/ "$APP_DIR/"
     sudo chown -R "$USER_NAME:$USER_NAME" "$APP_DIR"
     
-    # Install dependencies
-    echo "Installing production dependencies..."
+    # Install all dependencies (including dev dependencies for build)
+    echo "Installing dependencies..."
     cd "$APP_DIR"
-    sudo -u "$USER_NAME" npm ci --only=production --omit=dev
+    sudo -u "$USER_NAME" npm ci
     
     # Build application
     echo "Building application..."
     sudo -u "$USER_NAME" npm run build
+    
+    # Clean up dev dependencies after build
+    echo "Cleaning up dev dependencies..."
+    sudo -u "$USER_NAME" npm prune --production
     
     # Create database directory and set permissions
     sudo mkdir -p "$(dirname "$(grep DATABASE_PATH "$ENV_FILE" | cut -d'=' -f2)")"
@@ -346,12 +350,18 @@ update_application() {
     sudo rsync -av --exclude='database.sqlite' backend/ "$APP_DIR/"
     sudo chown -R "$USER_NAME:$USER_NAME" "$APP_DIR"
     
-    # Install dependencies
+    # Install all dependencies (including dev dependencies for build)
+    echo "Installing dependencies..."
     cd "$APP_DIR"
-    sudo -u "$USER_NAME" npm ci --only=production --omit=dev
+    sudo -u "$USER_NAME" npm ci
     
     # Build application
+    echo "Building application..."
     sudo -u "$USER_NAME" npm run build
+    
+    # Clean up dev dependencies after build
+    echo "Cleaning up dev dependencies..."
+    sudo -u "$USER_NAME" npm prune --production
     
     # Start application
     sudo -u "$USER_NAME" pm2 start ecosystem.config.js
