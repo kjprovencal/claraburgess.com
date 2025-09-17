@@ -71,7 +71,7 @@ export default function RsvpManager() {
     }
   };
 
-  const filteredRsvps = rsvps.filter((rsvp) => {
+  const filteredRsvps = rsvps?.filter((rsvp) => {
     if (filter === "attending") return rsvp.attending === "yes";
     if (filter === "not-attending") return rsvp.attending === "no";
     return true;
@@ -169,7 +169,7 @@ export default function RsvpManager() {
               : "bg-gray-100 text-gray-700 hover:bg-gray-200"
           }`}
         >
-          Attending ({rsvps.filter((r) => r.attending === "yes").length})
+          Attending ({rsvps?.filter((r) => r.attending === "yes").length})
         </button>
         <button
           onClick={() => setFilter("not-attending")}
@@ -179,7 +179,7 @@ export default function RsvpManager() {
               : "bg-gray-100 text-gray-700 hover:bg-gray-200"
           }`}
         >
-          Not Attending ({rsvps.filter((r) => r.attending === "no").length})
+          Not Attending ({rsvps?.filter((r) => r.attending === "no").length})
         </button>
       </div>
 
@@ -247,8 +247,8 @@ export default function RsvpManager() {
                           rsvp.emailSent
                             ? "bg-green-100 text-green-800"
                             : rsvp.attending === "no"
-                            ? "bg-red-100 text-red-800"
-                            : "bg-yellow-100 text-yellow-800"
+                              ? "bg-red-100 text-red-800"
+                              : "bg-yellow-100 text-yellow-800"
                         }`}
                       >
                         {rsvp.emailSent

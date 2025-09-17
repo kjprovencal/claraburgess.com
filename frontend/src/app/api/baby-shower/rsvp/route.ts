@@ -9,7 +9,20 @@ export async function GET(request: NextRequest) {
       }
     );
 
-    return NextResponse.json(await response.json());
+    if (!response.ok) {
+      console.error(
+        "Backend response not ok:",
+        response.status,
+        response.statusText
+      );
+      return NextResponse.json(
+        { error: "Failed to fetch RSVPs" },
+        { status: response.status }
+      );
+    }
+
+    const data = await response.json();
+    return NextResponse.json(data);
   } catch (error) {
     console.error("RSVP error:", error);
     return NextResponse.json(
