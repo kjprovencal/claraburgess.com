@@ -5,10 +5,12 @@ import {
   IsOptional,
   IsEnum,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
 import { UserStatus } from '../entities/user.entity';
 
 export class LoginDto {
   @IsString()
+  @Transform(({ value }) => value.trim().toLowerCase())
   username: string;
 
   @IsString()
@@ -18,9 +20,11 @@ export class LoginDto {
 export class RegisterDto {
   @IsString()
   @MinLength(3)
+  @Transform(({ value }) => value.trim().toLowerCase())
   username: string;
 
   @IsEmail()
+  @Transform(({ value }) => value.trim().toLowerCase())
   email: string;
 
   @IsString()
@@ -51,6 +55,7 @@ export class ChangePasswordDto {
 
 export class CreatePreApprovedUserDto {
   @IsEmail()
+  @Transform(({ value }) => value.trim().toLowerCase())
   email: string;
 
   @IsOptional()
@@ -66,6 +71,7 @@ export class CompleteRegistrationDto {
 
 export class RequestPasswordResetDto {
   @IsEmail()
+  @Transform(({ value }) => value.trim().toLowerCase())
   email: string;
 }
 
