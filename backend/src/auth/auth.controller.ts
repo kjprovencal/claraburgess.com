@@ -6,6 +6,7 @@ import {
   Put,
   UseGuards,
   Request,
+  BadRequestException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
@@ -43,13 +44,26 @@ export class AuthController {
     endpoint: 'login',
   })
   async login(@Body() loginDto: LoginDto) {
+    console.log(`[DEBUG] Login attempt for username: ${loginDto.username}`);
+    
     const user = await this.authService.validateUser(
       loginDto.username,
       loginDto.password,
     );
+    
+    console.log(`[DEBUG] User validation result:`, user ? {
+      id: user.id,
+      username: user.username,
+      status: user.status,
+      role: user.role
+    } : 'null');
+    
     if (!user) {
-      throw new Error('Invalid credentials');
+      console.log(`[DEBUG] Login failed: Invalid credentials for ${loginDto.username}`);
+      throw new BadRequestException('Invalid credentials');
     }
+    
+    console.log(`[DEBUG] Login successful for ${loginDto.username}`);
     return this.authService.login(user);
   }
 
@@ -163,5 +177,10 @@ export class AuthController {
   })
   async resetPassword(@Body() resetDto: ResetPasswordDto) {
     return this.authService.resetPassword(resetDto);
+  }
+
+  @Get('debug/admin-status')
+  async getAdminStatus() {
+    return this.authService.getAdminStatus();
   }
 }

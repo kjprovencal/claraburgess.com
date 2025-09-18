@@ -38,13 +38,27 @@ export class AuthService implements OnApplicationBootstrap {
   }
 
   async validateUser(username: string, password: string): Promise<any> {
+    console.log(`[DEBUG] validateUser called for username: ${username}`);
+    
     const user = await this.usersRepository.findOne({
       where: { username },
     });
+    
+    console.log(`[DEBUG] User found in database:`, user ? {
+      id: user.id,
+      username: user.username,
+      status: user.status,
+      role: user.role,
+      hasPassword: !!user.password
+    } : 'null');
+    
     if (!!user?.password && (await bcrypt.compare(password, user.password))) {
+      console.log(`[DEBUG] Password validation successful for ${username}`);
       const { password, ...result } = user;
       return result;
     }
+    
+    console.log(`[DEBUG] Password validation failed for ${username}`);
     return null;
   }
 
@@ -419,5 +433,35 @@ export class AuthService implements OnApplicationBootstrap {
         // Email failure doesn't affect registration success
       }
     });
+  }
+
+  /**
+   * Debug method to check admin user status
+   */
+  async getAdminStatus() {
+    const adminUser = await this.usersRepository.findOne({
+      where: { username: 'admin' },
+    });
+    
+    if (!adminUser) {
+      return {
+        exists: false,
+        message: 'Admin user does not exist'
+      };
+    }
+
+    return {
+      exists: true,
+      id: adminUser.id,
+      username: adminUser.username,
+      email: adminUser.email,
+      role: adminUser.role,
+      status: adminUser.status,
+      isEmailVerified: adminUser.isEmailVerified,
+      isPreApproved: adminUser.isPreApproved,
+      hasPassword: !!adminUser.password,
+      createdAt: adminUser.createdAt,
+      updatedAt: adminUser.updatedAt
+    };
   }
 }
