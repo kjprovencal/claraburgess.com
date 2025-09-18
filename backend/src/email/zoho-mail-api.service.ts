@@ -43,7 +43,9 @@ export class ZohoMailApiService {
         throw new Error('Zoho OAuth is not configured');
       }
 
-      if (!(await this.zohoOAuthService.hasValidTokens())) {
+      // Check if we have tokens at all (access or refresh)
+      const tokenStatus = await this.zohoOAuthService.getTokenStatus();
+      if (!tokenStatus.hasAccessToken && !tokenStatus.hasRefreshToken) {
         throw new Error(
           'Zoho OAuth tokens not available. Please complete OAuth flow first.',
         );
@@ -186,10 +188,12 @@ export class ZohoMailApiService {
    * Check if the service is ready to send emails
    */
   async isReady(): Promise<boolean> {
-    return (
-      this.zohoOAuthService.isConfigured() &&
-      (await this.zohoOAuthService.hasValidTokens())
-    );
+    if (!this.zohoOAuthService.isConfigured()) {
+      return false;
+    }
+    
+    const tokenStatus = await this.zohoOAuthService.getTokenStatus();
+    return tokenStatus.hasAccessToken || tokenStatus.hasRefreshToken;
   }
 
   /**
