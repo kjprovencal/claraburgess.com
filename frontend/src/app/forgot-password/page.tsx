@@ -37,12 +37,6 @@ export default function ForgotPasswordPage() {
 
       if (response.ok) {
         setSuccess(data.message);
-        // In development, show the token for testing
-        if (data.token) {
-          setSuccess(
-            `${data.message} (Development: Reset token: ${data.token})`,
-          );
-        }
       } else {
         setError(data.message || "Failed to request password reset");
       }

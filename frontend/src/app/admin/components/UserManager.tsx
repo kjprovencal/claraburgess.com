@@ -64,7 +64,7 @@ export default function UserManager() {
   const handleApproveUser = async (
     userId: string,
     status: "approved" | "rejected",
-    rejectionReason?: string,
+    rejectionReason?: string
   ) => {
     try {
       const response = await authenticatedFetch("/api/auth/approve-user", {
@@ -102,7 +102,7 @@ export default function UserManager() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(createForm),
-        },
+        }
       );
 
       if (response.ok) {
@@ -132,14 +132,7 @@ export default function UserManager() {
       const data = await response.json();
 
       if (response.ok) {
-        // Show success message with token for admin use
-        if (data.token) {
-          setError(
-            `Password reset initiated for ${email}. Reset token: ${data.token}`,
-          );
-        } else {
-          setError(`Password reset initiated for ${email}`);
-        }
+        setError(`Password reset initiated for ${email}.`);
       } else {
         setError(data.message || "Failed to initiate password reset");
       }
@@ -408,7 +401,7 @@ export default function UserManager() {
                         <button
                           onClick={() => {
                             const reason = prompt(
-                              "Please provide a reason for rejection (optional):",
+                              "Please provide a reason for rejection (optional):"
                             );
                             if (reason !== null) {
                               handleApproveUser(user.id, "rejected", reason);

@@ -378,7 +378,6 @@ export class AuthService implements OnApplicationBootstrap {
     return {
       message:
         'If an account with that email exists, a password reset link has been sent.',
-      token: resetToken, // Remove this in production
       expiresAt: resetExpires,
     };
   }
