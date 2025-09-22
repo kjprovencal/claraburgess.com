@@ -1,11 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
 import { formatPrice } from "@utils/priceFormat";
 import { authenticatedFetch } from "@utils/auth";
 import { RegistryItem } from "@types";
-import { FaEdit, FaImage, FaTrash } from "react-icons/fa";
+import { FaEdit, FaTrash } from "react-icons/fa";
 import Link from "next/link";
 
 type RegistryForm = Omit<RegistryItem, "id"> & { id?: string };
@@ -30,14 +29,10 @@ export default function RegistryManager() {
     order: 0,
     url: "",
     purchased: false,
-    imageUrl: "",
   });
   const [registryItems, setRegistryItems] = useState<RegistryItem[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const [selectedRegistryImage, setSelectedRegistryImage] =
-    useState<File | null>(null);
-  const [isDragOver, setIsDragOver] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [draggedItem, setDraggedItem] = useState<RegistryItem | null>(null);
 
@@ -64,24 +59,6 @@ export default function RegistryManager() {
     setLoading(true);
 
     try {
-      let finalImageUrl = "";
-
-      // If a local image is selected, upload it to Cloudinary first
-      if (selectedRegistryImage) {
-        try {
-          finalImageUrl = await uploadImageToCloudinary(selectedRegistryImage);
-        } catch (uploadErr) {
-          throw new Error(
-            `Failed to upload image: ${
-              uploadErr instanceof Error ? uploadErr.message : "Unknown error"
-            }`,
-          );
-        }
-      } else if (registryForm.imageUrl) {
-        // Use the existing imageUrl if no file is selected
-        finalImageUrl = registryForm.imageUrl;
-      }
-
       const response = await authenticatedFetch(
         isEditing
           ? `/api/admin/registry/${registryForm.id}`
@@ -91,10 +68,7 @@ export default function RegistryManager() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            ...registryForm,
-            imageUrl: finalImageUrl,
-          }),
+          body: JSON.stringify(registryForm),
         },
       );
 
@@ -117,9 +91,7 @@ export default function RegistryManager() {
         order: 0,
         url: "",
         purchased: false,
-        imageUrl: "",
       });
-      setSelectedRegistryImage(null);
       setIsEditing(false);
 
       // Refresh the list
@@ -142,10 +114,8 @@ export default function RegistryManager() {
       order: item.order,
       url: item.url,
       purchased: item.purchased,
-      imageUrl: item.imageUrl,
     });
     setIsEditing(true);
-    setSelectedRegistryImage(null);
   };
 
   const handleDeleteItem = async (id: string) => {
@@ -168,27 +138,15 @@ export default function RegistryManager() {
     }
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setSelectedRegistryImage(file);
-    }
-  };
 
   const handleDragStart = (e: React.DragEvent, item: RegistryItem) => {
     setDraggedItem(item);
     e.dataTransfer.effectAllowed = "move";
   };
 
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-  };
-
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
-    setIsDragOver(true);
   };
 
   const handleDrop = async (e: React.DragEvent, targetItem: RegistryItem) => {
@@ -245,39 +203,8 @@ export default function RegistryManager() {
     }
   };
 
-  const handleImageDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-
-    const files = e.dataTransfer.files;
-    if (files.length > 0) {
-      setSelectedRegistryImage(files[0]);
-    }
-  };
-
   const handleDragEnd = () => {
     setDraggedItem(null);
-  };
-
-  const uploadImageToCloudinary = async (file: File): Promise<string> => {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "claraburgess");
-
-    const response = await fetch(
-      "https://api.cloudinary.com/v1_1/dxqjyqz8f/image/upload",
-      {
-        method: "POST",
-        body: formData,
-      },
-    );
-
-    if (!response.ok) {
-      throw new Error("Failed to upload image");
-    }
-
-    const data = await response.json();
-    return data.secure_url;
   };
 
   return (
@@ -380,54 +307,6 @@ export default function RegistryManager() {
               />
             </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Image
-            </label>
-            <div
-              className={`border-2 border-dashed rounded-lg p-6 text-center ${
-                isDragOver ? "border-pink-500 bg-pink-50" : "border-gray-300"
-              }`}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleImageDrop}
-            >
-              {selectedRegistryImage ? (
-                <div>
-                  <p className="text-sm text-gray-600 mb-2">
-                    Selected: {selectedRegistryImage.name}
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedRegistryImage(null)}
-                    className="text-sm text-red-600 hover:text-red-800"
-                  >
-                    Remove
-                  </button>
-                </div>
-              ) : (
-                <div>
-                  <FaImage className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                  <p className="text-sm text-gray-600 mb-2">
-                    Drag and drop an image here, or click to select
-                  </p>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="hidden"
-                    id="image-upload"
-                  />
-                  <label
-                    htmlFor="image-upload"
-                    className="cursor-pointer text-pink-600 hover:text-pink-800 font-medium"
-                  >
-                    Choose file
-                  </label>
-                </div>
-              )}
-            </div>
-          </div>
 
           <div className="flex items-center gap-4">
             <label className="flex items-center">
@@ -462,9 +341,7 @@ export default function RegistryManager() {
                     order: 0,
                     url: "",
                     purchased: false,
-                    imageUrl: "",
                   });
-                  setSelectedRegistryImage(null);
                 }}
                 className="flex-1 bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600 hover:cursor-pointer"
               >
@@ -516,7 +393,7 @@ export default function RegistryManager() {
                   Status
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Image
+                  URL
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
@@ -570,20 +447,16 @@ export default function RegistryManager() {
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {item.imageUrl ? (
-                      <Image
-                        src={item.imageUrl}
-                        alt={item.name}
-                        width={32}
-                        height={32}
-                        className="rounded object-cover"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.style.display = "none";
-                        }}
-                      />
+                    {item.url ? (
+                      <Link 
+                        href={item.url} 
+                        target="_blank" 
+                        className="text-blue-600 hover:text-blue-800 underline truncate block max-w-xs"
+                      >
+                        {item.url}
+                      </Link>
                     ) : (
-                      <span className="text-xs text-gray-400">No image</span>
+                      <span className="text-xs text-gray-400">No URL</span>
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">

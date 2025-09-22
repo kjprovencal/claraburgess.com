@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
 import ProtectedRoute from "@components/ProtectedRoute";
+import LinkPreview from "@components/LinkPreview";
 import { RegistryItem } from "@types";
 import { formatPrice } from "@utils/priceFormat";
 import { FaTimes, FaSearch } from "react-icons/fa";
@@ -57,7 +57,7 @@ function RegistryContent() {
       orderNumber: "",
       thankYouAddress: "",
       similarItemDescription: "",
-    },
+    }
   );
   const [modalStep, setModalStep] = useState<
     "purchase-question" | "additional-info"
@@ -116,7 +116,7 @@ function RegistryContent() {
   };
 
   const handlePurchaseQuestion = (
-    giftType: "purchased" | "similar" | "none",
+    giftType: "purchased" | "similar" | "none"
   ) => {
     setPurchaseModalData((prev) => ({
       ...prev,
@@ -156,7 +156,7 @@ function RegistryContent() {
     } catch (err) {
       console.error("Error submitting purchase info:", err);
       alert(
-        "There was an error submitting your information. Please try again.",
+        "There was an error submitting your information. Please try again."
       );
     }
   };
@@ -361,91 +361,102 @@ function RegistryContent() {
               {filteredItems.map((item) => (
                 <div
                   key={item.id}
-                  onClick={() => handleViewItem(item)}
-                  className={`border rounded-lg md:p-6 transition-all hover:shadow-lg cursor-pointer h-24 md:h-auto ${
+                  className={`border rounded-lg transition-all hover:shadow-lg ${
                     item.purchased
                       ? "bg-gray-50 border-gray-200 opacity-75"
                       : "bg-white border-gray-200"
                   }`}
                 >
-                  {/* Landscape Layout: Image Left, Content Right */}
-                  <div className="flex gap-4">
-                    {/* Image - Left 1/3 */}
-                    {item.imageUrl ? (
-                      <div className="flex-shrink-0 w-1/3 relative">
-                        <div className="w-full aspect-square rounded-lg overflow-hidden border border-gray-200 shadow-sm">
-                          <Image
-                            src={item.imageUrl}
-                            alt={item.name}
-                            width={128}
-                            height={128}
-                            className="w-full h-full object-cover"
-                            unoptimized={false}
-                            placeholder="blur"
-                            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
-                          />
-                        </div>
-                        {/* Purchased Badge - Overlay on image */}
-                        {item.purchased && (
-                          <div className="absolute top-2 right-2">
-                            <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-500 text-white shadow-lg">
-                              Purchased
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    ) : (
-                      <div className="flex-shrink-0 w-1/3 relative">
-                        <div className="w-full aspect-square rounded-lg border border-gray-200 bg-gray-50 flex items-center justify-center">
-                          <span className="text-gray-400 text-sm">
-                            No image
-                          </span>
-                        </div>
-                        {/* Purchased Badge - Overlay on placeholder */}
-                        {item.purchased && (
-                          <div className="absolute top-2 right-2">
-                            <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-500 text-white shadow-lg">
-                              Purchased
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    )}
+                  {/* Show link preview if item has URL */}
+                  {item.url ? (
+                    <div className="p-4">
+                      <LinkPreview url={item.url} className="mb-4" />
 
-                    {/* Content - Right 2/3 */}
-                    <div className="flex-1 min-w-0 flex flex-col justify-between">
-                      {/* Top Right: Title */}
-                      <div className="mb-1">
-                        <div className="flex items-start justify-between gap-2 mb-1">
-                          <h3 className="text-base font-semibold text-gray-800 flex-1 line-clamp-1">
+                      {/* Item details below preview */}
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-sm font-semibold text-gray-800">
                             {item.name}
                           </h3>
-                        </div>
-                      </div>
-
-                      {/* Bottom Right: Price, Category */}
-                      <div className="space-y-1">
-                        {/* Price and Quantity */}
-                        <div className="flex items-center gap-2">
-                          <span className="text-base font-bold text-pink-600">
+                          <span className="text-sm font-bold text-pink-600">
                             {formatPrice(item.price)}
                           </span>
+                        </div>
+
+                        <div className="flex items-center justify-between text-xs text-gray-500">
+                          <span>{item.category}</span>
                           {item.quantity > 1 && (
-                            <span className="text-xs text-gray-500">
-                              × {item.quantity}
-                            </span>
+                            <span>Qty: {item.quantity}</span>
                           )}
                         </div>
 
-                        {/* Category */}
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-xs text-gray-500">
-                            {item.category}
-                          </span>
-                        </div>
+                        {/* Action button */}
+                        <button
+                          onClick={() => handleViewItem(item)}
+                          className="w-full mt-3 bg-pink-500 text-white py-2 px-4 rounded-lg hover:bg-pink-600 transition-colors text-sm font-medium"
+                        >
+                          {item.purchased
+                            ? "View Details"
+                            : "Purchase This Item"}
+                        </button>
+
+                        {/* Purchased Badge */}
+                        {item.purchased && (
+                          <div className="text-center">
+                            <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-500 text-white">
+                              Purchased
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
-                  </div>
+                  ) : (
+                    /* Simplified layout for items without URLs */
+                    <div
+                      onClick={() => handleViewItem(item)}
+                      className="p-4 md:p-6 cursor-pointer"
+                    >
+                      <div className="space-y-3">
+                        {/* Title and Price */}
+                        <div className="flex items-start justify-between gap-2">
+                          <h3 className="text-lg font-semibold text-gray-800 flex-1">
+                            {item.name}
+                          </h3>
+                          <span className="text-lg font-bold text-pink-600">
+                            {formatPrice(item.price)}
+                          </span>
+                        </div>
+
+                        {/* Category and Quantity */}
+                        <div className="flex items-center justify-between text-sm text-gray-500">
+                          <span>{item.category}</span>
+                          {item.quantity > 1 && (
+                            <span>Qty: {item.quantity}</span>
+                          )}
+                        </div>
+
+                        {/* Action button */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleViewItem(item);
+                          }}
+                          className="w-full bg-pink-500 text-white py-2 px-4 rounded-lg hover:bg-pink-600 transition-colors text-sm font-medium"
+                        >
+                          {item.purchased ? 'View Details' : 'Purchase This Item'}
+                        </button>
+
+                        {/* Purchased Badge */}
+                        {item.purchased && (
+                          <div className="text-center">
+                            <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-500 text-white">
+                              Purchased
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

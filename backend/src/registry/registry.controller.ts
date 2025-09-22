@@ -9,6 +9,7 @@ import {
   HttpCode,
   HttpStatus,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { RegistryService } from './registry.service';
 import {
@@ -67,5 +68,21 @@ export class RegistryController {
   @Put(':id/toggle-purchased')
   async togglePurchased(@Param('id') id: string) {
     return this.registryService.togglePurchased(id);
+  }
+
+  @Get('preview/link')
+  async getLinkPreview(@Query('url') url: string) {
+    if (!url) {
+      throw new Error('URL parameter is required');
+    }
+
+    // Validate URL
+    try {
+      new URL(url);
+    } catch {
+      throw new Error('Invalid URL format');
+    }
+
+    return this.registryService.generatePreview(url);
   }
 }

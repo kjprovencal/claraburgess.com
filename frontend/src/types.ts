@@ -8,6 +8,17 @@ export type RegistryItem = {
   order: number;
   purchased: boolean;
   url?: string;
+  linkPreview?: LinkPreviewData;
+};
+
+export type LinkPreviewData = {
+  title?: string;
+  description?: string;
+  imageUrl?: string;
+  siteName?: string;
+  url: string;
+  price?: string;
+  availability?: string;
 };
 
 export type Photo = {
