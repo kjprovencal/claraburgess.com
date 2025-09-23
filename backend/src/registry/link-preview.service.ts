@@ -12,10 +12,6 @@ export class LinkPreviewService {
   // Cache TTL: 7 days for link previews
   private readonly CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
-  // Rate limiting: track last request time per domain
-  private readonly lastRequestTimes = new Map<string, number>();
-  private readonly MIN_REQUEST_INTERVAL = 2000; // 2 seconds between requests to same domain
-
   constructor(
     @InjectRepository(LinkPreviewCache)
     private linkPreviewCacheRepository: Repository<LinkPreviewCache>,
@@ -36,23 +32,6 @@ export class LinkPreviewService {
     this.logger.debug(`Generating new preview for ${url}`);
     const preview = await this.generateNewPreview(url);
 
-    // If scraping failed, try fallback methods
-    if (preview.title === 'Preview unavailable') {
-      this.logger.log(
-        `Primary scraping failed for ${url}, trying fallback methods`,
-      );
-      const fallbackPreview = await this.tryFallbackMethods(url);
-      if (fallbackPreview.title !== 'Preview unavailable') {
-        // Cache the fallback preview
-        this.cachePreview(url, fallbackPreview).catch((error) => {
-          this.logger.warn(
-            `Failed to cache fallback preview for ${url}:`,
-            error,
-          );
-        });
-        return fallbackPreview;
-      }
-    }
 
     // If all scraping methods failed, use manual fallback data
     if (preview.title === 'Preview unavailable' && fallbackData) {
@@ -205,200 +184,99 @@ export class LinkPreviewService {
   }
 
   private async generateNewPreview(url: string): Promise<LinkPreviewDto> {
-    const maxRetries = 3;
-    let lastError: Error | null = null;
-
-    // Rate limiting: ensure we don't make requests too frequently to the same domain
-    await this.enforceRateLimit(url);
-
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-      try {
-        // Add random delay to avoid rate limiting (longer delay for retries)
-        const delay = attempt === 1 ? 1000 : 2000 + attempt * 1000;
-        await this.randomDelay(delay, delay + 2000);
-
-        const userAgent = this.getRandomUserAgent();
-        const headers = this.getRealisticHeaders(userAgent);
-
-        this.logger.log(
-          `Attempt ${attempt}/${maxRetries} for ${url} with User-Agent: ${userAgent.substring(0, 50)}...`,
-        );
-
-        const response = await fetch(url, {
-          headers,
-          // Add timeout
-          signal: AbortSignal.timeout(15000), // 15 second timeout
-          // Add redirect handling
-          redirect: 'follow',
-        });
-
-        // Check for bot detection responses
-        if (response.status === 403 || response.status === 429) {
-          const responseText = await response.text();
-          if (
-            responseText.includes('Robot or human') ||
-            responseText.includes('Access Denied') ||
-            responseText.includes('bot') ||
-            responseText.includes('captcha')
-          ) {
-            this.logger.warn(
-              `Bot detection triggered for ${url} on attempt ${attempt}`,
-            );
-            if (attempt < maxRetries) {
-              // Wait longer before retry
-              await this.randomDelay(5000, 10000);
-              continue;
-            }
-            throw new Error(
-              `Bot detection: ${response.status} - ${response.statusText}`,
-            );
-          }
-        }
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const html = await response.text();
-
-        // Check if we got a bot detection page in the HTML
-        if (
-          html.includes('Robot or human') ||
-          html.includes('Access Denied') ||
-          html.includes('Please verify you are human') ||
-          html.includes('captcha') ||
-          html.includes('Cloudflare') ||
-          html.includes('security check') ||
-          html.includes('verify you are human') ||
-          html.includes('bot detection') ||
-          html.includes('unusual traffic') ||
-          html.includes('automated requests')
-        ) {
-          this.logger.warn(
-            `Bot detection page received for ${url} on attempt ${attempt}`,
-          );
-          if (attempt < maxRetries) {
-            await this.randomDelay(5000, 10000);
-            continue;
-          }
-          throw new Error('Bot detection page received');
-        }
-
-        // Additional check: if the title is "Robot or human?" or similar bot detection titles
-        const $ = cheerio.load(html);
-        const pageTitle = $('title').text().toLowerCase();
-        if (
-          pageTitle.includes('robot or human') ||
-          pageTitle.includes('access denied') ||
-          pageTitle.includes('security check') ||
-          pageTitle.includes('captcha') ||
-          pageTitle.includes('bot detection')
-        ) {
-          this.logger.warn(
-            `Bot detection title detected for ${url} on attempt ${attempt}: "${pageTitle}"`,
-          );
-          if (attempt < maxRetries) {
-            await this.randomDelay(5000, 10000);
-            continue;
-          }
-          throw new Error(`Bot detection title: ${pageTitle}`);
-        }
-
-        // Extract title - prioritize HTML scraping for Amazon
-        const title = this.extractProductTitle($, url);
-
-        // Try to get the best product image, not just Open Graph
-        const imageUrl = this.extractProductImage($, url);
-
-        const siteName = this.extractMetaContent($, [
-          'og:site_name',
-          'twitter:site',
-        ]);
-
-        // Extract price information (common patterns)
-        const price = this.extractPrice($);
-
-        // Extract availability
-        const availability = this.extractAvailability($);
-
-        const extractedTitle = title || this.extractTitle($);
-
-        // Final check: ensure we don't return bot detection titles
-        if (extractedTitle && this.isBotDetectionTitle(extractedTitle)) {
-          this.logger.warn(
-            `Bot detection title in final result for ${url}: "${extractedTitle}"`,
-          );
-          throw new Error(`Bot detection title in result: ${extractedTitle}`);
-        }
-
-        const result = {
-          title: extractedTitle,
-          imageUrl: this.resolveImageUrl(imageUrl, url),
-          siteName,
-          url,
-          price: price ? parseFloat(price) : undefined,
-          availability,
-        };
-
-        this.logger.log(`Successfully scraped ${url} on attempt ${attempt}`);
-        return result;
-      } catch (error) {
-        lastError = error as Error;
-        this.logger.warn(
-          `Attempt ${attempt}/${maxRetries} failed for ${url}: ${lastError.message}`,
-        );
-
-        if (attempt === maxRetries) {
-          break;
-        }
-
-        // Wait before retry
-        await this.randomDelay(2000, 5000);
-      }
-    }
-
-    // All retries failed
-    this.logger.error(
-      `Failed to generate preview for ${url} after ${maxRetries} attempts:`,
-      lastError,
-    );
-    return {
-      url,
-      title: 'Preview unavailable',
-      description:
-        'Unable to load preview for this link - may be blocked by anti-bot measures',
-    };
-  }
-
-  private async randomDelay(min: number, max: number): Promise<void> {
-    const delay = Math.floor(Math.random() * (max - min + 1)) + min;
-    await new Promise((resolve) => setTimeout(resolve, delay));
-  }
-
-  private async enforceRateLimit(url: string): Promise<void> {
     try {
-      const urlObj = new URL(url);
-      const domain = urlObj.hostname;
-      const now = Date.now();
+      const userAgent = this.getRandomUserAgent();
+      const headers = this.getRealisticHeaders(userAgent);
 
-      const lastRequestTime = this.lastRequestTimes.get(domain);
-      if (lastRequestTime) {
-        const timeSinceLastRequest = now - lastRequestTime;
-        if (timeSinceLastRequest < this.MIN_REQUEST_INTERVAL) {
-          const waitTime = this.MIN_REQUEST_INTERVAL - timeSinceLastRequest;
-          this.logger.log(
-            `Rate limiting: waiting ${waitTime}ms before next request to ${domain}`,
-          );
-          await new Promise((resolve) => setTimeout(resolve, waitTime));
-        }
+      this.logger.log(`Scraping ${url} with User-Agent: ${userAgent.substring(0, 50)}...`);
+
+      const response = await fetch(url, {
+        headers,
+        redirect: 'follow',
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
-      // Update the last request time
-      this.lastRequestTimes.set(domain, Date.now());
+      const html = await response.text();
+      const $ = cheerio.load(html);
+
+      // Check if we got a bot detection page
+      if (this.isBotDetectionPage(html, $)) {
+        this.logger.warn(`Bot detection page received for ${url}`);
+        throw new Error('Bot detection page received');
+      }
+
+      // Extract title - prioritize HTML scraping for Amazon
+      const title = this.extractProductTitle($, url);
+
+      // Try to get the best product image, not just Open Graph
+      const imageUrl = this.extractProductImage($, url);
+
+      const siteName = this.extractMetaContent($, [
+        'og:site_name',
+        'twitter:site',
+      ]);
+
+      // Extract price information (common patterns)
+      const price = this.extractPrice($);
+
+      // Extract availability
+      const availability = this.extractAvailability($);
+
+      const extractedTitle = title || this.extractTitle($);
+
+      // Final check: ensure we don't return bot detection titles
+      if (extractedTitle && this.isBotDetectionTitle(extractedTitle)) {
+        this.logger.warn(
+          `Bot detection title in final result for ${url}: "${extractedTitle}"`,
+        );
+        throw new Error(`Bot detection title in result: ${extractedTitle}`);
+      }
+
+      const result = {
+        title: extractedTitle,
+        imageUrl: this.resolveImageUrl(imageUrl, url),
+        siteName,
+        url,
+        price: price ? parseFloat(price) : undefined,
+        availability,
+      };
+
+      this.logger.log(`Successfully scraped ${url}`);
+      return result;
     } catch (error) {
-      // If URL parsing fails, just continue without rate limiting
-      this.logger.warn(`Failed to parse URL for rate limiting: ${url}`, error);
+      this.logger.error(`Failed to generate preview for ${url}:`, error);
+      return {
+        url,
+        title: 'Preview unavailable',
+        description: 'Unable to load preview for this link',
+      };
     }
+  }
+
+  private isBotDetectionPage(html: string, $: cheerio.Root): boolean {
+    // Check HTML content for bot detection
+    const htmlLower = html.toLowerCase();
+    if (
+      htmlLower.includes('robot or human') ||
+      htmlLower.includes('access denied') ||
+      htmlLower.includes('please verify you are human') ||
+      htmlLower.includes('captcha') ||
+      htmlLower.includes('cloudflare') ||
+      htmlLower.includes('security check') ||
+      htmlLower.includes('verify you are human') ||
+      htmlLower.includes('bot detection') ||
+      htmlLower.includes('unusual traffic') ||
+      htmlLower.includes('automated requests')
+    ) {
+      return true;
+    }
+
+    // Check page title for bot detection
+    const pageTitle = $('title').text().toLowerCase();
+    return this.isBotDetectionTitle(pageTitle);
   }
 
   private getRandomUserAgent(): string {
@@ -469,117 +347,6 @@ export class LinkPreviewService {
     return headers;
   }
 
-  private async tryFallbackMethods(url: string): Promise<LinkPreviewDto> {
-    // Method 1: Try with a different approach - mobile user agent
-    try {
-      this.logger.log(`Trying mobile user agent fallback for ${url}`);
-      const mobilePreview = await this.tryMobileUserAgent(url);
-      if (mobilePreview.title !== 'Preview unavailable') {
-        return mobilePreview;
-      }
-    } catch (error) {
-      this.logger.warn(`Mobile user agent fallback failed for ${url}:`, error);
-    }
-
-    // Method 2: Try with minimal headers
-    try {
-      this.logger.log(`Trying minimal headers fallback for ${url}`);
-      const minimalPreview = await this.tryMinimalHeaders(url);
-      if (minimalPreview.title !== 'Preview unavailable') {
-        return minimalPreview;
-      }
-    } catch (error) {
-      this.logger.warn(`Minimal headers fallback failed for ${url}:`, error);
-    }
-
-    // Method 3: Try to extract basic info from URL patterns
-    try {
-      this.logger.log(`Trying URL pattern extraction for ${url}`);
-      const patternPreview = this.extractFromUrlPattern(url);
-      if (patternPreview.title !== 'Preview unavailable') {
-        return patternPreview;
-      }
-    } catch (error) {
-      this.logger.warn(`URL pattern extraction failed for ${url}:`, error);
-    }
-
-    return {
-      url,
-      title: 'Preview unavailable',
-      description: 'Unable to load preview - all methods failed',
-    };
-  }
-
-  private async tryMobileUserAgent(url: string): Promise<LinkPreviewDto> {
-    const mobileUserAgents = [
-      'Mozilla/5.0 (iPhone; CPU iPhone OS 17_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Mobile/15E148 Safari/604.1',
-      'Mozilla/5.0 (Linux; Android 14; SM-G998B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36',
-      'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1',
-    ];
-
-    const userAgent =
-      mobileUserAgents[Math.floor(Math.random() * mobileUserAgents.length)];
-    const headers = {
-      'User-Agent': userAgent,
-      Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-      'Accept-Language': 'en-US,en;q=0.5',
-      'Accept-Encoding': 'gzip, deflate',
-      Connection: 'keep-alive',
-    };
-
-    const response = await fetch(url, {
-      headers,
-      signal: AbortSignal.timeout(10000),
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    const html = await response.text();
-    const $ = cheerio.load(html);
-
-    return {
-      title: this.extractProductTitle($, url) || this.extractTitle($),
-      imageUrl: this.extractProductImage($, url),
-      siteName: this.extractMetaContent($, ['og:site_name', 'twitter:site']),
-      url,
-      price: this.extractPrice($)
-        ? parseFloat(this.extractPrice($)!)
-        : undefined,
-      availability: this.extractAvailability($),
-    };
-  }
-
-  private async tryMinimalHeaders(url: string): Promise<LinkPreviewDto> {
-    const headers = {
-      'User-Agent': 'Mozilla/5.0 (compatible; LinkPreviewBot/1.0)',
-      Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-    };
-
-    const response = await fetch(url, {
-      headers,
-      signal: AbortSignal.timeout(10000),
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    const html = await response.text();
-    const $ = cheerio.load(html);
-
-    return {
-      title: this.extractProductTitle($, url) || this.extractTitle($),
-      imageUrl: this.extractProductImage($, url),
-      siteName: this.extractMetaContent($, ['og:site_name', 'twitter:site']),
-      url,
-      price: this.extractPrice($)
-        ? parseFloat(this.extractPrice($)!)
-        : undefined,
-      availability: this.extractAvailability($),
-    };
-  }
 
   private createManualPreview(
     url: string,
