@@ -34,72 +34,132 @@ function AdminContent() {
   return (
     <div className="mb-16">
       {/* Main Card Surface */}
-      <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 border border-gray-100 relative overflow-hidden">
+      <div className="bg-white rounded-3xl shadow-2xl p-4 sm:p-6 md:p-8 lg:p-12 border border-gray-100 relative overflow-hidden">
         {/* Subtle Background Pattern - Full Height */}
         <div className="absolute inset-0 bg-gradient-to-br from-pink-50/30 via-transparent to-blue-50/30 pointer-events-none"></div>
 
         <div className="relative">
           <TokenExpiryWarning />
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold dark:text-gray-800">
+          <div className="mb-6 sm:mb-8">
+            <h1 className="text-2xl sm:text-3xl font-bold dark:text-gray-800">
               Admin Panel
             </h1>
-            <p className="text-gray-600 mt-1">
+            <p className="text-gray-600 mt-1 text-sm sm:text-base">
               Managing Clara&apos;s registry and photos
             </p>
           </div>
 
-          <div className="flex gap-4 mb-8">
-            <button
-              onClick={() => setActiveTab("registry")}
-              className={`px-4 py-2 rounded-md font-medium ${
-                activeTab === "registry"
-                  ? "bg-pink-500 text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:cursor-pointer"
-              }`}
-            >
-              Registry Items
-            </button>
-            <button
-              onClick={() => setActiveTab("photos")}
-              className={`px-4 py-2 rounded-md font-medium ${
-                activeTab === "photos"
-                  ? "bg-pink-500 text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:cursor-pointer"
-              }`}
-            >
-              Photos
-            </button>
-            <button
-              onClick={() => setActiveTab("users")}
-              className={`px-4 py-2 rounded-md font-medium ${
-                activeTab === "users"
-                  ? "bg-pink-500 text-white"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-200 hover:cursor-pointer"
-              }`}
-            >
-              Users
-            </button>
-            <button
-              onClick={() => setActiveTab("email")}
-              className={`px-4 py-2 rounded-md font-medium ${
-                activeTab === "email"
-                  ? "bg-pink-500 text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:cursor-pointer"
-              }`}
-            >
-              Email Setup
-            </button>
-            <button
-              onClick={() => setActiveTab("rsvp")}
-              className={`px-4 py-2 rounded-md font-medium ${
-                activeTab === "rsvp"
-                  ? "bg-pink-500 text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:cursor-pointer"
-              }`}
-            >
-              Baby Shower RSVPs
-            </button>
+          {/* Mobile-friendly tab navigation */}
+          <div className="mb-6 sm:mb-8">
+            {/* Mobile: Horizontal scroll tabs */}
+            <div className="block sm:hidden">
+              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                <button
+                  onClick={() => setActiveTab("registry")}
+                  className={`px-3 py-2 rounded-md font-medium text-sm whitespace-nowrap flex-shrink-0 ${
+                    activeTab === "registry"
+                      ? "bg-pink-500 text-white"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:cursor-pointer"
+                  }`}
+                >
+                  Registry
+                </button>
+                <button
+                  onClick={() => setActiveTab("photos")}
+                  className={`px-3 py-2 rounded-md font-medium text-sm whitespace-nowrap flex-shrink-0 ${
+                    activeTab === "photos"
+                      ? "bg-pink-500 text-white"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:cursor-pointer"
+                  }`}
+                >
+                  Photos
+                </button>
+                <button
+                  onClick={() => setActiveTab("users")}
+                  className={`px-3 py-2 rounded-md font-medium text-sm whitespace-nowrap flex-shrink-0 ${
+                    activeTab === "users"
+                      ? "bg-pink-500 text-white"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:cursor-pointer"
+                  }`}
+                >
+                  Users
+                </button>
+                <button
+                  onClick={() => setActiveTab("email")}
+                  className={`px-3 py-2 rounded-md font-medium text-sm whitespace-nowrap flex-shrink-0 ${
+                    activeTab === "email"
+                      ? "bg-pink-500 text-white"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:cursor-pointer"
+                  }`}
+                >
+                  Email
+                </button>
+                <button
+                  onClick={() => setActiveTab("rsvp")}
+                  className={`px-3 py-2 rounded-md font-medium text-sm whitespace-nowrap flex-shrink-0 ${
+                    activeTab === "rsvp"
+                      ? "bg-pink-500 text-white"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:cursor-pointer"
+                  }`}
+                >
+                  RSVPs
+                </button>
+              </div>
+            </div>
+
+            {/* Desktop: Full tab names */}
+            <div className="hidden sm:flex gap-4">
+              <button
+                onClick={() => setActiveTab("registry")}
+                className={`px-4 py-2 rounded-md font-medium ${
+                  activeTab === "registry"
+                    ? "bg-pink-500 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:cursor-pointer"
+                }`}
+              >
+                Registry Items
+              </button>
+              <button
+                onClick={() => setActiveTab("photos")}
+                className={`px-4 py-2 rounded-md font-medium ${
+                  activeTab === "photos"
+                    ? "bg-pink-500 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:cursor-pointer"
+                }`}
+              >
+                Photos
+              </button>
+              <button
+                onClick={() => setActiveTab("users")}
+                className={`px-4 py-2 rounded-md font-medium ${
+                  activeTab === "users"
+                    ? "bg-pink-500 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:cursor-pointer"
+                }`}
+              >
+                Users
+              </button>
+              <button
+                onClick={() => setActiveTab("email")}
+                className={`px-4 py-2 rounded-md font-medium ${
+                  activeTab === "email"
+                    ? "bg-pink-500 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:cursor-pointer"
+                }`}
+              >
+                Email Setup
+              </button>
+              <button
+                onClick={() => setActiveTab("rsvp")}
+                className={`px-4 py-2 rounded-md font-medium ${
+                  activeTab === "rsvp"
+                    ? "bg-pink-500 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:cursor-pointer"
+                }`}
+              >
+                Baby Shower RSVPs
+              </button>
+            </div>
           </div>
 
           {activeTab === "registry" && <RegistryManager />}

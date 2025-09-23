@@ -4,6 +4,7 @@ export class LinkPreviewDto {
   imageUrl?: string;
   siteName?: string;
   url: string;
-  price?: string;
+  price?: number;
   availability?: string;
+  expiresAt?: Date;
 }

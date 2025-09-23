@@ -1,24 +1,20 @@
 export type RegistryItem = {
   id: string;
   name: string;
-  imageUrl?: string;
-  price: number;
   quantity: number;
   category: string;
   order: number;
   purchased: boolean;
+  purchasedQuantity: number;
   url?: string;
-  linkPreview?: LinkPreviewData;
-};
-
-export type LinkPreviewData = {
+  imageUrl?: string;
+  // Preview data from link scraping
   title?: string;
   description?: string;
-  imageUrl?: string;
   siteName?: string;
-  url: string;
-  price?: string;
+  price?: number;
   availability?: string;
+  previewCacheExpiry?: string;
 };
 
 export type Photo = {

@@ -5,7 +5,6 @@ export class CreateRegistryItemDto {
   category: string;
   order?: number;
   url?: string;
-  imageUrl?: string;
 }
 
 export class UpdateRegistryItemDto {
@@ -16,5 +15,24 @@ export class UpdateRegistryItemDto {
   order?: number;
   purchased?: boolean;
   url?: string;
+}
+
+export class RegistryItemWithPreviewDto {
+  id: string;
+  name: string;
+  quantity: number;
+  category: string;
+  order: number;
+  purchased: boolean;
+  url?: string;
+  // Cached preview data
   imageUrl?: string;
+  title?: string;
+  description?: string;
+  siteName?: string;
+  price?: number;
+  availability?: string;
+  previewCacheExpiry?: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }

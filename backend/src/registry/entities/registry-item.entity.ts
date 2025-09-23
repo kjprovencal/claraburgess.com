@@ -15,7 +15,7 @@ export class RegistryItem {
   name: string;
 
   @Column('decimal', { precision: 10, scale: 2 })
-  price: number;
+  price?: number;
 
   @Column({ default: 1 })
   quantity: number;
@@ -29,11 +29,30 @@ export class RegistryItem {
   @Column({ default: false })
   purchased: boolean;
 
+  @Column({ default: 0 })
+  purchasedQuantity: number;
+
   @Column({ nullable: true })
   url?: string;
 
+  // Cached link preview data
+  @Column({ nullable: true })
+  title?: string;
+
+  @Column({ nullable: true })
+  description?: string;
+
   @Column({ nullable: true })
   imageUrl?: string;
+
+  @Column({ nullable: true })
+  siteName?: string;
+
+  @Column({ nullable: true })
+  availability?: string;
+
+  @Column({ nullable: true })
+  previewCacheExpiry?: Date;
 
   @CreateDateColumn()
   createdAt: Date;

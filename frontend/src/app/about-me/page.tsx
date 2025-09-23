@@ -34,7 +34,7 @@ function AboutMeContent() {
               <div className="w-full md:w-5/12 ml-16 md:ml-auto bg-white rounded-2xl shadow-xl p-6 md:border-l-4 border-pink-500 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
                 <div className="text-center">
                   <h3 className="text-xl font-bold text-pink-600 mb-2">
-                    Clara Burgess
+                    Clara Burgess Provencal
                   </h3>
                   <p className="text-sm text-gray-500 mb-2">
                     Due Date: December 19, 2025

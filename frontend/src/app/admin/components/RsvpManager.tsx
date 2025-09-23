@@ -110,12 +110,12 @@ export default function RsvpManager() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-800">Baby Shower RSVPs</h2>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Baby Shower RSVPs</h2>
         <button
           onClick={fetchRsvps}
-          className="px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-colors"
+          className="px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-colors min-h-[44px]"
         >
           Refresh
         </button>
@@ -150,122 +150,186 @@ export default function RsvpManager() {
       )}
 
       {/* Filter Buttons */}
-      <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row gap-2">
         <button
           onClick={() => setFilter("all")}
-          className={`px-4 py-2 rounded-lg font-medium ${
+          className={`px-4 py-2 rounded-lg font-medium min-h-[44px] ${
             filter === "all"
               ? "bg-pink-500 text-white"
               : "bg-gray-100 text-gray-700 hover:bg-gray-200"
           }`}
         >
-          All ({rsvps.length})
+          <span className="block sm:hidden">All ({rsvps.length})</span>
+          <span className="hidden sm:block">All ({rsvps.length})</span>
         </button>
         <button
           onClick={() => setFilter("attending")}
-          className={`px-4 py-2 rounded-lg font-medium ${
+          className={`px-4 py-2 rounded-lg font-medium min-h-[44px] ${
             filter === "attending"
               ? "bg-green-500 text-white"
               : "bg-gray-100 text-gray-700 hover:bg-gray-200"
           }`}
         >
-          Attending ({rsvps?.filter((r) => r.attending === "yes").length})
+          <span className="block sm:hidden">Attending ({rsvps?.filter((r) => r.attending === "yes").length})</span>
+          <span className="hidden sm:block">Attending ({rsvps?.filter((r) => r.attending === "yes").length})</span>
         </button>
         <button
           onClick={() => setFilter("not-attending")}
-          className={`px-4 py-2 rounded-lg font-medium ${
+          className={`px-4 py-2 rounded-lg font-medium min-h-[44px] ${
             filter === "not-attending"
               ? "bg-red-500 text-white"
               : "bg-gray-100 text-gray-700 hover:bg-gray-200"
           }`}
         >
-          Not Attending ({rsvps?.filter((r) => r.attending === "no").length})
+          <span className="block sm:hidden">Not Attending ({rsvps?.filter((r) => r.attending === "no").length})</span>
+          <span className="hidden sm:block">Not Attending ({rsvps?.filter((r) => r.attending === "no").length})</span>
         </button>
       </div>
 
       {/* RSVP List */}
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
         {filteredRsvps.length === 0 ? (
-          <div className="p-8 text-center text-gray-500">
+          <div className="p-6 sm:p-8 text-center text-gray-500">
             No RSVPs found for the selected filter.
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Email
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Guests
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Email Sent
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Submitted
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+          <>
+            {/* Mobile Card Layout */}
+            <div className="block sm:hidden">
+              <div className="divide-y divide-gray-200">
                 {filteredRsvps.map((rsvp) => (
-                  <tr key={rsvp.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
-                        {rsvp.name}
+                  <div key={rsvp.id} className="p-4">
+                    <div className="flex justify-between items-start mb-3">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-sm font-medium text-gray-900 truncate">
+                          {rsvp.name}
+                        </h3>
+                        <p className="text-xs text-gray-500 mt-1 truncate">
+                          {rsvp.email}
+                        </p>
                       </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{rsvp.email}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ml-2 ${
                           rsvp.attending === "yes"
                             ? "bg-green-100 text-green-800"
                             : "bg-red-100 text-red-800"
                         }`}
                       >
-                        {rsvp.attending === "yes"
-                          ? "Attending"
-                          : "Not Attending"}
+                        {rsvp.attending === "yes" ? "Attending" : "Not Attending"}
                       </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {rsvp.guestCount}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          rsvp.emailSent
-                            ? "bg-green-100 text-green-800"
-                            : rsvp.attending === "no"
-                              ? "bg-red-100 text-red-800"
-                              : "bg-yellow-100 text-yellow-800"
-                        }`}
-                      >
-                        {rsvp.emailSent
-                          ? "Sent"
-                          : rsvp.attending === "yes"
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-2 text-xs mb-2">
+                      <div>
+                        <span className="text-gray-500">Guests:</span>
+                        <span className="ml-1 font-medium">{rsvp.guestCount}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-500">Email:</span>
+                        <span
+                          className={`ml-1 font-medium ${
+                            rsvp.emailSent
+                              ? "text-green-600"
+                              : rsvp.attending === "no"
+                              ? "text-gray-500"
+                              : "text-yellow-600"
+                          }`}
+                        >
+                          {rsvp.emailSent
+                            ? "Sent"
+                            : rsvp.attending === "yes"
                             ? "Pending"
                             : "No"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {formatDate(rsvp.createdAt)}
-                    </td>
-                  </tr>
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="text-xs text-gray-500">
+                      Submitted: {formatDate(rsvp.createdAt)}
+                    </div>
+                  </div>
                 ))}
-              </tbody>
-            </table>
-          </div>
+              </div>
+            </div>
+
+            {/* Desktop Table Layout */}
+            <div className="hidden sm:block overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Name
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Email
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Guests
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Email Sent
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Submitted
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredRsvps.map((rsvp) => (
+                    <tr key={rsvp.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">
+                          {rsvp.name}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">{rsvp.email}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                            rsvp.attending === "yes"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-red-100 text-red-800"
+                          }`}
+                        >
+                          {rsvp.attending === "yes"
+                            ? "Attending"
+                            : "Not Attending"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {rsvp.guestCount}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                            rsvp.emailSent
+                              ? "bg-green-100 text-green-800"
+                              : rsvp.attending === "no"
+                                ? "bg-red-100 text-red-800"
+                                : "bg-yellow-100 text-yellow-800"
+                          }`}
+                        >
+                          {rsvp.emailSent
+                            ? "Sent"
+                            : rsvp.attending === "yes"
+                              ? "Pending"
+                              : "No"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {formatDate(rsvp.createdAt)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
 

@@ -65,24 +65,16 @@ export class RegistryController {
     return this.registryService.deleteItem(id);
   }
 
-  @Put(':id/toggle-purchased')
-  async togglePurchased(@Param('id') id: string) {
-    return this.registryService.togglePurchased(id);
+  @Put(':id/purchase')
+  async purchase(
+    @Param('id') id: string,
+    @Body() body: { purchasedQuantity: number }
+  ) {
+    return this.registryService.purchase(id, body.purchasedQuantity);
   }
 
   @Get('preview/link')
   async getLinkPreview(@Query('url') url: string) {
-    if (!url) {
-      throw new Error('URL parameter is required');
-    }
-
-    // Validate URL
-    try {
-      new URL(url);
-    } catch {
-      throw new Error('Invalid URL format');
-    }
-
-    return this.registryService.generatePreview(url);
+    return this.registryService.getLinkPreview(url);
   }
 }

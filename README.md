@@ -158,7 +158,6 @@ The application uses NestJS ConfigModule for environment-based configuration:
 - `GET /api/registry` - Get all registry items
 - `GET /api/photos` - Get all photos
 - `GET /api/baby-info` - Get baby information (name, due date)
-- `PUT /api/registry/:id/toggle-purchased` - Toggle purchased status
 
 ### Admin API (Protected)
 

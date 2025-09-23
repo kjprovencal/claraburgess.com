@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { formatPrice } from "@utils/priceFormat";
 import { authenticatedFetch } from "@utils/auth";
 import { RegistryItem } from "@types";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaEdit, FaTrash, FaMagic, FaSpinner } from "react-icons/fa";
 import Link from "next/link";
 
 type RegistryForm = Omit<RegistryItem, "id"> & { id?: string };
@@ -23,15 +23,16 @@ const categories = [
 export default function RegistryManager() {
   const [registryForm, setRegistryForm] = useState<RegistryForm>({
     name: "",
-    price: 0,
     quantity: 1,
     category: "General",
     order: 0,
     url: "",
     purchased: false,
+    purchasedQuantity: 0,
   });
   const [registryItems, setRegistryItems] = useState<RegistryItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const [scrapingUrl, setScrapingUrl] = useState(false);
 
   const [isEditing, setIsEditing] = useState(false);
   const [draggedItem, setDraggedItem] = useState<RegistryItem | null>(null);
@@ -48,6 +49,45 @@ export default function RegistryManager() {
       setRegistryItems(data);
     } catch (err) {
       console.error("Failed to fetch items:", err);
+    }
+  };
+
+  const scrapeUrl = async (url: string) => {
+    if (!url) return;
+
+    setScrapingUrl(true);
+    try {
+      const response = await fetch("/api/admin/registry/scrape-url", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ url }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to scrape URL");
+      }
+
+      const scrapedData = await response.json();
+
+      // Update form with scraped data, preserving existing values where appropriate
+      setRegistryForm((prev) => ({
+        ...prev,
+        url: url,
+        name: scrapedData.name || prev.name,
+        description: scrapedData.description || prev.description,
+        imageUrl: scrapedData.imageUrl || prev.imageUrl,
+        siteName: scrapedData.siteName || prev.siteName,
+        price: scrapedData.price || prev.price,
+        availability: scrapedData.availability || prev.availability,
+      }));
+    } catch (error) {
+      console.error("Error scraping URL:", error);
+      alert(error instanceof Error ? error.message : "Failed to scrape URL");
+    } finally {
+      setScrapingUrl(false);
     }
   };
 
@@ -69,7 +109,7 @@ export default function RegistryManager() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(registryForm),
-        },
+        }
       );
 
       console.log("📥 Response status:", response.status, response.statusText);
@@ -85,12 +125,18 @@ export default function RegistryManager() {
       // Reset form
       setRegistryForm({
         name: "",
-        price: 0,
         quantity: 1,
         category: "General",
         order: 0,
         url: "",
+        imageUrl: "",
+        title: "",
+        description: "",
+        siteName: "",
+        price: undefined,
+        availability: "",
         purchased: false,
+        purchasedQuantity: 0,
       });
       setIsEditing(false);
 
@@ -108,12 +154,18 @@ export default function RegistryManager() {
     setRegistryForm({
       id: item.id,
       name: item.name,
-      price: item.price,
       quantity: item.quantity,
       category: item.category,
       order: item.order,
-      url: item.url,
+      url: item.url || "",
+      imageUrl: item.imageUrl || "",
+      title: item.title || "",
+      description: item.description || "",
+      siteName: item.siteName || "",
+      price: item.price,
+      availability: item.availability || "",
       purchased: item.purchased,
+      purchasedQuantity: item.purchasedQuantity,
     });
     setIsEditing(true);
   };
@@ -138,7 +190,6 @@ export default function RegistryManager() {
     }
   };
 
-
   const handleDragStart = (e: React.DragEvent, item: RegistryItem) => {
     setDraggedItem(item);
     e.dataTransfer.effectAllowed = "move";
@@ -157,10 +208,10 @@ export default function RegistryManager() {
       // Get current order of items
       const sortedItems = [...registryItems].sort((a, b) => a.order - b.order);
       const draggedIndex = sortedItems.findIndex(
-        (item) => item.id === draggedItem.id,
+        (item) => item.id === draggedItem.id
       );
       const targetIndex = sortedItems.findIndex(
-        (item) => item.id === targetItem.id,
+        (item) => item.id === targetItem.id
       );
 
       // Calculate new order values
@@ -186,7 +237,7 @@ export default function RegistryManager() {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ order: newOrder }),
-        },
+        }
       );
 
       if (!response.ok) {
@@ -210,14 +261,111 @@ export default function RegistryManager() {
   return (
     <>
       {/* Add/Edit Registry Item Form */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-6 dark:text-gray-900">
+      <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-4 sm:mb-6">
+        <h2 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 dark:text-gray-900">
           {isEditing ? "Edit Registry Item" : "Add New Registry Item"}
         </h2>
 
         <form onSubmit={handleSubmitItem} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
+          {/* URL Input with Scraping */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Product URL
+            </label>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <input
+                type="url"
+                value={registryForm.url}
+                onChange={(e) =>
+                  setRegistryForm({ ...registryForm, url: e.target.value })
+                }
+                onBlur={(e) => {
+                  if (e.target.value && e.target.value !== registryForm.url) {
+                    scrapeUrl(e.target.value);
+                  }
+                }}
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 dark:text-gray-900"
+                placeholder="https://amazon.com/product..."
+              />
+              <button
+                type="button"
+                onClick={() => registryForm.url && scrapeUrl(registryForm.url)}
+                disabled={!registryForm.url || scrapingUrl}
+                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 min-h-[42px]"
+              >
+                {scrapingUrl ? (
+                  <FaSpinner className="animate-spin" />
+                ) : (
+                  <FaMagic />
+                )}
+                <span className="hidden sm:inline">
+                  {scrapingUrl ? "Scraping..." : "Scrape"}
+                </span>
+                <span className="sm:hidden">
+                  {scrapingUrl ? "..." : "Go"}
+                </span>
+              </button>
+            </div>
+          </div>
+
+          {/* Scraped Data Preview */}
+          {(registryForm.title ||
+            registryForm.description ||
+            registryForm.imageUrl) && (
+            <div className="bg-gray-50 rounded-lg p-4 border">
+              <h3 className="text-sm font-medium text-gray-700 mb-3">
+                Scraped Data Preview
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {registryForm.imageUrl && (
+                  <div className="md:col-span-2">
+                    <img
+                      src={registryForm.imageUrl}
+                      alt="Product preview"
+                      className="w-32 h-32 object-cover rounded-lg border"
+                    />
+                  </div>
+                )}
+                {registryForm.title && (
+                  <div>
+                    <span className="text-xs text-gray-500">Title:</span>
+                    <p className="text-sm font-medium">{registryForm.title}</p>
+                  </div>
+                )}
+                {registryForm.siteName && (
+                  <div>
+                    <span className="text-xs text-gray-500">Site:</span>
+                    <p className="text-sm">{registryForm.siteName}</p>
+                  </div>
+                )}
+                {registryForm.price && (
+                  <div>
+                    <span className="text-xs text-gray-500">Price:</span>
+                    <p className="text-sm font-medium text-green-600">
+                      {formatPrice(registryForm.price)}
+                    </p>
+                  </div>
+                )}
+                {registryForm.availability && (
+                  <div>
+                    <span className="text-xs text-gray-500">Availability:</span>
+                    <p className="text-sm">{registryForm.availability}</p>
+                  </div>
+                )}
+              </div>
+              {registryForm.description && (
+                <div className="mt-2">
+                  <span className="text-xs text-gray-500">Description:</span>
+                  <p className="text-sm text-gray-700 line-clamp-3">
+                    {registryForm.description}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="sm:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Name <span className="text-red-500">*</span>
               </label>
@@ -254,18 +402,17 @@ export default function RegistryManager() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Price <span className="text-red-500">*</span>
+                Price
               </label>
               <input
                 type="number"
-                required
                 min="0"
                 step="0.01"
-                value={registryForm.price}
+                value={registryForm.price || ""}
                 onChange={(e) =>
                   setRegistryForm({
                     ...registryForm,
-                    price: parseFloat(e.target.value) || 0,
+                    price: parseFloat(e.target.value) || undefined,
                   })
                 }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 dark:text-gray-900"
@@ -292,18 +439,36 @@ export default function RegistryManager() {
               />
             </div>
 
-            <div>
+            <div className="sm:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                URL
+                Image URL
               </label>
               <input
                 type="url"
-                value={registryForm.url}
+                value={registryForm.imageUrl || ""}
                 onChange={(e) =>
-                  setRegistryForm({ ...registryForm, url: e.target.value })
+                  setRegistryForm({ ...registryForm, imageUrl: e.target.value })
                 }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 dark:text-gray-900"
                 placeholder="https://..."
+              />
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Description
+              </label>
+              <textarea
+                value={registryForm.description || ""}
+                onChange={(e) =>
+                  setRegistryForm({
+                    ...registryForm,
+                    description: e.target.value,
+                  })
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 dark:text-gray-900"
+                placeholder="Product description"
+                rows={3}
               />
             </div>
           </div>
@@ -327,7 +492,7 @@ export default function RegistryManager() {
             </label>
           </div>
 
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             {isEditing && (
               <button
                 type="button"
@@ -335,15 +500,21 @@ export default function RegistryManager() {
                   setIsEditing(false);
                   setRegistryForm({
                     name: "",
-                    price: 0,
                     quantity: 1,
                     category: "General",
                     order: 0,
                     url: "",
+                    imageUrl: "",
+                    title: "",
+                    description: "",
+                    siteName: "",
+                    price: undefined,
+                    availability: "",
                     purchased: false,
+                    purchasedQuantity: 0,
                   });
                 }}
-                className="flex-1 bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600 hover:cursor-pointer"
+                className="flex-1 bg-gray-500 text-white py-3 px-4 rounded-md hover:bg-gray-600 hover:cursor-pointer min-h-[48px]"
               >
                 Cancel
               </button>
@@ -351,7 +522,7 @@ export default function RegistryManager() {
             <button
               type="submit"
               disabled={loading}
-              className={`flex-1 bg-pink-500 text-white py-2 px-4 rounded-md hover:bg-pink-600 disabled:opacity-50${
+              className={`flex-1 bg-pink-500 text-white py-3 px-4 rounded-md hover:bg-pink-600 disabled:opacity-50 min-h-[48px]${
                 !loading ? " hover:cursor-pointer" : ""
               }`}
             >
@@ -369,11 +540,94 @@ export default function RegistryManager() {
 
       {/* Registry Items List */}
       <div className="bg-white rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold p-6 border-b dark:text-gray-900">
+        <h2 className="text-lg sm:text-xl font-semibold p-4 sm:p-6 border-b dark:text-gray-900">
           Current Registry Items
         </h2>
 
-        <div className="overflow-x-auto">
+        {/* Mobile Card Layout */}
+        <div className="block sm:hidden">
+          <div className="divide-y divide-gray-200">
+            {sortedItems.map((item) => (
+              <div
+                key={item.id}
+                draggable
+                onDragStart={(e) => handleDragStart(e, item)}
+                onDragOver={handleDragOver}
+                onDrop={(e) => handleDrop(e, item)}
+                onDragEnd={handleDragEnd}
+                className={`p-4 hover:cursor-grab ${
+                  draggedItem?.id === item.id ? "opacity-50" : ""
+                }`}
+              >
+                <div className="flex justify-between items-start mb-3">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-medium text-gray-900 truncate">
+                      {item.url ? (
+                        <Link href={item.url} target="_blank" className="hover:text-blue-600">
+                          {item.name}
+                        </Link>
+                      ) : (
+                        item.name
+                      )}
+                    </h3>
+                    <p className="text-xs text-gray-500 mt-1">{item.category}</p>
+                  </div>
+                  <div className="flex gap-2 ml-2">
+                    <button
+                      onClick={() => handleEditItem(item)}
+                      className="text-blue-600 hover:text-blue-900 p-1"
+                    >
+                      <FaEdit className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteItem(item.id)}
+                      className="text-red-600 hover:text-red-900 p-1"
+                    >
+                      <FaTrash className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <span className="text-gray-500">Qty:</span>
+                    <span className="ml-1 font-medium">{item.quantity}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-500">Price:</span>
+                    <span className="ml-1 font-medium">
+                      {item.price ? formatPrice(item.price) : "—"}
+                    </span>
+                  </div>
+                </div>
+                
+                <div className="mt-2 flex items-center justify-between">
+                  <span
+                    className={`px-2 py-1 text-xs font-medium rounded-full ${
+                      item.purchased
+                        ? "bg-green-100 text-green-700"
+                        : "bg-gray-100 text-gray-700"
+                    }`}
+                  >
+                    {item.purchased ? "Purchased" : "Available"}
+                  </span>
+                  {item.url && (
+                    <Link
+                      href={item.url}
+                      target="_blank"
+                      className="text-blue-600 hover:text-blue-800 text-xs underline truncate max-w-[120px]"
+                    >
+                      View Product
+                    </Link>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Desktop Table Layout */}
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr>
@@ -384,10 +638,10 @@ export default function RegistryManager() {
                   Category
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Price
+                  Quantity
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Quantity
+                  Price
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
@@ -430,10 +684,10 @@ export default function RegistryManager() {
                     {item.category}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {formatPrice(item.price)}
+                    {item.quantity}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {item.quantity}
+                    {item.price ? formatPrice(item.price) : "—"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
@@ -448,9 +702,9 @@ export default function RegistryManager() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {item.url ? (
-                      <Link 
-                        href={item.url} 
-                        target="_blank" 
+                      <Link
+                        href={item.url}
+                        target="_blank"
                         className="text-blue-600 hover:text-blue-800 underline truncate block max-w-xs"
                       >
                         {item.url}

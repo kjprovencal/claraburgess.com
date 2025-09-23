@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import ProtectedRoute from "@components/ProtectedRoute";
-import LinkPreview from "@components/LinkPreview";
 import { RegistryItem } from "@types";
-import { formatPrice } from "@utils/priceFormat";
 import { FaTimes, FaSearch } from "react-icons/fa";
+import LinkPreview from "@components/LinkPreview";
+import { formatPrice } from "@utils/priceFormat";
 
 type PurchaseModalData = {
   hasPurchased: boolean;
@@ -15,6 +15,7 @@ type PurchaseModalData = {
   orderNumber: string;
   thankYouAddress: string;
   similarItemDescription: string;
+  purchasedQuantity: number;
 };
 
 const categories = [
@@ -57,10 +58,14 @@ function RegistryContent() {
       orderNumber: "",
       thankYouAddress: "",
       similarItemDescription: "",
+      purchasedQuantity: 1,
     }
   );
   const [modalStep, setModalStep] = useState<
-    "purchase-question" | "additional-info"
+    | "purchase-question"
+    | "quantity-selection"
+    | "additional-info"
+    | "already-purchased"
   >("purchase-question");
 
   const fetchRegistryItems = async () => {
@@ -76,21 +81,6 @@ function RegistryContent() {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const togglePurchased = async (id: string) => {
-    try {
-      const response = await fetch(`/api/registry/${id}/toggle-purchased`, {
-        method: "PUT",
-      });
-      if (!response.ok) {
-        throw new Error("Failed to update item");
-      }
-      // Refresh the data
-      await fetchRegistryItems();
-    } catch (err) {
-      console.error("Error toggling purchased status:", err);
     }
   };
 
@@ -112,6 +102,7 @@ function RegistryContent() {
       orderNumber: "",
       thankYouAddress: "",
       similarItemDescription: "",
+      purchasedQuantity: 1,
     });
   };
 
@@ -125,12 +116,33 @@ function RegistryContent() {
     }));
 
     if (giftType !== "none") {
-      setModalStep("additional-info");
+      // If item is already fully purchased, show already-purchased message
+      if (selectedItem && getRemainingQuantity(selectedItem) === 0) {
+        setModalStep("already-purchased");
+      }
+      // If item has quantity > 1 and still needs items, show quantity selection first
+      else if (
+        selectedItem &&
+        selectedItem.quantity > 1 &&
+        getRemainingQuantity(selectedItem) > 0
+      ) {
+        setModalStep("quantity-selection");
+      } else {
+        setModalStep("additional-info");
+      }
     } else {
       // If not gifting, just close modal
       setShowModal(false);
       setSelectedItem(null);
     }
+  };
+
+  const handleQuantitySelection = (quantity: number) => {
+    setPurchaseModalData((prev) => ({
+      ...prev,
+      purchasedQuantity: quantity,
+    }));
+    setModalStep("additional-info");
   };
 
   const handleSubmitPurchaseInfo = async () => {
@@ -142,9 +154,27 @@ function RegistryContent() {
         ...purchaseModalData,
       });
 
-      // Mark item as purchased if it (or a similar item) was gifted
+      // Mark item as purchased with quantity if it (or a similar item) was gifted
       if (selectedItem && purchaseModalData.giftType !== "none") {
-        await togglePurchased(selectedItem.id);
+        const response = await fetch(
+          `/api/registry/${selectedItem.id}/purchase`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              purchasedQuantity: purchaseModalData.purchasedQuantity,
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to update item purchase status");
+        }
+
+        // Refresh the data
+        await fetchRegistryItems();
       }
 
       // Close modal
@@ -198,6 +228,14 @@ function RegistryContent() {
   // Sort items by order (ascending)
   const sortItems = (items: RegistryItem[]): RegistryItem[] => {
     return [...items].sort((a, b) => a.order - b.order);
+  };
+
+  const getRemainingQuantity = (item: RegistryItem): number => {
+    return Math.max(0, item.quantity - item.purchasedQuantity);
+  };
+
+  const isOverPurchased = (item: RegistryItem): boolean => {
+    return item.purchasedQuantity > item.quantity;
   };
 
   const filteredItems = sortItems(searchAndFilterItems(registryItems));
@@ -361,7 +399,7 @@ function RegistryContent() {
               {filteredItems.map((item) => (
                 <div
                   key={item.id}
-                  className={`border rounded-lg transition-all hover:shadow-lg ${
+                  className={`border rounded-lg transition-all hover:shadow-lg flex flex-col ${
                     item.purchased
                       ? "bg-gray-50 border-gray-200 opacity-75"
                       : "bg-white border-gray-200"
@@ -369,88 +407,134 @@ function RegistryContent() {
                 >
                   {/* Show link preview if item has URL */}
                   {item.url ? (
-                    <div className="p-4">
-                      <LinkPreview url={item.url} className="mb-4" />
+                    <div className="p-4 flex flex-col h-full">
+                      <LinkPreview {...item} className="mb-4" />
 
                       {/* Item details below preview */}
-                      <div className="space-y-2">
+                      <div className="space-y-2 flex-1">
                         <div className="flex items-center justify-between">
                           <h3 className="text-sm font-semibold text-gray-800">
                             {item.name}
                           </h3>
-                          <span className="text-sm font-bold text-pink-600">
-                            {formatPrice(item.price)}
-                          </span>
                         </div>
 
                         <div className="flex items-center justify-between text-xs text-gray-500">
                           <span>{item.category}</span>
-                          {item.quantity > 1 && (
-                            <span>Qty: {item.quantity}</span>
+                          {item.quantity > 1 && !item.purchased && (
+                            <span>
+                              Qty: {item.quantity}{" "}
+                              {item.purchasedQuantity > 0
+                                ? `(${item.purchasedQuantity} purchased${
+                                    isOverPurchased(item)
+                                      ? " - over purchased!"
+                                      : ""
+                                  })`
+                                : ""}
+                            </span>
+                          )}
+                          {/* Purchased Badge */}
+                          {item.purchased && (
+                            <div className="text-center mt-2">
+                              <span
+                                className={`px-2 py-1 rounded-full text-xs font-medium text-white ${
+                                  isOverPurchased(item)
+                                    ? "bg-orange-500"
+                                    : item.purchasedQuantity === item.quantity
+                                      ? "bg-green-500"
+                                      : "bg-green-500"
+                                }`}
+                              >
+                                {isOverPurchased(item)
+                                  ? `Over purchased! (${item.purchasedQuantity}/${item.quantity})`
+                                  : item.purchasedQuantity === item.quantity
+                                    ? "Purchased"
+                                    : `${item.purchasedQuantity} of ${item.quantity} purchased`}
+                              </span>
+                            </div>
                           )}
                         </div>
+                      </div>
 
-                        {/* Action button */}
+                      {/* Action button */}
+                      <div className="mt-auto pt-3">
                         <button
                           onClick={() => handleViewItem(item)}
-                          className="w-full mt-3 bg-pink-500 text-white py-2 px-4 rounded-lg hover:bg-pink-600 transition-colors text-sm font-medium"
+                          className="w-full bg-pink-500 text-white py-2 px-4 rounded-lg hover:bg-pink-600 transition-colors text-sm font-medium hover:cursor-pointer"
                         >
                           {item.purchased
-                            ? "View Details"
+                            ? getRemainingQuantity(item) > 0
+                              ? "Purchase More"
+                              : "View Details"
                             : "Purchase This Item"}
                         </button>
-
-                        {/* Purchased Badge */}
-                        {item.purchased && (
-                          <div className="text-center">
-                            <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-500 text-white">
-                              Purchased
-                            </span>
-                          </div>
-                        )}
                       </div>
                     </div>
                   ) : (
                     /* Simplified layout for items without URLs */
-                    <div
-                      onClick={() => handleViewItem(item)}
-                      className="p-4 md:p-6 cursor-pointer"
-                    >
-                      <div className="space-y-3">
-                        {/* Title and Price */}
+                    <div className="p-4 md:p-6 flex flex-col h-full">
+                      <div className="space-y-3 flex-1">
+                        {/* Title */}
                         <div className="flex items-start justify-between gap-2">
                           <h3 className="text-lg font-semibold text-gray-800 flex-1">
                             {item.name}
                           </h3>
-                          <span className="text-lg font-bold text-pink-600">
-                            {formatPrice(item.price)}
-                          </span>
                         </div>
 
                         {/* Category and Quantity */}
                         <div className="flex items-center justify-between text-sm text-gray-500">
                           <span>{item.category}</span>
                           {item.quantity > 1 && (
-                            <span>Qty: {item.quantity}</span>
+                            <span>
+                              Qty: {item.quantity}{" "}
+                              {item.purchasedQuantity > 0
+                                ? `(${item.purchasedQuantity} purchased${
+                                    isOverPurchased(item)
+                                      ? " - over purchased!"
+                                      : ""
+                                  })`
+                                : ""}
+                            </span>
                           )}
                         </div>
 
-                        {/* Action button */}
+                        {/* Price */}
+                        {item.price && (
+                          <div className="text-lg font-bold text-pink-600">
+                            {formatPrice(item.price)}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Action button - always at bottom */}
+                      <div className="mt-auto pt-3">
                         <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleViewItem(item);
-                          }}
-                          className="w-full bg-pink-500 text-white py-2 px-4 rounded-lg hover:bg-pink-600 transition-colors text-sm font-medium"
+                          onClick={() => handleViewItem(item)}
+                          className="w-full bg-pink-500 text-white py-2 px-4 rounded-lg hover:bg-pink-600 transition-colors text-sm font-medium hover:cursor-pointer"
                         >
-                          {item.purchased ? 'View Details' : 'Purchase This Item'}
+                          {item.purchased
+                            ? getRemainingQuantity(item) > 0
+                              ? "Purchase More"
+                              : "View Details"
+                            : "Purchase This Item"}
                         </button>
 
                         {/* Purchased Badge */}
                         {item.purchased && (
-                          <div className="text-center">
-                            <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-500 text-white">
-                              Purchased
+                          <div className="text-center mt-2">
+                            <span
+                              className={`px-2 py-1 rounded-full text-xs font-medium text-white ${
+                                isOverPurchased(item)
+                                  ? "bg-orange-500"
+                                  : item.purchasedQuantity === item.quantity
+                                    ? "bg-green-500"
+                                    : "bg-green-500"
+                              }`}
+                            >
+                              {isOverPurchased(item)
+                                ? `Over purchased! (${item.purchasedQuantity}/${item.quantity})`
+                                : item.purchasedQuantity === item.quantity
+                                  ? "Purchased"
+                                  : `${item.purchasedQuantity} of ${item.quantity} purchased`}
                             </span>
                           </div>
                         )}
@@ -534,6 +618,108 @@ function RegistryContent() {
                         Just viewing, not gifting
                       </div>
                       <div className="text-sm opacity-90">Close this modal</div>
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {modalStep === "quantity-selection" && selectedItem && (
+                <div>
+                  <p className="text-gray-600 mb-6">
+                    How many of this item did you purchase?
+                    {getRemainingQuantity(selectedItem) > 0 && (
+                      <span className="block text-sm mt-1">
+                        (Still needed: {getRemainingQuantity(selectedItem)})
+                      </span>
+                    )}
+                    {isOverPurchased(selectedItem) && (
+                      <span className="block text-sm mt-1 text-orange-600">
+                        (Already over-purchased by{" "}
+                        {selectedItem.purchasedQuantity - selectedItem.quantity}
+                        )
+                      </span>
+                    )}
+                  </p>
+                  <div className="space-y-3">
+                    {Array.from(
+                      {
+                        length: Math.max(1, getRemainingQuantity(selectedItem)),
+                      },
+                      (_, i) => i + 1
+                    ).map((quantity) => (
+                      <button
+                        key={quantity}
+                        onClick={() => handleQuantitySelection(quantity)}
+                        className={`w-full py-3 px-4 rounded-lg transition-colors text-left ${
+                          purchaseModalData.purchasedQuantity === quantity
+                            ? "bg-pink-500 text-white"
+                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        }`}
+                      >
+                        <div className="font-medium">
+                          {quantity} {quantity === 1 ? "item" : "items"}
+                        </div>
+                        <div className="text-sm opacity-90">
+                          {quantity === getRemainingQuantity(selectedItem)
+                            ? "Complete the request"
+                            : `${getRemainingQuantity(selectedItem) - quantity} still needed`}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex gap-3 mt-6">
+                    <button
+                      onClick={() => setModalStep("purchase-question")}
+                      className="flex-1 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors"
+                    >
+                      Back
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {modalStep === "already-purchased" && selectedItem && (
+                <div>
+                  <div className="text-center mb-6">
+                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg
+                        className="w-8 h-8 text-green-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                      This item is already fully purchased!
+                    </h3>
+                    <p className="text-gray-600">
+                      {selectedItem.purchasedQuantity === selectedItem.quantity
+                        ? `All ${selectedItem.quantity} requested items have been purchased.`
+                        : `This item has been over-purchased with ${selectedItem.purchasedQuantity} items (${selectedItem.quantity} were requested).`}
+                    </p>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => setModalStep("purchase-question")}
+                      className="flex-1 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors"
+                    >
+                      Back
+                    </button>
+                    <button
+                      onClick={() => {
+                        setModalStep("additional-info");
+                      }}
+                      className="flex-1 bg-pink-500 text-white py-2 px-4 rounded-lg hover:bg-pink-600 transition-colors"
+                    >
+                      Continue
                     </button>
                   </div>
                 </div>
