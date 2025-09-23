@@ -75,23 +75,29 @@ export class RegistryService {
     await this.registryItemsRepository.remove(item);
   }
 
-  async purchase(id: string, additionalQuantity: number): Promise<RegistryItem> {
+  async purchase(
+    id: string,
+    additionalQuantity: number,
+  ): Promise<RegistryItem> {
     const item = await this.getItemById(id);
-    
+
     // Validate additional quantity
     if (additionalQuantity < 1) {
       throw new Error('Additional quantity must be at least 1');
     }
-    
+
     // Add to existing purchased quantity
     item.purchasedQuantity += additionalQuantity;
     item.purchased = item.purchasedQuantity > 0;
-    
+
     return this.registryItemsRepository.save(item);
   }
 
-  async getLinkPreview(url: string): Promise<LinkPreviewDto> {
-    return this.linkPreviewService.generatePreview(url);
+  async getLinkPreview(
+    url: string,
+    fallbackData?: { name?: string; imageUrl?: string; description?: string },
+  ): Promise<LinkPreviewDto> {
+    return this.linkPreviewService.generatePreview(url, fallbackData);
   }
 
   private async populateCachedPreviewData(item: RegistryItem): Promise<void> {

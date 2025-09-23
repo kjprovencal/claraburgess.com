@@ -21,7 +21,10 @@ export class LinkPreviewService {
     private linkPreviewCacheRepository: Repository<LinkPreviewCache>,
   ) {}
 
-  async generatePreview(url: string): Promise<LinkPreviewDto> {
+  async generatePreview(
+    url: string,
+    fallbackData?: { name?: string; imageUrl?: string; description?: string },
+  ): Promise<LinkPreviewDto> {
     // First, check if we have a valid cached preview
     const cachedPreview = await this.getCachedPreview(url);
     if (cachedPreview) {
@@ -49,6 +52,19 @@ export class LinkPreviewService {
         });
         return fallbackPreview;
       }
+    }
+
+    // If all scraping methods failed, use manual fallback data
+    if (preview.title === 'Preview unavailable' && fallbackData) {
+      this.logger.log(`Using manual fallback data for ${url}`);
+      const manualPreview = this.createManualPreview(url, fallbackData);
+
+      // Cache the manual preview
+      this.cachePreview(url, manualPreview).catch((error) => {
+        this.logger.warn(`Failed to cache manual preview for ${url}:`, error);
+      });
+
+      return manualPreview;
     }
 
     // Cache the preview (don't await to avoid blocking the response)
@@ -249,7 +265,14 @@ export class LinkPreviewService {
         if (
           html.includes('Robot or human') ||
           html.includes('Access Denied') ||
-          html.includes('Please verify you are human')
+          html.includes('Please verify you are human') ||
+          html.includes('captcha') ||
+          html.includes('Cloudflare') ||
+          html.includes('security check') ||
+          html.includes('verify you are human') ||
+          html.includes('bot detection') ||
+          html.includes('unusual traffic') ||
+          html.includes('automated requests')
         ) {
           this.logger.warn(
             `Bot detection page received for ${url} on attempt ${attempt}`,
@@ -261,7 +284,25 @@ export class LinkPreviewService {
           throw new Error('Bot detection page received');
         }
 
+        // Additional check: if the title is "Robot or human?" or similar bot detection titles
         const $ = cheerio.load(html);
+        const pageTitle = $('title').text().toLowerCase();
+        if (
+          pageTitle.includes('robot or human') ||
+          pageTitle.includes('access denied') ||
+          pageTitle.includes('security check') ||
+          pageTitle.includes('captcha') ||
+          pageTitle.includes('bot detection')
+        ) {
+          this.logger.warn(
+            `Bot detection title detected for ${url} on attempt ${attempt}: "${pageTitle}"`,
+          );
+          if (attempt < maxRetries) {
+            await this.randomDelay(5000, 10000);
+            continue;
+          }
+          throw new Error(`Bot detection title: ${pageTitle}`);
+        }
 
         // Extract title - prioritize HTML scraping for Amazon
         const title = this.extractProductTitle($, url);
@@ -280,8 +321,18 @@ export class LinkPreviewService {
         // Extract availability
         const availability = this.extractAvailability($);
 
+        const extractedTitle = title || this.extractTitle($);
+
+        // Final check: ensure we don't return bot detection titles
+        if (extractedTitle && this.isBotDetectionTitle(extractedTitle)) {
+          this.logger.warn(
+            `Bot detection title in final result for ${url}: "${extractedTitle}"`,
+          );
+          throw new Error(`Bot detection title in result: ${extractedTitle}`);
+        }
+
         const result = {
-          title: title || this.extractTitle($),
+          title: extractedTitle,
           imageUrl: this.resolveImageUrl(imageUrl, url),
           siteName,
           url,
@@ -530,6 +581,45 @@ export class LinkPreviewService {
     };
   }
 
+  private createManualPreview(
+    url: string,
+    fallbackData: { name?: string; imageUrl?: string; description?: string },
+  ): LinkPreviewDto {
+    try {
+      const urlObj = new URL(url);
+      const hostname = urlObj.hostname.toLowerCase();
+
+      // Extract site name from URL
+      let siteName = '';
+      if (hostname.includes('amazon.com')) siteName = 'Amazon';
+      else if (hostname.includes('walmart.com')) siteName = 'Walmart';
+      else if (hostname.includes('target.com')) siteName = 'Target';
+      else if (hostname.includes('buybuybaby.com')) siteName = 'BuyBuy Baby';
+      else if (hostname.includes('babylist.com')) siteName = 'Babylist';
+      else {
+        siteName = hostname.replace('www.', '').split('.')[0];
+        siteName = siteName.charAt(0).toUpperCase() + siteName.slice(1);
+      }
+
+      return {
+        url,
+        title: fallbackData.name || 'Product from ' + siteName,
+        imageUrl: fallbackData.imageUrl,
+        siteName,
+        description:
+          fallbackData.description || `Product available at ${siteName}`,
+      };
+    } catch (error) {
+      return {
+        url,
+        title: fallbackData.name || 'Preview unavailable',
+        imageUrl: fallbackData.imageUrl,
+        description:
+          fallbackData.description || 'Unable to extract information from URL',
+      };
+    }
+  }
+
   private extractFromUrlPattern(url: string): LinkPreviewDto {
     try {
       const urlObj = new URL(url);
@@ -597,6 +687,15 @@ export class LinkPreviewService {
     $: cheerio.Root,
     baseUrl: string,
   ): string | undefined {
+    // First check if we're on a bot detection page
+    const pageTitle = $('title').text().trim();
+    if (this.isBotDetectionTitle(pageTitle)) {
+      this.logger.warn(
+        `Bot detection title detected in extractProductTitle: "${pageTitle}"`,
+      );
+      return undefined; // Return undefined to trigger fallback
+    }
+
     // Check if this is Amazon first - they have specific title structure
     const isAmazon = baseUrl.includes('amazon.');
 
@@ -627,7 +726,7 @@ export class LinkPreviewService {
     // Look for product-specific titles first
     for (const selector of productTitleSelectors) {
       const title = $(selector).first().text().trim();
-      if (title && title.length > 0) {
+      if (title && title.length > 0 && !this.isBotDetectionTitle(title)) {
         return title;
       }
     }
@@ -635,12 +734,36 @@ export class LinkPreviewService {
     // Fallback to Open Graph meta tags
     const ogTitle = this.extractMetaContent($, ['og:title', 'twitter:title']);
 
-    if (ogTitle && ogTitle.length > 0) {
+    if (ogTitle && ogTitle.length > 0 && !this.isBotDetectionTitle(ogTitle)) {
       return ogTitle;
     }
 
-    // Last resort: page title
-    return this.extractTitle($);
+    // Last resort: page title (but check for bot detection)
+    const finalTitle = this.extractTitle($);
+    if (finalTitle && !this.isBotDetectionTitle(finalTitle)) {
+      return finalTitle;
+    }
+
+    return undefined;
+  }
+
+  private isBotDetectionTitle(title: string): boolean {
+    if (!title) return false;
+
+    const lowerTitle = title.toLowerCase();
+    return (
+      lowerTitle.includes('robot or human') ||
+      lowerTitle.includes('access denied') ||
+      lowerTitle.includes('security check') ||
+      lowerTitle.includes('captcha') ||
+      lowerTitle.includes('bot detection') ||
+      lowerTitle.includes('verify you are human') ||
+      lowerTitle.includes('unusual traffic') ||
+      lowerTitle.includes('automated requests') ||
+      lowerTitle.includes('cloudflare') ||
+      lowerTitle.includes('please wait') ||
+      lowerTitle.includes('checking your browser')
+    );
   }
 
   private extractAmazonTitle($: cheerio.Root): string | undefined {

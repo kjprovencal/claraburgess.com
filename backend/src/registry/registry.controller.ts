@@ -68,13 +68,27 @@ export class RegistryController {
   @Put(':id/purchase')
   async purchase(
     @Param('id') id: string,
-    @Body() body: { purchasedQuantity: number }
+    @Body() body: { purchasedQuantity: number },
   ) {
     return this.registryService.purchase(id, body.purchasedQuantity);
   }
 
   @Get('preview/link')
-  async getLinkPreview(@Query('url') url: string) {
-    return this.registryService.getLinkPreview(url);
+  async getLinkPreview(
+    @Query('url') url: string,
+    @Query('name') name?: string,
+    @Query('imageUrl') imageUrl?: string,
+    @Query('description') description?: string,
+  ) {
+    const fallbackData =
+      name || imageUrl || description
+        ? {
+            name,
+            imageUrl,
+            description,
+          }
+        : undefined;
+
+    return this.registryService.getLinkPreview(url, fallbackData);
   }
 }

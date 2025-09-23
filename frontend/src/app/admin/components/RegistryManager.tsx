@@ -62,7 +62,12 @@ export default function RegistryManager() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ url }),
+        body: JSON.stringify({
+          url,
+          name: registryForm.name,
+          imageUrl: registryForm.imageUrl,
+          description: registryForm.description,
+        }),
       });
 
       if (!response.ok) {
@@ -301,9 +306,7 @@ export default function RegistryManager() {
                 <span className="hidden sm:inline">
                   {scrapingUrl ? "Scraping..." : "Scrape"}
                 </span>
-                <span className="sm:hidden">
-                  {scrapingUrl ? "..." : "Go"}
-                </span>
+                <span className="sm:hidden">{scrapingUrl ? "..." : "Go"}</span>
               </button>
             </div>
           </div>
@@ -563,14 +566,20 @@ export default function RegistryManager() {
                   <div className="flex-1 min-w-0">
                     <h3 className="text-sm font-medium text-gray-900 truncate">
                       {item.url ? (
-                        <Link href={item.url} target="_blank" className="hover:text-blue-600">
+                        <Link
+                          href={item.url}
+                          target="_blank"
+                          className="hover:text-blue-600"
+                        >
                           {item.name}
                         </Link>
                       ) : (
                         item.name
                       )}
                     </h3>
-                    <p className="text-xs text-gray-500 mt-1">{item.category}</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {item.category}
+                    </p>
                   </div>
                   <div className="flex gap-2 ml-2">
                     <button
@@ -587,7 +596,7 @@ export default function RegistryManager() {
                     </button>
                   </div>
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div>
                     <span className="text-gray-500">Qty:</span>
@@ -600,7 +609,7 @@ export default function RegistryManager() {
                     </span>
                   </div>
                 </div>
-                
+
                 <div className="mt-2 flex items-center justify-between">
                   <span
                     className={`px-2 py-1 text-xs font-medium rounded-full ${

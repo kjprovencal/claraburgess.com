@@ -4,7 +4,7 @@ const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3001";
 
 export async function POST(request: NextRequest) {
   try {
-    const { url } = await request.json();
+    const { url, name, imageUrl, description } = await request.json();
 
     if (!url) {
       return NextResponse.json({ error: "URL is required" }, { status: 400 });
@@ -20,9 +20,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Build query parameters for fallback data
+    const queryParams = new URLSearchParams({
+      url: url,
+    });
+
+    if (name) queryParams.append("name", name);
+    if (imageUrl) queryParams.append("imageUrl", imageUrl);
+    if (description) queryParams.append("description", description);
+
     // Call backend API to generate preview
     const response = await fetch(
-      `${BACKEND_URL}/api/registry/preview/link?url=${encodeURIComponent(url)}`,
+      `${BACKEND_URL}/api/registry/preview/link?${queryParams.toString()}`,
       {
         method: "GET",
         headers: {
