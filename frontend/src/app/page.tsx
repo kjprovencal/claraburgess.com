@@ -119,7 +119,7 @@ export default function Home() {
                     <PiTreeStructureLight className="w-8 h-8 text-white" />
                   </div>
                   <h3 className="text-xl font-semibold text-purple-800 mb-2">
-                    About Clara Burgess
+                    About Clara
                   </h3>
                   <p className="text-purple-600">
                     Learn more about Clara&apos;s namesake and the Burgess

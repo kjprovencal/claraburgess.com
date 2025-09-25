@@ -20,6 +20,46 @@ const categories = [
   "General",
 ];
 
+// Helper function to safely update form fields with scraped data
+const updateFieldIfValid = (
+  scrapedValue: string | undefined,
+  currentValue: string
+): string => {
+  return scrapedValue && scrapedValue.trim() ? scrapedValue : currentValue;
+};
+
+// Helper function for price field (number type)
+const updatePriceIfValid = (
+  scrapedValue: number | undefined,
+  currentValue: number | undefined
+): number | undefined => {
+  return scrapedValue !== undefined && scrapedValue !== null
+    ? scrapedValue
+    : currentValue;
+};
+
+// Comprehensive helper function for updating form fields with scraped data
+const updateFormWithScrapedData = (
+  scrapedData: any,
+  prevForm: RegistryForm,
+  url: string
+) => ({
+  ...prevForm,
+  url: url,
+  name: updateFieldIfValid(scrapedData.name, prevForm.name || ""),
+  description: updateFieldIfValid(
+    scrapedData.description,
+    prevForm.description || ""
+  ),
+  imageUrl: updateFieldIfValid(scrapedData.imageUrl, prevForm.imageUrl || ""),
+  siteName: updateFieldIfValid(scrapedData.siteName, prevForm.siteName || ""),
+  price: updatePriceIfValid(scrapedData.price, prevForm.price),
+  availability: updateFieldIfValid(
+    scrapedData.availability,
+    prevForm.availability || ""
+  ),
+});
+
 export default function RegistryManager() {
   const [registryForm, setRegistryForm] = useState<RegistryForm>({
     name: "",
@@ -78,16 +118,9 @@ export default function RegistryManager() {
       const scrapedData = await response.json();
 
       // Update form with scraped data, preserving existing values where appropriate
-      setRegistryForm((prev) => ({
-        ...prev,
-        url: url,
-        name: scrapedData.name || prev.name,
-        description: scrapedData.description || prev.description,
-        imageUrl: scrapedData.imageUrl || prev.imageUrl,
-        siteName: scrapedData.siteName || prev.siteName,
-        price: scrapedData.price || prev.price,
-        availability: scrapedData.availability || prev.availability,
-      }));
+      setRegistryForm((prev) =>
+        updateFormWithScrapedData(scrapedData, prev, url)
+      );
     } catch (error) {
       console.error("Error scraping URL:", error);
       alert(error instanceof Error ? error.message : "Failed to scrape URL");
