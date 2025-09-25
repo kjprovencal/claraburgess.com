@@ -35,7 +35,7 @@ export class RegistryItem {
   @Column({ nullable: true })
   url?: string;
 
-  // Cached link preview data
+  // Stored link preview data (scraped when item was added)
   @Column({ nullable: true })
   title?: string;
 
@@ -50,9 +50,6 @@ export class RegistryItem {
 
   @Column({ nullable: true })
   availability?: string;
-
-  @Column({ nullable: true })
-  previewCacheExpiry?: Date;
 
   @CreateDateColumn()
   createdAt: Date;
