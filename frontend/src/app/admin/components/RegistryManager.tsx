@@ -40,10 +40,10 @@ const updatePriceIfValid = (
 
 // Comprehensive helper function for updating form fields with scraped data
 const updateFormWithScrapedData = (
-  scrapedData: any,
+  scrapedData: RegistryItem,
   prevForm: RegistryForm,
   url: string
-) => ({
+): RegistryForm => ({
   ...prevForm,
   url: url,
   name: updateFieldIfValid(scrapedData.name, prevForm.name || ""),
