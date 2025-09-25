@@ -280,16 +280,16 @@ function RegistryContent() {
     <>
       <div className="mb-16">
         {/* Main Card Surface */}
-        <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 border border-gray-100 relative overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 md:p-12 border border-gray-100 dark:border-gray-700 relative overflow-hidden">
           {/* Subtle Background Pattern - Full Height */}
           <div className="absolute inset-0 bg-gradient-to-br from-pink-50/30 via-transparent to-blue-50/30 pointer-events-none"></div>
 
           <div className="relative">
             <div className="text-center mb-8">
-              <h1 className="text-4xl font-bold mb-4 dark:text-gray-800">
+              <h1 className="text-4xl font-bold mb-4 dark:text-gray-200">
                 Clara&apos;s Registry
               </h1>
-              <p className="text-lg text-gray-600 mb-6">
+              <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
                 Thank you for helping us prepare for our little one&apos;s
                 arrival!
               </p>
@@ -386,7 +386,7 @@ function RegistryContent() {
                       onChange={(e) => setShowPurchased(e.target.checked)}
                       className="rounded"
                     />
-                    <span className="text-sm dark:text-gray-800">
+                    <span className="text-sm dark:text-gray-200">
                       Show purchased items
                     </span>
                   </label>

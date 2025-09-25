@@ -111,16 +111,6 @@ export default function RsvpManager() {
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Baby Shower RSVPs</h2>
-        <button
-          onClick={fetchRsvps}
-          className="px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-colors min-h-[44px]"
-        >
-          Refresh
-        </button>
-      </div>
-
       {/* Stats Cards */}
       {stats && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">

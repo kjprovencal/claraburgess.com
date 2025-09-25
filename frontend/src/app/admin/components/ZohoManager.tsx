@@ -171,16 +171,6 @@ export default function ZohoManager() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900">
-          Zoho OAuth Management
-        </h2>
-        <p className="mt-1 text-sm text-gray-600">
-          Manage Zoho OAuth tokens for email functionality using the Self Client
-          workflow.
-        </p>
-      </div>
-
       {/* Status Display */}
       {status && (
         <div className="bg-white shadow rounded-lg p-6">
@@ -190,7 +180,7 @@ export default function ZohoManager() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <h4 className="font-medium text-gray-700">OAuth Status</h4>
-              <ul className="mt-2 space-y-1 text-sm">
+              <ul className="mt-2 space-y-1 text-sm text-gray-600">
                 <li className="flex items-center">
                   <span
                     className={`w-2 h-2 rounded-full mr-2 ${status.oauth.hasAccessToken ? "bg-green-400" : "bg-red-400"}`}
@@ -218,7 +208,7 @@ export default function ZohoManager() {
             </div>
             <div>
               <h4 className="font-medium text-gray-700">Mail API Status</h4>
-              <ul className="mt-2 space-y-1 text-sm">
+              <ul className="mt-2 space-y-1 text-sm text-gray-600">
                 <li className="flex items-center">
                   <span
                     className={`w-2 h-2 rounded-full mr-2 ${status.mailApi.isReady ? "bg-green-400" : "bg-red-400"}`}
@@ -276,7 +266,7 @@ export default function ZohoManager() {
               id="authCode"
               value={authorizationCode}
               onChange={(e) => setAuthorizationCode(e.target.value)}
-              className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 shadow-sm text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               placeholder="Enter authorization code from Zoho Console"
               disabled={isLoading}
             />

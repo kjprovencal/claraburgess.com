@@ -85,10 +85,10 @@ export default function RegisterPage() {
   return (
     <div className="flex flex-col lg:flex-row justify-center items-center min-h-[calc(100vh-200px)] gap-8 px-4">
       <div className="w-full max-w-md lg:w-96 lg:max-w-none">
-        <h2 className="text-center lg:text-left text-3xl font-extrabold text-gray-900">
+        <h2 className="text-center lg:text-left text-3xl font-extrabold text-gray-900 dark:text-gray-200">
           Create your account
         </h2>
-        <p className="mt-2 text-center lg:text-left text-sm text-gray-600">
+        <p className="mt-2 text-center lg:text-left text-sm text-gray-600 dark:text-gray-400">
           Or{" "}
           <Link
             href="/login"
@@ -97,7 +97,7 @@ export default function RegisterPage() {
             sign in to your existing account
           </Link>
         </p>
-        <p className="mt-2 text-center lg:text-left text-sm text-gray-600">
+        <p className="mt-2 text-center lg:text-left text-sm text-gray-600 dark:text-gray-400">
           For Clara&apos;s privacy, we require all accounts to be approved by an
           administrator. Please sign up and wait for approval. Let us know if
           you have any issues!

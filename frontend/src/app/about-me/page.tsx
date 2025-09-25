@@ -13,7 +13,7 @@ function AboutMeContent() {
   return (
     <div className="mb-16">
       {/* Family Tree Section */}
-      <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 border border-gray-100 relative overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 md:p-12 border border-gray-100 dark:border-gray-700 relative overflow-hidden">
         {/* Subtle Background Pattern - Full Height */}
         <div className="absolute inset-0 bg-gradient-to-br from-pink-50/30 via-transparent to-blue-50/30 pointer-events-none"></div>
         <h1 className="text-3xl font-bold text-center mb-12 text-gray-800 dark:text-gray-200">

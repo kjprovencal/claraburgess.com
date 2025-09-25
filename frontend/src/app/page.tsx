@@ -31,7 +31,7 @@ export default function Home() {
   return (
     <div className="mb-16">
       {/* Main Card Surface */}
-      <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 border border-gray-100 relative overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 md:p-12 border border-gray-100 dark:border-gray-700 relative overflow-hidden">
         {/* Subtle Background Pattern - Full Height */}
         <div className="absolute inset-0 bg-gradient-to-br from-pink-50/30 via-transparent to-blue-50/30 pointer-events-none"></div>
 
@@ -53,7 +53,7 @@ export default function Home() {
               Welcome to Clara&apos;s World!
             </h1>
 
-            <p className="text-xl max-w-2xl text-center text-gray-600 leading-relaxed mx-auto">
+            <p className="text-xl max-w-2xl text-center text-gray-600 dark:text-gray-300 leading-relaxed mx-auto">
               We are so excited to welcome our precious daughter Clara into this
               world! Here you can find our baby registry, browse photos of our
               journey, and share in our joy.
@@ -150,7 +150,7 @@ export default function Home() {
             <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
               Have Questions?
             </h3>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-400">
               Feel free to reach out to us directly, or use the link below to
               send us an email.
             </p>

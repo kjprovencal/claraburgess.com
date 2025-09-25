@@ -79,7 +79,7 @@ function PhotosContent() {
     <>
       <div className="mb-16">
         {/* Main Card Surface */}
-        <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 border border-gray-100 relative overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 md:p-12 border border-gray-100 dark:border-gray-700 relative overflow-hidden">
           {/* Subtle Background Pattern - Full Height */}
           <div className="absolute inset-0 bg-gradient-to-br from-pink-50/30 via-transparent to-blue-50/30 pointer-events-none"></div>
 
@@ -88,7 +88,7 @@ function PhotosContent() {
               <h1 className="text-4xl font-bold mb-4 text-gray-800 dark:text-gray-200">
                 Clara&apos;s Photo Gallery
               </h1>
-              <p className="text-lg text-gray-600 mb-6">
+              <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
                 Watch our journey as we prepare to welcome our little miracle
               </p>
 
@@ -101,7 +101,7 @@ function PhotosContent() {
                     className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                       selectedCategory === category
                         ? "bg-pink-500 text-white"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                     }`}
                   >
                     {category}

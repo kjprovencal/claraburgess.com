@@ -29,7 +29,7 @@ export default function PageTransition({ children }: PageTransitionProps) {
     <>
       {isTransitioning && (
         <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
-          <div className="bg-white/90 backdrop-blur-sm rounded-full p-4 shadow-lg">
+          <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-full p-4 shadow-lg">
             <LoadingSpinner size="lg" color="pink" />
           </div>
         </div>

@@ -34,17 +34,17 @@ function AdminContent() {
   return (
     <div className="mb-16">
       {/* Main Card Surface */}
-      <div className="bg-white rounded-3xl shadow-2xl p-4 sm:p-6 md:p-8 lg:p-12 border border-gray-100 relative overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-4 sm:p-6 md:p-8 lg:p-12 border border-gray-100 dark:border-gray-700 relative overflow-hidden">
         {/* Subtle Background Pattern - Full Height */}
         <div className="absolute inset-0 bg-gradient-to-br from-pink-50/30 via-transparent to-blue-50/30 pointer-events-none"></div>
 
         <div className="relative">
           <TokenExpiryWarning />
           <div className="mb-6 sm:mb-8">
-            <h1 className="text-2xl sm:text-3xl font-bold dark:text-gray-800">
+            <h1 className="text-2xl sm:text-3xl font-bold dark:text-gray-200">
               Admin Panel
             </h1>
-            <p className="text-gray-600 mt-1 text-sm sm:text-base">
+            <p className="text-gray-600 dark:text-gray-300 mt-1 text-sm sm:text-base">
               Managing Clara&apos;s registry and photos
             </p>
           </div>

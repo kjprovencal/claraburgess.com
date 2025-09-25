@@ -72,7 +72,7 @@ export default function BabyShowerPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-blue-50 py-8">
         <div className="max-w-4xl mx-auto px-4">
-          <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 border border-gray-100 relative overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 md:p-12 border border-gray-100 dark:border-gray-700 relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-pink-50/30 via-transparent to-blue-50/30 pointer-events-none"></div>
 
             <div className="relative text-center">
@@ -265,7 +265,7 @@ export default function BabyShowerPage() {
                       value={rsvpData.name}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-colors"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-700 focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-colors"
                       placeholder="Your full name"
                     />
                   </div>
@@ -284,7 +284,7 @@ export default function BabyShowerPage() {
                       value={rsvpData.email}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-colors"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-700 focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-colors"
                       placeholder="your.email@example.com"
                     />
                   </div>
@@ -341,7 +341,7 @@ export default function BabyShowerPage() {
                         name="guestCount"
                         value={rsvpData.guestCount}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-colors"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-700 focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-colors"
                       >
                         <option value={1}>Just me</option>
                         <option value={2}>2 guests</option>
@@ -363,7 +363,7 @@ export default function BabyShowerPage() {
                         value={rsvpData.dietaryRestrictions}
                         onChange={handleInputChange}
                         rows={3}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-colors"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-700 focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-colors"
                         placeholder="Please let us know about any dietary restrictions or allergies..."
                       />
                     </div>
@@ -383,7 +383,7 @@ export default function BabyShowerPage() {
                     value={rsvpData.message}
                     onChange={handleInputChange}
                     rows={4}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-colors"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-700 focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-colors"
                     placeholder="Share your excitement, well wishes, or any special message..."
                   />
                 </div>

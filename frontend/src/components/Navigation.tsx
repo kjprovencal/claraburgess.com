@@ -33,7 +33,7 @@ export default function Navigation() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200 shadow-sm mb-8 rounded-b-2xl">
+    <nav className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 shadow-sm mb-8 rounded-b-2xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Desktop Navigation */}
         <div className="hidden md:flex gap-6 lg:gap-8 text-base lg:text-lg font-semibold py-4 lg:py-6 justify-center">
@@ -42,7 +42,7 @@ export default function Navigation() {
             className={`transition-all duration-200 hover:text-pink-600 ${
               isActive("/")
                 ? "text-pink-600"
-                : "text-gray-700 hover:text-gray-900"
+                : "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
             }`}
           >
             Home
@@ -54,7 +54,7 @@ export default function Navigation() {
                 className={`transition-all duration-200 hover:text-pink-600 ${
                   isActive("/about-me")
                     ? "text-pink-600"
-                    : "text-gray-700 hover:text-gray-900"
+                    : "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
                 }`}
               >
                 About Clara
@@ -64,7 +64,7 @@ export default function Navigation() {
                 className={`transition-all duration-200 hover:text-pink-600 ${
                   isActive("/about-us")
                     ? "text-pink-600"
-                    : "text-gray-700 hover:text-gray-900"
+                    : "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
                 }`}
               >
                 About Us
@@ -74,7 +74,7 @@ export default function Navigation() {
                 className={`transition-all duration-200 hover:text-pink-600 ${
                   isActive("/registry")
                     ? "text-pink-600"
-                    : "text-gray-700 hover:text-gray-900"
+                    : "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
                 }`}
               >
                 Registry
@@ -84,7 +84,7 @@ export default function Navigation() {
                 className={`transition-all duration-200 hover:text-pink-600 ${
                   isActive("/photos")
                     ? "text-pink-600"
-                    : "text-gray-700 hover:text-gray-900"
+                    : "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
                 }`}
               >
                 Photos
@@ -148,12 +148,12 @@ export default function Navigation() {
         <div className="md:hidden">
           {/* Mobile Header */}
           <div className="flex items-center justify-between py-4">
-            <div className="text-lg font-semibold text-gray-800">
+            <div className="text-lg font-semibold text-gray-800 dark:text-gray-200">
               Clara&apos;s World
             </div>
             <button
               onClick={toggleMobileMenu}
-              className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+              className="p-2 rounded-md text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               aria-label="Toggle mobile menu"
             >
               {isMobileMenuOpen ? (
@@ -166,15 +166,15 @@ export default function Navigation() {
 
           {/* Mobile Menu */}
           {isMobileMenuOpen && (
-            <div className="absolute top-full left-0 right-0 bg-white border-b border-gray-200 shadow-lg rounded-b-2xl">
+            <div className="absolute top-full left-0 right-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 shadow-lg rounded-b-2xl">
               <div className="px-4 py-4 space-y-3">
                 <Link
                   href="/"
                   onClick={closeMobileMenu}
                   className={`block py-2 px-3 rounded-lg transition-all duration-200 ${
                     isActive("/")
-                      ? "bg-pink-50 text-pink-600"
-                      : "text-gray-700 hover:bg-gray-50"
+                      ? "bg-pink-50 dark:bg-pink-900/20 text-pink-600"
+                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                   }`}
                 >
                   Home
@@ -186,8 +186,8 @@ export default function Navigation() {
                       onClick={closeMobileMenu}
                       className={`block py-2 px-3 rounded-lg transition-all duration-200 ${
                         isActive("/about-me")
-                          ? "bg-pink-50 text-pink-600"
-                          : "text-gray-700 hover:bg-gray-50"
+                          ? "bg-pink-50 dark:bg-pink-900/20 text-pink-600"
+                          : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                       }`}
                     >
                       About Clara
@@ -197,8 +197,8 @@ export default function Navigation() {
                       onClick={closeMobileMenu}
                       className={`block py-2 px-3 rounded-lg transition-all duration-200 ${
                         isActive("/about-us")
-                          ? "bg-pink-50 text-pink-600"
-                          : "text-gray-700 hover:bg-gray-50"
+                          ? "bg-pink-50 dark:bg-pink-900/20 text-pink-600"
+                          : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                       }`}
                     >
                       About Us
@@ -208,8 +208,8 @@ export default function Navigation() {
                       onClick={closeMobileMenu}
                       className={`block py-2 px-3 rounded-lg transition-all duration-200 ${
                         isActive("/registry")
-                          ? "bg-pink-50 text-pink-600"
-                          : "text-gray-700 hover:bg-gray-50"
+                          ? "bg-pink-50 dark:bg-pink-900/20 text-pink-600"
+                          : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                       }`}
                     >
                       Registry
@@ -219,8 +219,8 @@ export default function Navigation() {
                       onClick={closeMobileMenu}
                       className={`block py-2 px-3 rounded-lg transition-all duration-200 ${
                         isActive("/photos")
-                          ? "bg-pink-50 text-pink-600"
-                          : "text-gray-700 hover:bg-gray-50"
+                          ? "bg-pink-50 dark:bg-pink-900/20 text-pink-600"
+                          : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                       }`}
                     >
                       Photos
