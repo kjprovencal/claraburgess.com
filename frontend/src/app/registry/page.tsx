@@ -90,6 +90,9 @@ function RegistryContent() {
       window.open(item.url, "_blank");
     }
 
+    // Scroll to top of page to ensure modal is visible
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
     // Show the purchase question modal
     setSelectedItem(item);
     setShowModal(true);
@@ -567,7 +570,7 @@ function RegistryContent() {
       </div>
 
       {showModal && selectedItem && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-opacity-20 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 backdrop-blur-sm bg-opacity-20 flex items-start justify-center z-50 p-4 pt-8">
           <div className="bg-white/95 rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-200">
             <div className="p-6">
               <div className="flex justify-between items-center mb-4">
