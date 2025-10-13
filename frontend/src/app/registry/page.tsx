@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ProtectedRoute from "@components/ProtectedRoute";
 import { RegistryItem } from "@types";
 import { FaTimes, FaSearch } from "react-icons/fa";
@@ -46,6 +46,8 @@ function RegistryContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const modalRef = useRef<HTMLDivElement>(null);
+
   // Modal state
   const [showModal, setShowModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState<RegistryItem | null>(null);
@@ -85,15 +87,7 @@ function RegistryContent() {
   };
 
   const handleViewItem = (item: RegistryItem, openUrl: boolean = true) => {
-    // Open the item URL immediately in a new tab
-    if (item.url && openUrl) {
-      window.open(item.url, "_blank");
-    }
-
-    // Scroll to top of page to ensure modal is visible
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    // Show the purchase question modal
+    // Show the purchase question modal first
     setSelectedItem(item);
     setShowModal(true);
     setModalStep("purchase-question");
@@ -107,6 +101,24 @@ function RegistryContent() {
       similarItemDescription: "",
       purchasedQuantity: 1,
     });
+
+    // Scroll modal into view after it renders
+    setTimeout(() => {
+      if (modalRef.current) {
+        modalRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+          inline: "nearest",
+        });
+      }
+    }, 50);
+
+    // Open the item URL in a new tab after a short delay
+    if (item.url && openUrl) {
+      setTimeout(() => {
+        window.open(item.url, "_blank");
+      }, 100);
+    }
   };
 
   const handlePurchaseQuestion = (
@@ -314,7 +326,8 @@ function RegistryContent() {
                   </span>
                 </p>
                 <p className="text-xs text-pink-600 text-center mt-2">
-                  Digital items and gift cards can be sent directly to us via email
+                  Digital items and gift cards can be sent directly to us via
+                  email
                 </p>
               </div>
 
@@ -592,7 +605,10 @@ function RegistryContent() {
 
       {showModal && selectedItem && (
         <div className="fixed inset-0 backdrop-blur-sm bg-opacity-20 flex items-start justify-center z-50 p-4 pt-8">
-          <div className="bg-white/95 rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-200">
+          <div
+            ref={modalRef}
+            className="bg-white/95 rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-200"
+          >
             <div className="p-6">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-gray-800">
@@ -614,12 +630,14 @@ function RegistryContent() {
                       📦 Shipping Address
                     </h4>
                     <p className="text-xs text-pink-700 leading-relaxed">
-                      Natalie & Kyle Provencal<br />
-                      7 Harrison Rd<br />
+                      Natalie & Kyle Provencal
+                      <br />
+                      7 Harrison Rd
+                      <br />
                       Bridgton, ME 04009
                     </p>
                   </div>
-                  
+
                   <p className="text-gray-600 mb-6">
                     What would you like to do with this item?
                   </p>
