@@ -297,6 +297,27 @@ function RegistryContent() {
                 arrival!
               </p>
 
+              {/* Mailing Address */}
+              <div className="bg-pink-50 border border-pink-200 rounded-lg p-4 mb-6 max-w-2xl mx-auto">
+                <h2 className="text-lg font-semibold text-pink-800 mb-2 text-center">
+                  📦 Mailing Address
+                </h2>
+                <p className="text-sm text-pink-700 text-center leading-relaxed">
+                  Please send physical items to:
+                  <br />
+                  <span className="font-medium">
+                    Natalie & Kyle Provencal
+                    <br />
+                    7 Harrison Rd
+                    <br />
+                    Bridgton, ME 04009
+                  </span>
+                </p>
+                <p className="text-xs text-pink-600 text-center mt-2">
+                  Digital items and gift cards can be sent directly to us via email
+                </p>
+              </div>
+
               {/* Registry Stats */}
               <div className="grid grid-cols-3 gap-4 md:gap-8 mb-8 max-w-2xl mx-auto">
                 <div className="bg-blue-50 p-3 md:p-4 rounded-lg text-center">
@@ -587,6 +608,18 @@ function RegistryContent() {
 
               {modalStep === "purchase-question" && (
                 <div>
+                  {/* Shipping Address Info */}
+                  <div className="bg-pink-50 border border-pink-200 rounded-lg p-3 mb-4">
+                    <h4 className="text-sm font-semibold text-pink-800 mb-1">
+                      📦 Shipping Address
+                    </h4>
+                    <p className="text-xs text-pink-700 leading-relaxed">
+                      Natalie & Kyle Provencal<br />
+                      7 Harrison Rd<br />
+                      Bridgton, ME 04009
+                    </p>
+                  </div>
+                  
                   <p className="text-gray-600 mb-6">
                     What would you like to do with this item?
                   </p>
