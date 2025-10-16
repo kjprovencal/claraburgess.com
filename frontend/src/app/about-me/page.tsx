@@ -1,15 +1,6 @@
-import ProtectedRoute from "@components/ProtectedRoute";
 import React from "react";
 
 export default function AboutMePage() {
-  return (
-    <ProtectedRoute>
-      <AboutMeContent />
-    </ProtectedRoute>
-  );
-}
-
-function AboutMeContent() {
   return (
     <div className="mb-16">
       {/* Family Tree Section */}

@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import ProtectedRoute from "@components/ProtectedRoute";
 import { RegistryItem } from "@types";
 import { FaTimes, FaSearch } from "react-icons/fa";
 import LinkPreview from "@components/LinkPreview";
@@ -31,14 +30,6 @@ const categories = [
 ];
 
 export default function RegistryPage() {
-  return (
-    <ProtectedRoute>
-      <RegistryContent />
-    </ProtectedRoute>
-  );
-}
-
-function RegistryContent() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [showPurchased, setShowPurchased] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
