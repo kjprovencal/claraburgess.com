@@ -303,7 +303,7 @@ jobs:
             echo "📋 PM2 Status:"
             sudo -u clara-app pm2 status
             echo "📋 PM2 Logs:"
-            sudo -u clara-app pm2 logs --lines 30
+            timeout 10 sudo -u clara-app pm2 logs --lines 30 --nostream || echo "Logs command completed or timed out"
             echo "📋 System Resources:"
             free -h
             df -h
@@ -312,9 +312,13 @@ jobs:
             exit 1
           fi
           
-          # Show recent logs
+          # Show recent logs (with timeout to prevent hanging)
           echo "📋 Recent application logs:"
-          sudo -u clara-app pm2 logs --lines 10
+          timeout 10 sudo -u clara-app pm2 logs --lines 10 --nostream || echo "Logs command completed or timed out"
+          
+          # Final success message
+          echo "🎉 Deployment verification completed successfully!"
+          echo "✅ Backend is running and healthy"
           
     - name: Notify deployment status
       if: always()
