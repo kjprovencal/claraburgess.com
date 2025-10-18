@@ -1,0 +1,234 @@
+name: Deploy Backend to DigitalOcean
+
+on:
+  push:
+    branches: [ main ]
+    paths: [ 'backend/**' ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+        cache-dependency-path: backend/package-lock.json
+        
+    - name: Install dependencies
+      working-directory: ./backend
+      run: npm ci
+      
+    - name: Run tests
+      working-directory: ./backend
+      run: npm run test
+      
+    - name: Build application
+      working-directory: ./backend
+      run: npm run build
+      
+    - name: Create deployment package
+      run: |
+        # Create a deployment directory
+        mkdir -p deployment
+        
+        # Copy backend files (excluding node_modules, dist, and database)
+        rsync -av --exclude='node_modules' \
+                  --exclude='dist' \
+                  --exclude='database.sqlite' \
+                  --exclude='*.log' \
+                  --exclude='.env*' \
+                  backend/ deployment/
+        
+        # Copy built files
+        cp -r backend/dist deployment/
+        
+        # Create deployment script
+        cat > deployment/deploy.sh << 'EOF'
+        #!/bin/bash
+        set -e
+        
+        # Configuration
+        APP_NAME="claraburgess.com"
+        APP_DIR="/opt/$APP_NAME"
+        USER_NAME="clara-app"
+        LOG_DIR="/var/log/$APP_NAME"
+        
+        echo "🚀 Starting deployment..."
+        
+        # Create directories if they don't exist
+        sudo mkdir -p "$APP_DIR"
+        sudo mkdir -p "$LOG_DIR"
+        
+        # Backup existing database if it exists
+        if [ -f "$APP_DIR/database.sqlite" ]; then
+            echo "📦 Backing up existing database..."
+            sudo cp "$APP_DIR/database.sqlite" "$APP_DIR/database.sqlite.backup.$(date +%Y%m%d_%H%M%S)"
+        fi
+        
+        # Stop the application
+        echo "🛑 Stopping application..."
+        sudo -u "$USER_NAME" pm2 stop "$APP_NAME" 2>/dev/null || true
+        
+        # Copy new files (excluding database)
+        echo "📁 Copying application files..."
+        sudo rsync -av --exclude='database.sqlite' \
+                    --exclude='node_modules' \
+                    --exclude='.env*' \
+                    . "$APP_DIR/"
+        
+        # Set ownership
+        sudo chown -R "$USER_NAME:$USER_NAME" "$APP_DIR"
+        
+        # Install production dependencies
+        echo "📦 Installing production dependencies..."
+        cd "$APP_DIR"
+        sudo -u "$USER_NAME" npm ci --only=production --no-audit --no-fund
+        
+        # Start the application
+        echo "🚀 Starting application..."
+        sudo -u "$USER_NAME" pm2 start ecosystem.config.js
+        sudo -u "$USER_NAME" pm2 save
+        
+        # Health check
+        echo "🔍 Performing health check..."
+        sleep 10
+        if curl -f http://localhost:3001/health > /dev/null 2>&1; then
+            echo "✅ Health check passed"
+        else
+            echo "❌ Health check failed"
+            sudo -u "$USER_NAME" pm2 logs --lines 20
+            exit 1
+        fi
+        
+        echo "🎉 Deployment completed successfully!"
+        EOF
+        
+        chmod +x deployment/deploy.sh
+        
+        # Create PM2 ecosystem file
+        cat > deployment/ecosystem.config.js << 'EOF'
+        module.exports = {
+          apps: [{
+            name: 'claraburgess.com',
+            script: 'dist/main.js',
+            cwd: '/opt/claraburgess.com',
+            exec_mode: 'fork',
+            env: {
+              NODE_ENV: 'production',
+              PORT: 3001
+            },
+            error_file: '/var/log/claraburgess.com/error.log',
+            out_file: '/var/log/claraburgess.com/out.log',
+            log_file: '/var/log/claraburgess.com/combined.log',
+            time: true,
+            max_memory_restart: '1G',
+            restart_delay: 4000,
+            max_restarts: 10,
+            min_uptime: '10s'
+          }]
+        };
+        EOF
+        
+        # Create package.json for production
+        cat > deployment/package.json << 'EOF'
+        {
+          "name": "claraburgess.com",
+          "version": "0.0.1",
+          "description": "",
+          "author": "",
+          "private": true,
+          "license": "UNLICENSED",
+          "scripts": {
+            "start": "node dist/main"
+          },
+          "dependencies": {
+            "@nestjs/axios": "^4.0.1",
+            "@nestjs/common": "^11.1.6",
+            "@nestjs/config": "^4.0.2",
+            "@nestjs/core": "^11.1.6",
+            "@nestjs/jwt": "^11.0.0",
+            "@nestjs/passport": "^11.0.5",
+            "@nestjs/platform-express": "^11.1.6",
+            "@nestjs/typeorm": "^11.0.0",
+            "@types/cheerio": "^0.22.35",
+            "axios": "^1.12.0",
+            "bcryptjs": "^3.0.2",
+            "cheerio": "^1.1.2",
+            "cloudinary": "^2.7.0",
+            "dotenv": "^17.2.2",
+            "passport-jwt": "^4.0.1"
+          }
+        }
+        EOF
+        
+        # Create .tar.gz archive
+        tar -czf deployment.tar.gz -C deployment .
+        
+    - name: Deploy to DigitalOcean
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.DO_HOST }}
+        username: ${{ secrets.DO_USER }}
+        key: ${{ secrets.DO_SSH_KEY }}
+        port: ${{ secrets.DO_PORT || 22 }}
+        script: |
+          # Create temporary directory
+          TEMP_DIR="/tmp/deployment-$(date +%s)"
+          mkdir -p "$TEMP_DIR"
+          cd "$TEMP_DIR"
+          
+          # Download and extract deployment package
+          # Note: In a real scenario, you'd upload the tar.gz file
+          # For now, we'll use the existing deployment script
+          echo "📥 Deployment package would be uploaded here"
+          echo "🔄 Running deployment script..."
+          
+          # Use the existing deployment script
+          /opt/claraburgess.com/deploy.sh update
+          
+          # Cleanup
+          rm -rf "$TEMP_DIR"
+          
+    - name: Verify deployment
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.DO_HOST }}
+        username: ${{ secrets.DO_USER }}
+        key: ${{ secrets.DO_SSH_KEY }}
+        port: ${{ secrets.DO_PORT || 22 }}
+        script: |
+          echo "🔍 Verifying deployment..."
+          
+          # Check if application is running
+          sudo -u clara-app pm2 status
+          
+          # Check health endpoint
+          if curl -f http://localhost:3001/health; then
+            echo "✅ Backend is healthy and responding"
+          else
+            echo "❌ Backend health check failed"
+            sudo -u clara-app pm2 logs --lines 20
+            exit 1
+          fi
+          
+          # Show recent logs
+          echo "📋 Recent application logs:"
+          sudo -u clara-app pm2 logs --lines 10
+          
+    - name: Notify deployment status
+      if: always()
+      run: |
+        if [ "${{ job.status }}" == "success" ]; then
+          echo "🎉 Deployment completed successfully!"
+          echo "Backend is now running on ${{ secrets.DO_HOST }}:3001"
+        else
+          echo "❌ Deployment failed!"
+          echo "Check the logs above for details"
+        fi
