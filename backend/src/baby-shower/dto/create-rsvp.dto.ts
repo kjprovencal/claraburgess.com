@@ -7,6 +7,7 @@ import {
   Min,
   Max,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
 import { AttendanceStatus } from '../entities/rsvp.entity';
 
 export class CreateRsvpDto {
@@ -22,6 +23,7 @@ export class CreateRsvpDto {
   @IsNumber()
   @Min(1)
   @Max(10)
+  @Transform(({ value }) => (value ? parseInt(value, 10) : 1))
   @IsOptional()
   guestCount?: number = 1;
 

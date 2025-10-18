@@ -22,10 +22,6 @@ function PhotosContent() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
 
-  useEffect(() => {
-    fetchPhotos();
-  }, []);
-
   const fetchPhotos = async () => {
     try {
       setLoading(true);
@@ -46,6 +42,10 @@ function PhotosContent() {
     (photo) =>
       selectedCategory === "All" || photo.category === selectedCategory,
   );
+
+  useEffect(() => {
+    fetchPhotos();
+  }, []);
 
   if (loading) {
     return (
