@@ -167,6 +167,17 @@ jobs:
         # Create .tar.gz archive
         tar -czf deployment.tar.gz -C deployment .
         
+    - name: Upload deployment files
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.DO_HOST }}
+        username: ${{ secrets.DO_USER }}
+        key: ${{ secrets.DO_SSH_KEY }}
+        port: ${{ secrets.DO_PORT || 22 }}
+        source: "deployment/*"
+        target: "/tmp/deployment"
+        strip_components: 1
+        
     - name: Deploy to DigitalOcean
       uses: appleboy/ssh-action@v1.0.3
       with:
@@ -175,21 +186,72 @@ jobs:
         key: ${{ secrets.DO_SSH_KEY }}
         port: ${{ secrets.DO_PORT || 22 }}
         script: |
-          # Create temporary directory
-          TEMP_DIR="/tmp/deployment-$(date +%s)"
-          mkdir -p "$TEMP_DIR"
-          cd "$TEMP_DIR"
+          echo "🚀 Starting deployment..."
           
-          # Download and extract deployment package
-          # Note: In a real scenario, you'd upload the tar.gz file
-          # For now, we'll use the existing deployment script
-          echo "📥 Deployment package would be uploaded here"
-          echo "🔄 Running deployment script..."
+          # Configuration
+          APP_NAME="claraburgess.com"
+          APP_DIR="/opt/$APP_NAME"
+          USER_NAME="clara-app"
+          LOG_DIR="/var/log/$APP_NAME"
+          TEMP_DIR="/tmp/deployment"
           
-          # Use the existing deployment script
-          /opt/claraburgess.com/deploy.sh update
+          # Create directories if they don't exist
+          sudo mkdir -p "$APP_DIR"
+          sudo mkdir -p "$LOG_DIR"
           
-          # Cleanup
+          # Set ownership of directories
+          sudo chown -R "$USER_NAME:$USER_NAME" "$APP_DIR"
+          sudo chown -R "$USER_NAME:$USER_NAME" "$LOG_DIR"
+          
+          # Stop any existing PM2 processes
+          echo "🛑 Stopping existing processes..."
+          sudo -u "$USER_NAME" pm2 stop "$APP_NAME" 2>/dev/null || true
+          sudo -u "$USER_NAME" pm2 delete "$APP_NAME" 2>/dev/null || true
+          
+          # Backup existing database if it exists
+          if [ -f "$APP_DIR/database.sqlite" ]; then
+              echo "📦 Backing up existing database..."
+              sudo cp "$APP_DIR/database.sqlite" "$APP_DIR/database.sqlite.backup.$(date +%Y%m%d_%H%M%S)"
+          fi
+          
+          # Copy new files (excluding database)
+          echo "📁 Copying application files..."
+          sudo rsync -av --exclude='database.sqlite' \
+                      --exclude='node_modules' \
+                      --exclude='.env*' \
+                      "$TEMP_DIR/" "$APP_DIR/"
+          
+          # Set ownership
+          sudo chown -R "$USER_NAME:$USER_NAME" "$APP_DIR"
+          
+          # Install production dependencies
+          echo "📦 Installing production dependencies..."
+          cd "$APP_DIR"
+          sudo -u "$USER_NAME" npm ci --only=production --no-audit --no-fund
+          
+          # Verify files are in place
+          echo "🔍 Verifying deployment files..."
+          ls -la "$APP_DIR/"
+          echo "Checking if dist/main.js exists:"
+          ls -la "$APP_DIR/dist/main.js" || echo "❌ dist/main.js not found!"
+          echo "Checking ecosystem.config.js:"
+          cat "$APP_DIR/ecosystem.config.js"
+          
+          # Start the application
+          echo "🚀 Starting application..."
+          cd "$APP_DIR"
+          sudo -u "$USER_NAME" pm2 start ecosystem.config.js
+          sudo -u "$USER_NAME" pm2 save
+          
+          # Wait for application to start
+          echo "⏳ Waiting for application to start..."
+          sleep 15
+          
+          # Check PM2 status
+          echo "📊 PM2 Status:"
+          sudo -u "$USER_NAME" pm2 status
+          
+          # Cleanup temporary files
           rm -rf "$TEMP_DIR"
           
     - name: Verify deployment
@@ -202,15 +264,51 @@ jobs:
         script: |
           echo "🔍 Verifying deployment..."
           
-          # Check if application is running
+          # Wait a bit more for the application to fully start
+          sleep 10
+          
+          # Check PM2 status first
+          echo "📊 PM2 Status:"
           sudo -u clara-app pm2 status
           
-          # Check health endpoint
-          if curl -f http://localhost:3001/health; then
-            echo "✅ Backend is healthy and responding"
-          else
-            echo "❌ Backend health check failed"
-            sudo -u clara-app pm2 logs --lines 20
+          # Check if the process is running
+          PM2_STATUS=$(sudo -u clara-app pm2 jlist | jq -r '.[0].pm2_env.status' 2>/dev/null || echo "unknown")
+          echo "PM2 Process Status: $PM2_STATUS"
+          
+          # If PM2 shows stopped, try to restart it
+          if [ "$PM2_STATUS" = "stopped" ] || [ "$PM2_STATUS" = "errored" ]; then
+            echo "⚠️  PM2 process is not running, attempting to restart..."
+            sudo -u clara-app pm2 restart claraburgess.com || sudo -u clara-app pm2 start ecosystem.config.js
+            sleep 10
+            sudo -u clara-app pm2 status
+          fi
+          
+          # Check health endpoint with retries
+          echo "🔍 Checking health endpoint..."
+          HEALTH_CHECK_PASSED=false
+          for i in {1..5}; do
+            echo "Health check attempt $i/5..."
+            if curl -f http://localhost:3001/health > /dev/null 2>&1; then
+              echo "✅ Backend is healthy and responding"
+              HEALTH_CHECK_PASSED=true
+              break
+            else
+              echo "⏳ Health check failed, waiting 5 seconds..."
+              sleep 5
+            fi
+          done
+          
+          if [ "$HEALTH_CHECK_PASSED" = false ]; then
+            echo "❌ Backend health check failed after 5 attempts"
+            echo "📋 PM2 Status:"
+            sudo -u clara-app pm2 status
+            echo "📋 PM2 Logs:"
+            sudo -u clara-app pm2 logs --lines 30
+            echo "📋 System Resources:"
+            free -h
+            df -h
+            echo "📋 Process List:"
+            ps aux | grep node
             exit 1
           fi
           
