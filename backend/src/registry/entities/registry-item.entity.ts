@@ -4,7 +4,9 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { Purchase } from './purchase.entity';
 
 @Entity('registry_items')
 export class RegistryItem {
@@ -56,4 +58,7 @@ export class RegistryItem {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @OneToMany(() => Purchase, (purchase) => purchase.registryItem)
+  purchases: Purchase[];
 }

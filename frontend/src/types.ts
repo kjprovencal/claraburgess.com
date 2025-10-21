@@ -1,3 +1,17 @@
+export type Purchase = {
+  id: string;
+  registryItemId: string;
+  quantity: number;
+  buyerName?: string;
+  purchaseLocation?: string;
+  orderNumber?: string;
+  thankYouAddress?: string;
+  similarItemDescription?: string;
+  giftType: 'purchased' | 'similar' | 'none';
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type RegistryItem = {
   id: string;
   name: string;
@@ -15,6 +29,8 @@ export type RegistryItem = {
   price?: number;
   availability?: string;
   previewCacheExpiry?: string;
+  // Purchase information
+  purchases?: Purchase[];
 };
 
 export type Photo = {

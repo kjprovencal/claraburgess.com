@@ -3,10 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as cheerio from 'cheerio';
 import { RegistryItem } from './entities/registry-item.entity';
+import { Purchase } from './entities/purchase.entity';
 import {
   CreateRegistryItemDto,
   UpdateRegistryItemDto,
 } from './dto/registry.dto';
+import { CreatePurchaseDto, PurchaseDto } from './dto/purchase.dto';
 import { LinkPreviewDto } from 'src/registry/dto/link-preview.dto';
 
 @Injectable()
@@ -16,10 +18,13 @@ export class RegistryService {
   constructor(
     @InjectRepository(RegistryItem)
     private registryItemsRepository: Repository<RegistryItem>,
+    @InjectRepository(Purchase)
+    private purchaseRepository: Repository<Purchase>,
   ) {}
 
   async getAllItems(): Promise<RegistryItem[]> {
     return this.registryItemsRepository.find({
+      relations: ['purchases'],
       order: { createdAt: 'DESC' },
     });
   }
@@ -56,20 +61,48 @@ export class RegistryService {
 
   async purchase(
     id: string,
-    additionalQuantity: number,
+    purchaseData: CreatePurchaseDto,
   ): Promise<RegistryItem> {
     const item = await this.getItemById(id);
 
-    // Validate additional quantity
-    if (additionalQuantity < 1) {
-      throw new Error('Additional quantity must be at least 1');
+    // Validate quantity
+    if (purchaseData.quantity < 1) {
+      throw new Error('Quantity must be at least 1');
     }
 
-    // Add to existing purchased quantity
-    item.purchasedQuantity += additionalQuantity;
+    // Create purchase record
+    const purchase = this.purchaseRepository.create({
+      ...purchaseData,
+      registryItemId: id,
+    });
+    await this.purchaseRepository.save(purchase);
+
+    // Update item purchased quantity
+    item.purchasedQuantity += purchaseData.quantity;
     item.purchased = item.purchasedQuantity > 0;
 
     return this.registryItemsRepository.save(item);
+  }
+
+  async getItemPurchases(id: string): Promise<PurchaseDto[]> {
+    const purchases = await this.purchaseRepository.find({
+      where: { registryItemId: id },
+      order: { createdAt: 'DESC' },
+    });
+
+    return purchases.map((purchase) => ({
+      id: purchase.id,
+      registryItemId: purchase.registryItemId,
+      quantity: purchase.quantity,
+      buyerName: purchase.buyerName,
+      purchaseLocation: purchase.purchaseLocation,
+      orderNumber: purchase.orderNumber,
+      thankYouAddress: purchase.thankYouAddress,
+      similarItemDescription: purchase.similarItemDescription,
+      giftType: purchase.giftType,
+      createdAt: purchase.createdAt,
+      updatedAt: purchase.updatedAt,
+    }));
   }
 
   async getLinkPreview(

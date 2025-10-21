@@ -16,6 +16,7 @@ import {
   CreateRegistryItemDto,
   UpdateRegistryItemDto,
 } from './dto/registry.dto';
+import { CreatePurchaseDto } from './dto/purchase.dto';
 import { RateLimitGuard } from '../rate-limit/guards/rate-limit.guard';
 import { RateLimit } from '../rate-limit/decorators/rate-limit.decorator';
 
@@ -66,11 +67,28 @@ export class RegistryController {
   }
 
   @Put(':id/purchase')
+  @UseGuards(RateLimitGuard)
+  @RateLimit({
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    maxRequests: 10, // 10 requests per 5 minutes
+    endpoint: 'registry-purchase',
+  })
   async purchase(
     @Param('id') id: string,
-    @Body() body: { purchasedQuantity: number },
+    @Body() purchaseData: CreatePurchaseDto,
   ) {
-    return this.registryService.purchase(id, body.purchasedQuantity);
+    return this.registryService.purchase(id, purchaseData);
+  }
+
+  @Get(':id/purchases')
+  @UseGuards(RateLimitGuard)
+  @RateLimit({
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    maxRequests: 30, // 30 requests per 5 minutes
+    endpoint: 'registry-purchases',
+  })
+  async getItemPurchases(@Param('id') id: string) {
+    return this.registryService.getItemPurchases(id);
   }
 
   @Get('preview/link')

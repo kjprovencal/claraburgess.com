@@ -5,15 +5,16 @@ import { RegistryItem } from "@types";
 import { FaTimes, FaSearch } from "react-icons/fa";
 import LinkPreview from "@components/LinkPreview";
 import { formatPrice } from "@utils/priceFormat";
+import { useAuth } from "@contexts/AuthContext";
 
 type PurchaseModalData = {
   hasPurchased: boolean;
-  giftType: "purchased" | "similar" | "none";
-  isAnonymous: boolean;
-  purchaseLocation: string;
-  orderNumber: string;
-  thankYouAddress: string;
-  similarItemDescription: string;
+  giftType?: "purchased" | "similar";
+  buyerName?: string;
+  purchaseLocation?: string;
+  orderNumber?: string;
+  thankYouAddress?: string;
+  similarItemDescription?: string;
   purchasedQuantity: number;
 };
 
@@ -30,6 +31,7 @@ const categories = [
 ];
 
 export default function RegistryPage() {
+  const { user } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [showPurchased, setShowPurchased] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -45,13 +47,8 @@ export default function RegistryPage() {
   const [purchaseModalData, setPurchaseModalData] = useState<PurchaseModalData>(
     {
       hasPurchased: false,
-      giftType: "none",
-      isAnonymous: false,
-      purchaseLocation: "",
-      orderNumber: "",
-      thankYouAddress: "",
-      similarItemDescription: "",
       purchasedQuantity: 1,
+      buyerName: user?.username || "",
     }
   );
   const [modalStep, setModalStep] = useState<
@@ -84,13 +81,8 @@ export default function RegistryPage() {
     setModalStep("purchase-question");
     setPurchaseModalData({
       hasPurchased: false,
-      giftType: "none",
-      isAnonymous: false,
-      purchaseLocation: "",
-      orderNumber: "",
-      thankYouAddress: "",
-      similarItemDescription: "",
       purchasedQuantity: 1,
+      buyerName: user?.username || "",
     });
 
     // Scroll modal into view after it renders
@@ -112,34 +104,36 @@ export default function RegistryPage() {
     }
   };
 
-  const handlePurchaseQuestion = (
-    giftType: "purchased" | "similar" | "none"
-  ) => {
+  const handleNoGift = () => {
     setPurchaseModalData((prev) => ({
       ...prev,
-      hasPurchased: giftType !== "none",
-      giftType: giftType,
+      hasPurchased: false,
+      giftType: undefined,
+    }));
+    setShowModal(false);
+    setSelectedItem(null);
+  };
+
+  const handlePurchaseQuestion = (giftType: "purchased" | "similar") => {
+    setPurchaseModalData((prev) => ({
+      ...prev,
+      hasPurchased: true,
+      giftType,
     }));
 
-    if (giftType !== "none") {
-      // If item is already fully purchased, show already-purchased message
-      if (selectedItem && getRemainingQuantity(selectedItem) === 0) {
-        setModalStep("already-purchased");
-      }
-      // If item has quantity > 1 and still needs items, show quantity selection first
-      else if (
-        selectedItem &&
-        selectedItem.quantity > 1 &&
-        getRemainingQuantity(selectedItem) > 0
-      ) {
-        setModalStep("quantity-selection");
-      } else {
-        setModalStep("additional-info");
-      }
+    // If item is already fully purchased, show already-purchased message
+    if (selectedItem && getRemainingQuantity(selectedItem) === 0) {
+      setModalStep("already-purchased");
+    }
+    // If item has quantity > 1 and still needs items, show quantity selection first
+    else if (
+      selectedItem &&
+      selectedItem.quantity > 1 &&
+      getRemainingQuantity(selectedItem) > 0
+    ) {
+      setModalStep("quantity-selection");
     } else {
-      // If not gifting, just close modal
-      setShowModal(false);
-      setSelectedItem(null);
+      setModalStep("additional-info");
     }
   };
 
@@ -161,7 +155,7 @@ export default function RegistryPage() {
       });
 
       // Mark item as purchased with quantity if it (or a similar item) was gifted
-      if (selectedItem && purchaseModalData.giftType !== "none") {
+      if (selectedItem && purchaseModalData.giftType) {
         const response = await fetch(
           `/api/registry/${selectedItem.id}/purchase`,
           {
@@ -170,7 +164,13 @@ export default function RegistryPage() {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              purchasedQuantity: purchaseModalData.purchasedQuantity,
+              quantity: purchaseModalData.purchasedQuantity,
+              buyerName: purchaseModalData.buyerName,
+              purchaseLocation: purchaseModalData.purchaseLocation,
+              orderNumber: purchaseModalData.orderNumber,
+              thankYouAddress: purchaseModalData.thankYouAddress,
+              similarItemDescription: purchaseModalData.similarItemDescription,
+              giftType: purchaseModalData.giftType,
             }),
           }
         );
@@ -253,6 +253,16 @@ export default function RegistryPage() {
   useEffect(() => {
     fetchRegistryItems();
   }, []);
+
+  // Update buyer name when user changes
+  useEffect(() => {
+    if (user?.username) {
+      setPurchaseModalData(prev => ({
+        ...prev,
+        buyerName: user.username,
+      }));
+    }
+  }, [user]);
 
   if (loading) {
     return (
@@ -656,7 +666,7 @@ export default function RegistryPage() {
                       </div>
                     </button>
                     <button
-                      onClick={() => handlePurchaseQuestion("none")}
+                      onClick={handleNoGift}
                       className="w-full bg-gray-500 text-white py-3 px-4 rounded-lg hover:bg-gray-600 transition-colors text-left"
                     >
                       <div className="font-medium">
@@ -779,22 +789,27 @@ export default function RegistryPage() {
 
                   <div className="space-y-4">
                     <div>
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={purchaseModalData.isAnonymous}
-                          onChange={(e) =>
-                            setPurchaseModalData({
-                              ...purchaseModalData,
-                              isAnonymous: e.target.checked,
-                            })
-                          }
-                          className="rounded"
-                        />
-                        <span className="text-sm text-gray-700">
-                          Do you want this to be an anonymous gift?
-                        </span>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Your name (optional)
                       </label>
+                      <input
+                        type="text"
+                        value={purchaseModalData.buyerName || ""}
+                        onChange={(e) =>
+                          setPurchaseModalData({
+                            ...purchaseModalData,
+                            buyerName: e.target.value,
+                          })
+                        }
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 dark:text-gray-900"
+                        placeholder="Your name (optional)"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        {user 
+                          ? "Your name is prefilled. Clear it if you want this to be an anonymous gift"
+                          : "Leave blank if you want this to be an anonymous gift"
+                        }
+                      </p>
                     </div>
 
                     {purchaseModalData.giftType === "similar" && (

@@ -663,6 +663,32 @@ export default function RegistryManager() {
                     </Link>
                   )}
                 </div>
+
+                {/* Purchaser Information */}
+                {item.purchases && item.purchases.length > 0 && (
+                  <div className="mt-2 text-xs text-gray-600">
+                    <div className="font-medium mb-1">Purchased by:</div>
+                    {item.purchases.slice(0, 2).map((purchase) => (
+                      <div key={purchase.id} className="mb-1">
+                        {purchase.buyerName ? (
+                          <span className="font-medium">
+                            {purchase.buyerName}
+                          </span>
+                        ) : (
+                          <span className="text-gray-500 italic">Anonymous</span>
+                        )}
+                        {purchase.quantity > 1 && (
+                          <span className="text-gray-500"> (×{purchase.quantity})</span>
+                        )}
+                      </div>
+                    ))}
+                    {item.purchases.length > 2 && (
+                      <div className="text-gray-500">
+                        +{item.purchases.length - 2} more
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -687,6 +713,9 @@ export default function RegistryManager() {
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Purchased By
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   URL
@@ -741,6 +770,33 @@ export default function RegistryManager() {
                     >
                       {item.purchased ? "Purchased" : "Available"}
                     </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {item.purchases && item.purchases.length > 0 ? (
+                      <div className="space-y-1">
+                        {item.purchases.slice(0, 2).map((purchase, index) => (
+                          <div key={purchase.id} className="text-xs">
+                            {purchase.buyerName ? (
+                              <span className="font-medium">
+                                {purchase.buyerName}
+                              </span>
+                            ) : (
+                              <span className="text-gray-500 italic">Anonymous</span>
+                            )}
+                            {purchase.quantity > 1 && (
+                              <span className="text-gray-500"> (×{purchase.quantity})</span>
+                            )}
+                          </div>
+                        ))}
+                        {item.purchases.length > 2 && (
+                          <div className="text-xs text-gray-500">
+                            +{item.purchases.length - 2} more
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-gray-400">—</span>
+                    )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {item.url ? (
