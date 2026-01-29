@@ -28,7 +28,7 @@ export default function AboutMePage() {
                     Clara Burgess Provencal
                   </h3>
                   <p className="text-sm text-gray-500 mb-2">
-                    Due Date: December 19, 2025
+                    Born: December 21, 2025
                   </p>
                   <Image
                     src="/clara.jpeg"

@@ -58,7 +58,7 @@ export default function Home() {
                     Photo Gallery
                   </h3>
                   <p className="text-pink-600">
-                    Follow our journey through pregnancy and watch Clara grow
+                    Browse photos of Clara as she grows and our family adventures
                   </p>
                 </div>
               </div>

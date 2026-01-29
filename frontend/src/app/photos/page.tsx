@@ -89,7 +89,7 @@ function PhotosContent() {
                 Clara&apos;s Photo Gallery
               </h1>
               <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
-                Watch our journey as we prepare to welcome our little miracle
+                Watch our journey as we care for Clara and watch her grow
               </p>
 
               {/* Category Filters */}
