@@ -1,6 +1,30 @@
+"use client";
+
 import Image from "next/image";
+import { useState, useCallback, useEffect } from "react";
+import { createPortal } from "react-dom";
+
+type ExpandedImage = { src: string; alt: string } | null;
 
 export default function AboutMePage() {
+  const [expandedImage, setExpandedImage] = useState<ExpandedImage>(null);
+
+  const closeLightbox = useCallback(() => setExpandedImage(null), []);
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeLightbox();
+    };
+    if (expandedImage) {
+      document.addEventListener("keydown", handleEscape);
+      document.body.style.overflow = "hidden";
+    }
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+      document.body.style.overflow = "";
+    };
+  }, [expandedImage, closeLightbox]);
+
   return (
     <div className="mb-16">
       {/* Family Tree Section */}
@@ -30,12 +54,21 @@ export default function AboutMePage() {
                   <p className="text-sm text-gray-500 mb-2">
                     Born: December 21, 2025
                   </p>
-                  <Image
-                    src="/clara.jpeg"
-                    alt="Clara"
-                    width={100}
-                    height={100}
-                  />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setExpandedImage({ src: "/clara.jpeg", alt: "Clara" })
+                    }
+                    className="relative w-28 h-28 mx-auto overflow-hidden rounded-xl border-2 border-gray-200 dark:border-gray-600 shadow-md mt-3 block cursor-pointer hover:ring-2 hover:ring-pink-400 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  >
+                    <Image
+                      src="/clara.jpeg"
+                      alt="Clara"
+                      fill
+                      className="object-cover"
+                      sizes="112px"
+                    />
+                  </button>
                 </div>
               </div>
             </div>
@@ -56,12 +89,24 @@ export default function AboutMePage() {
                       <strong>Born:</strong> March 18, 2000 in Portland, Maine
                     </p>
                   </div>
-                  <Image
-                    src="/natalie.jpeg"
-                    alt="Natalie"
-                    width={100}
-                    height={100}
-                  />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setExpandedImage({
+                        src: "/natalie.jpeg",
+                        alt: "Natalie",
+                      })
+                    }
+                    className="relative w-28 h-28 mx-auto overflow-hidden rounded-xl border-2 border-gray-200 dark:border-gray-600 shadow-md mt-3 block cursor-pointer hover:ring-2 hover:ring-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  >
+                    <Image
+                      src="/natalie.jpeg"
+                      alt="Natalie"
+                      fill
+                      className="object-cover"
+                      sizes="112px"
+                    />
+                  </button>
                 </div>
               </div>
             </div>
@@ -83,12 +128,21 @@ export default function AboutMePage() {
                       Maryland
                     </p>
                   </div>
-                  <Image
-                    src="/scott.jpeg"
-                    alt="Scott"
-                    width={100}
-                    height={100}
-                  />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setExpandedImage({ src: "/scott.jpeg", alt: "Scott" })
+                    }
+                    className="relative w-28 h-28 mx-auto overflow-hidden rounded-xl border-2 border-gray-200 dark:border-gray-600 shadow-md mt-3 block cursor-pointer hover:ring-2 hover:ring-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <Image
+                      src="/scott.jpeg"
+                      alt="Scott"
+                      fill
+                      className="object-cover"
+                      sizes="112px"
+                    />
+                  </button>
                 </div>
               </div>
             </div>
@@ -116,12 +170,24 @@ export default function AboutMePage() {
                       Massachusetts
                     </p>
                   </div>
-                  <Image
-                    src="/gordon.jpeg"
-                    alt="Gordon"
-                    width={100}
-                    height={100}
-                  />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setExpandedImage({
+                        src: "/gordon.jpeg",
+                        alt: "Gordon",
+                      })
+                    }
+                    className="relative w-28 h-28 mx-auto overflow-hidden rounded-xl border-2 border-gray-200 dark:border-gray-600 shadow-md mt-3 block cursor-pointer hover:ring-2 hover:ring-green-400 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  >
+                    <Image
+                      src="/gordon.jpeg"
+                      alt="Gordon"
+                      fill
+                      className="object-cover"
+                      sizes="112px"
+                    />
+                  </button>
                 </div>
               </div>
             </div>
@@ -149,12 +215,24 @@ export default function AboutMePage() {
                       Massachusetts
                     </p>
                   </div>
-                  <Image
-                    src="/harriet.jpeg"
-                    alt="Harriet"
-                    width={100}
-                    height={100}
-                  />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setExpandedImage({
+                        src: "/harriet.jpeg",
+                        alt: "Harriet",
+                      })
+                    }
+                    className="relative w-28 h-28 mx-auto overflow-hidden rounded-xl border-2 border-gray-200 dark:border-gray-600 shadow-md mt-3 block cursor-pointer hover:ring-2 hover:ring-red-400 focus:outline-none focus:ring-2 focus:ring-red-500"
+                  >
+                    <Image
+                      src="/harriet.jpeg"
+                      alt="Harriet"
+                      fill
+                      className="object-cover"
+                      sizes="112px"
+                    />
+                  </button>
                 </div>
               </div>
             </div>
@@ -182,18 +260,78 @@ export default function AboutMePage() {
                       Massachusetts
                     </p>
                   </div>
-                  <Image
-                    src="/og-clara.jpeg"
-                    alt="Original Clara Burgess"
-                    width={100}
-                    height={100}
-                  />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setExpandedImage({
+                        src: "/og-clara.jpeg",
+                        alt: "Original Clara Burgess",
+                      })
+                    }
+                    className="relative w-28 h-28 mx-auto overflow-hidden rounded-xl border-2 border-gray-200 dark:border-gray-600 shadow-md mt-3 block cursor-pointer hover:ring-2 hover:ring-pink-400 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  >
+                    <Image
+                      src="/og-clara.jpeg"
+                      alt="Original Clara Burgess"
+                      fill
+                      className="object-cover"
+                      sizes="112px"
+                    />
+                  </button>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Image lightbox - portaled to body so it centers in the viewport */}
+      {expandedImage &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={`View full size: ${expandedImage.alt}`}
+            className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+            onClick={closeLightbox}
+          >
+            <button
+              type="button"
+              onClick={closeLightbox}
+              className="absolute top-4 right-4 p-2 rounded-full bg-white/10 text-white hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white"
+              aria-label="Close"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </svg>
+            </button>
+            <div
+              className="relative w-[90vw] h-[90vh] max-w-4xl max-h-[85vh] flex items-center justify-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Image
+                src={expandedImage.src}
+                alt={expandedImage.alt}
+                fill
+                className="object-contain rounded-lg shadow-2xl"
+                sizes="90vw"
+              />
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   );
 }
