@@ -25,20 +25,20 @@ export default function AboutUsPage() {
             <div className="max-w-4xl mx-auto text-center">
               <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed mb-6">
                 We&apos;re Natalie and Kyle, and we&apos;re absolutely thrilled
-                to be welcoming our first child, Clara, into the world! Our
-                journey to parenthood has been filled with love, excitement, and
-                countless moments of joy.
+                to be parents to our beautiful daughter, Clara! Our journey into
+                parenthood has been filled with love, joy, and countless precious
+                moments watching her grow.
               </p>
               <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed mb-6">
                 We met and fell in love, building a life together filled with
                 adventures, laughter, and dreams of starting a family. Now that
-                dream is becoming reality, and we couldn&apos;t be more grateful
+                dream is our reality, and we couldn&apos;t be more grateful
                 for the love and support of our family and friends.
               </p>
               <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
-                As we prepare for Clara&apos;s arrival, we&apos;re learning that
-                parenthood is about more than just diapers and sleepless
-                nights—it&apos;s about creating a home filled with love,
+                As we care for Clara and enjoy time as a family, we&apos;re
+                learning that parenthood is about more than just diapers and
+                sleepless nights—it&apos;s about creating a home filled with love,
                 teaching values, and watching our little one grow into the
                 amazing person she&apos;s meant to be.
               </p>
@@ -58,7 +58,7 @@ export default function AboutUsPage() {
               <div className="grid md:grid-cols-2 gap-8 items-center">
                 <div className="text-center md:text-left">
                   <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">
-                    The Future Mom
+                    Mom
                   </h3>
                   <div className="mb-4">
                     <span className="inline-block bg-pink-100 text-pink-800 text-sm font-medium px-3 py-1 rounded-full mb-3">
@@ -68,20 +68,19 @@ export default function AboutUsPage() {
                   <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
                     Natalie is the heart of our family, bringing warmth,
                     creativity, and endless love to everything she does. Her
-                    nurturing spirit and gentle nature make her the perfect
-                    mother-to-be.
+                    nurturing spirit and gentle nature make her an amazing
+                    mother.
                   </p>
                   <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
                     As a private nanny, Natalie has years of experience caring
                     for children of all ages, which gives her incredible insight
                     into child development, behavior, and the daily rhythms of
-                    family life. She&apos;s been absolutely amazing throughout
-                    this pregnancy, embracing every moment with grace and
-                    excitement.
+                    family life. She&apos;s been absolutely amazing as a new mom,
+                    embracing every moment with grace, patience, and endless love.
                   </p>
                   <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                    Her maternal instincts are already shining through as she
-                    carefully plans and prepares for Clara&apos;s arrival. Clara
+                    Her maternal instincts shine through every day as she cares
+                    for Clara, creating a loving and nurturing environment. Clara
                     is so lucky to have such an experienced and loving mama!
                   </p>
                 </div>
@@ -112,7 +111,7 @@ export default function AboutUsPage() {
                 </div>
                 <div className="text-center md:text-left order-1 md:order-2">
                   <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">
-                    The Future Dad
+                    Dad
                   </h3>
                   <div className="mb-4">
                     <span className="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full mb-3">
@@ -122,19 +121,19 @@ export default function AboutUsPage() {
                   <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
                     Kyle is the rock of our family, providing strength,
                     stability, and unwavering support. His protective nature and
-                    loving heart make him the perfect father-to-be.
+                    loving heart make him an amazing father.
                   </p>
                   <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
                     As a software developer, Kyle brings his analytical mind,
                     problem-solving skills, and attention to detail to
-                    everything he does. Throughout this pregnancy, he&apos;s
-                    been incredibly supportive, attending every appointment,
-                    reading parenting books, and already practicing his dad
-                    jokes (much to Natalie&apos;s amusement).
+                    everything he does. As a new dad, he&apos;s been incredibly
+                    hands-on, helping with feedings, diaper changes, and
+                    everything in between—all while perfecting his dad jokes
+                    (much to Natalie&apos;s amusement).
                   </p>
                   <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                    His dedication, patience, and sense of humor will make him
-                    an amazing father. Clara will grow up feeling safe, loved,
+                    His dedication, patience, and sense of humor make him
+                    an amazing father. Clara is growing up feeling safe, loved,
                     and always entertained!
                   </p>
                 </div>
@@ -198,23 +197,25 @@ export default function AboutUsPage() {
           {/* Looking Forward Section */}
           <div className="text-center">
             <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-6">
-              Looking Forward
+              Our Journey Together
             </h2>
             <div className="max-w-3xl mx-auto">
               <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed mb-6">
-                As we count down the days until Clara&apos;s arrival, we&apos;re
-                filled with excitement and gratitude. We can&apos;t wait to hold
-                her in our arms, watch her first smile, hear her first laugh,
-                and experience all the beautiful moments that parenthood brings.
+                Now that Clara is here, we&apos;re filled with joy and gratitude
+                every single day. We love holding her in our arms, watching her
+                smile, hearing her laugh, and experiencing all the beautiful
+                moments that parenthood brings. Each day brings new discoveries
+                as we watch her grow and develop.
               </p>
               <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed mb-6">
                 We&apos;re so thankful for the love and support of our family
                 and friends during this special time. Your encouragement,
-                advice, and excitement mean the world to us.
+                advice, and excitement mean the world to us as we navigate this
+                amazing journey together.
               </p>
               <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
-                Thank you for being part of our journey to parenthood. We
-                can&apos;t wait to introduce you to our little miracle, Clara!
+                Thank you for being part of our journey into parenthood. We&apos;re
+                so grateful to share our little miracle, Clara, with all of you!
               </p>
             </div>
           </div>
