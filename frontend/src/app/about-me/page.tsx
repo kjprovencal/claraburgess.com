@@ -1,4 +1,3 @@
-import React from "react";
 import Image from "next/image";
 
 export default function AboutMePage() {
@@ -31,7 +30,12 @@ export default function AboutMePage() {
                   <p className="text-sm text-gray-500 mb-2">
                     Due Date: December 19, 2025
                   </p>
-                  <Image src="/clara.jpeg" alt="Clara" width={100} height={100} />
+                  <Image
+                    src="/clara.jpeg"
+                    alt="Clara"
+                    width={100}
+                    height={100}
+                  />
                 </div>
               </div>
             </div>
@@ -52,7 +56,12 @@ export default function AboutMePage() {
                       <strong>Born:</strong> March 18, 2000 in Portland, Maine
                     </p>
                   </div>
-                  <Image src="/natalie.jpeg" alt="Natalie" width={100} height={100} />
+                  <Image
+                    src="/natalie.jpeg"
+                    alt="Natalie"
+                    width={100}
+                    height={100}
+                  />
                 </div>
               </div>
             </div>
@@ -74,7 +83,12 @@ export default function AboutMePage() {
                       Maryland
                     </p>
                   </div>
-                  <Image src="/scott.jpeg" alt="Scott" width={100} height={100} />
+                  <Image
+                    src="/scott.jpeg"
+                    alt="Scott"
+                    width={100}
+                    height={100}
+                  />
                 </div>
               </div>
             </div>
@@ -102,7 +116,12 @@ export default function AboutMePage() {
                       Massachusetts
                     </p>
                   </div>
-                  <Image src="/gordon.jpeg" alt="Gordon" width={100} height={100} />
+                  <Image
+                    src="/gordon.jpeg"
+                    alt="Gordon"
+                    width={100}
+                    height={100}
+                  />
                 </div>
               </div>
             </div>
@@ -130,7 +149,12 @@ export default function AboutMePage() {
                       Massachusetts
                     </p>
                   </div>
-                  <Image src="/harriet.jpeg" alt="Harriet" width={100} height={100} />
+                  <Image
+                    src="/harriet.jpeg"
+                    alt="Harriet"
+                    width={100}
+                    height={100}
+                  />
                 </div>
               </div>
             </div>

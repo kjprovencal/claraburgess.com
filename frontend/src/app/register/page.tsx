@@ -70,6 +70,7 @@ export default function RegisterPage() {
       }
     } catch (error) {
       setError("Network error. Please try again.");
+      console.error("Error:", error);
     } finally {
       setIsLoading(false);
     }

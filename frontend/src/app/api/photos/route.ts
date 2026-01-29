@@ -8,6 +8,7 @@ export async function GET(request: NextRequest) {
       {
         method: "GET",
         headers: {
+          ...request.headers,
           "Content-Type": "application/json",
         },
       },

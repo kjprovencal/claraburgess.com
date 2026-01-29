@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, startTransition } from "react";
 import LoadingSpinner from "./LoadingSpinner";
 
 interface PageTransitionProps {
@@ -14,7 +14,9 @@ export default function PageTransition({ children }: PageTransitionProps) {
   const [key, setKey] = useState(0);
 
   useEffect(() => {
-    setIsTransitioning(true);
+    startTransition(() => {
+      setIsTransitioning(true);
+    });
 
     // Small delay to show the transition
     const timer = setTimeout(() => {

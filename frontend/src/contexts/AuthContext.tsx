@@ -1,11 +1,12 @@
 "use client";
 
-import React, {
+import {
   createContext,
   useContext,
   useState,
   useEffect,
   ReactNode,
+  startTransition,
 } from "react";
 import { isTokenExpired } from "@utils/auth";
 
@@ -30,51 +31,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    // Check if user is already logged in (check localStorage)
-    const token = localStorage.getItem("auth_token");
-    const userData = localStorage.getItem("user_data");
-
-    if (token && userData) {
-      try {
-        // Check if token is expired
-        if (isTokenExpired()) {
-          console.log("🔒 Token expired on page load, logging out");
-          localStorage.removeItem("auth_token");
-          localStorage.removeItem("user_data");
-          setUser(null);
-        } else {
-          setUser(JSON.parse(userData));
-        }
-      } catch (error) {
-        console.error("Error parsing user data:", error);
-        localStorage.removeItem("auth_token");
-        localStorage.removeItem("user_data");
-      }
-    }
-    setIsLoading(false);
-  }, []);
-
-  // Set up periodic token expiration check
-  useEffect(() => {
-    if (!user) return;
-
-    const checkTokenExpiration = () => {
-      if (isTokenExpired()) {
-        console.log("🔒 Token expired during session, logging out");
-        logout();
-        // Redirect to login
-        if (typeof window !== "undefined") {
-          window.location.href = "/login";
-        }
-      }
-    };
-
-    // Check every minute
-    const interval = setInterval(checkTokenExpiration, 60000);
-
-    return () => clearInterval(interval);
-  }, [user]);
+  const logout = () => {
+    localStorage.removeItem("auth_token");
+    localStorage.removeItem("user_data");
+    setUser(null);
+  };
 
   const login = async (
     username: string,
@@ -104,12 +65,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem("auth_token");
-    localStorage.removeItem("user_data");
-    setUser(null);
-  };
-
   const getReturnUrl = (): string => {
     if (typeof window !== "undefined") {
       const urlParams = new URLSearchParams(window.location.search);
@@ -119,6 +74,58 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const isAdmin = user?.role === "admin";
+
+  useEffect(() => {
+    // Check if user is already logged in (check localStorage)
+    const token = localStorage.getItem("auth_token");
+    const userData = localStorage.getItem("user_data");
+
+    if (token && userData) {
+      try {
+        // Check if token is expired
+        if (isTokenExpired()) {
+          console.log("🔒 Token expired on page load, logging out");
+          localStorage.removeItem("auth_token");
+          localStorage.removeItem("user_data");
+          startTransition(() => {
+            setUser(null);
+          });
+        } else {
+          startTransition(() => {
+            setUser(JSON.parse(userData));
+          });
+        }
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+        localStorage.removeItem("auth_token");
+        localStorage.removeItem("user_data");
+      }
+    }
+    startTransition(() => {
+      setIsLoading(false);
+    });
+  }, []);
+
+  // Set up periodic token expiration check
+  useEffect(() => {
+    if (!user) return;
+
+    const checkTokenExpiration = () => {
+      if (isTokenExpired()) {
+        console.log("🔒 Token expired during session, logging out");
+        logout();
+        // Redirect to login
+        if (typeof window !== "undefined") {
+          window.location.href = "/login";
+        }
+      }
+    };
+
+    // Check every minute
+    const interval = setInterval(checkTokenExpiration, 60000);
+
+    return () => clearInterval(interval);
+  }, [user]);
 
   return (
     <AuthContext.Provider

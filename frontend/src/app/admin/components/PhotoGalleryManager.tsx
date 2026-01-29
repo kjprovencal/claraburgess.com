@@ -33,7 +33,7 @@ export default function PhotoGalleryManager() {
     }
   };
 
-  const handleSubmitPhoto = async (e: React.FormEvent) => {
+  const handleSubmitPhoto = async (e: React.SubmitEvent) => {
     e.preventDefault();
     if (!selectedFile) {
       alert("Please select a photo file");

@@ -1,16 +1,13 @@
 "use client";
 
-import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import dayjs from "dayjs";
 import { PiTreeStructureLight } from "react-icons/pi";
 import { BsEnvelope } from "react-icons/bs";
 import { BiSolidPhotoAlbum } from "react-icons/bi";
 import { MdPeopleOutline } from "react-icons/md";
 
 export default function Home() {
-
   return (
     <div className="mb-16">
       {/* Main Card Surface */}

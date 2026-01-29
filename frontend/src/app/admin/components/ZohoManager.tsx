@@ -84,6 +84,7 @@ export default function ZohoManager() {
       }
     } catch (error) {
       setMessage({ type: "error", text: "Network error occurred" });
+      console.error("Error:", error);
     } finally {
       setIsLoading(false);
     }
@@ -92,7 +93,7 @@ export default function ZohoManager() {
   const handleRevokeToken = async () => {
     if (
       !confirm(
-        "Are you sure you want to revoke the current token? This will disable email functionality."
+        "Are you sure you want to revoke the current token? This will disable email functionality.",
       )
     ) {
       return;
@@ -119,12 +120,13 @@ export default function ZohoManager() {
       }
     } catch (error) {
       setMessage({ type: "error", text: "Network error occurred" });
+      console.error("Error:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleTestEmail = async (e: React.FormEvent) => {
+  const handleTestEmail = async (e: React.SubmitEvent) => {
     e.preventDefault();
     if (!testEmail.to.trim()) {
       setMessage({
@@ -159,6 +161,7 @@ export default function ZohoManager() {
       }
     } catch (error) {
       setMessage({ type: "error", text: "Network error occurred" });
+      console.error("Error:", error);
     } finally {
       setIsLoading(false);
     }

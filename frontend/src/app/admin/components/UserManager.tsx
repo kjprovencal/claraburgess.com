@@ -64,7 +64,7 @@ export default function UserManager() {
   const handleApproveUser = async (
     userId: string,
     status: "approved" | "rejected",
-    rejectionReason?: string
+    rejectionReason?: string,
   ) => {
     try {
       const response = await authenticatedFetch("/api/auth/approve-user", {
@@ -91,7 +91,7 @@ export default function UserManager() {
     }
   };
 
-  const handleCreatePreApprovedUser = async (e: React.FormEvent) => {
+  const handleCreatePreApprovedUser = async (e: React.SubmitEvent) => {
     e.preventDefault();
     try {
       const response = await authenticatedFetch(
@@ -102,7 +102,7 @@ export default function UserManager() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(createForm),
-        }
+        },
       );
 
       if (response.ok) {
@@ -401,7 +401,7 @@ export default function UserManager() {
                         <button
                           onClick={() => {
                             const reason = prompt(
-                              "Please provide a reason for rejection (optional):"
+                              "Please provide a reason for rejection (optional):",
                             );
                             if (reason !== null) {
                               handleApproveUser(user.id, "rejected", reason);

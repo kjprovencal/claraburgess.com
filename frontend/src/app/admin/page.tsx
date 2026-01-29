@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, startTransition } from "react";
 import { useSearchParams } from "next/navigation";
 import ProtectedRoute from "@components/ProtectedRoute";
 import PhotoGalleryManager from "./components/PhotoGalleryManager";
@@ -18,14 +18,16 @@ export default function AdminPage() {
 
 function AdminContent() {
   const searchParams = useSearchParams();
-  const [activeTab, setActiveTab] = useState<
-    "photos" | "users" | "email"
-  >("photos");
+  const [activeTab, setActiveTab] = useState<"photos" | "users" | "email">(
+    "photos",
+  );
 
   useEffect(() => {
     const tab = searchParams.get("tab");
     if (tab && ["photos", "users", "email"].includes(tab)) {
-      setActiveTab(tab as "photos" | "users" | "email");
+      startTransition(() => {
+        setActiveTab(tab as "photos" | "users" | "email");
+      });
     }
   }, [searchParams]);
 

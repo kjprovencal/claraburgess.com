@@ -23,7 +23,7 @@ function ResetPasswordForm() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
     setError("");
     setSuccess("");
@@ -71,6 +71,7 @@ function ResetPasswordForm() {
       }
     } catch (error) {
       setError("Network error. Please try again.");
+      console.error("Error:", error);
     } finally {
       setIsLoading(false);
     }

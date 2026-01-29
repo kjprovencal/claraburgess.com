@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import Image from "next/image";
 import { RegistryItem } from "@types";
 import { formatPrice } from "@utils/priceFormat";
