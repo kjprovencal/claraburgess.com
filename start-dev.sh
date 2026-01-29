@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🚀 Starting Clara's Baby Registry Website Development Servers"
+echo "🚀 Starting Clara's Website Development Servers"
 echo "=========================================================="
 
 # Function to check if a port is in use

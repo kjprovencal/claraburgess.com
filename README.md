@@ -1,6 +1,6 @@
-# Clara's Baby Registry Website
+# Clara's Website
 
-A beautiful personal website for sharing baby registry information and photos with friends and family. Built with Next.js frontend and NestJS backend.
+A beautiful personal website for sharing baby photos with friends and family. Built with Next.js frontend and NestJS backend.
 
 ## Features
 
