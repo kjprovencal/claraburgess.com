@@ -5,7 +5,7 @@ import { join } from 'path';
 export const getDatabaseConfig = (
   configService: ConfigService,
 ): TypeOrmModuleOptions => ({
-  type: 'sqlite',
+  type: 'better-sqlite3',
   database: join(
     process.cwd(),
     configService.get<string>('DB_PATH') || 'database.sqlite',
