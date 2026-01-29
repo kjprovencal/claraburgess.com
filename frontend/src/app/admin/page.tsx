@@ -3,10 +3,8 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import ProtectedRoute from "@components/ProtectedRoute";
-import RegistryManager from "./components/RegistryManager";
 import PhotoGalleryManager from "./components/PhotoGalleryManager";
 import UserManager from "./components/UserManager";
-import RsvpManager from "./components/RsvpManager";
 import TokenExpiryWarning from "@components/TokenExpiryWarning";
 import ZohoManager from "@/app/admin/components/ZohoManager";
 
@@ -21,13 +19,13 @@ export default function AdminPage() {
 function AdminContent() {
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState<
-    "registry" | "photos" | "users" | "email" | "rsvp"
-  >("registry");
+    "photos" | "users" | "email"
+  >("photos");
 
   useEffect(() => {
     const tab = searchParams.get("tab");
-    if (tab && ["registry", "photos", "users", "email", "rsvp"].includes(tab)) {
-      setActiveTab(tab as "registry" | "photos" | "users" | "email" | "rsvp");
+    if (tab && ["photos", "users", "email"].includes(tab)) {
+      setActiveTab(tab as "photos" | "users" | "email");
     }
   }, [searchParams]);
 
@@ -45,7 +43,7 @@ function AdminContent() {
               Admin Panel
             </h1>
             <p className="text-gray-600 dark:text-gray-300 mt-1 text-sm sm:text-base">
-              Managing Clara&apos;s registry and photos
+              Managing Clara&apos;s photos and user accounts
             </p>
           </div>
 
@@ -54,16 +52,6 @@ function AdminContent() {
             {/* Mobile: Horizontal scroll tabs */}
             <div className="block sm:hidden">
               <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                <button
-                  onClick={() => setActiveTab("registry")}
-                  className={`px-3 py-2 rounded-md font-medium text-sm whitespace-nowrap flex-shrink-0 ${
-                    activeTab === "registry"
-                      ? "bg-pink-500 text-white"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:cursor-pointer"
-                  }`}
-                >
-                  Registry
-                </button>
                 <button
                   onClick={() => setActiveTab("photos")}
                   className={`px-3 py-2 rounded-md font-medium text-sm whitespace-nowrap flex-shrink-0 ${
@@ -94,31 +82,11 @@ function AdminContent() {
                 >
                   Email
                 </button>
-                <button
-                  onClick={() => setActiveTab("rsvp")}
-                  className={`px-3 py-2 rounded-md font-medium text-sm whitespace-nowrap flex-shrink-0 ${
-                    activeTab === "rsvp"
-                      ? "bg-pink-500 text-white"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:cursor-pointer"
-                  }`}
-                >
-                  RSVPs
-                </button>
               </div>
             </div>
 
             {/* Desktop: Full tab names */}
             <div className="hidden sm:flex gap-4">
-              <button
-                onClick={() => setActiveTab("registry")}
-                className={`px-4 py-2 rounded-md font-medium ${
-                  activeTab === "registry"
-                    ? "bg-pink-500 text-white"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:cursor-pointer"
-                }`}
-              >
-                Registry Items
-              </button>
               <button
                 onClick={() => setActiveTab("photos")}
                 className={`px-4 py-2 rounded-md font-medium ${
@@ -149,24 +117,12 @@ function AdminContent() {
               >
                 Email Setup
               </button>
-              <button
-                onClick={() => setActiveTab("rsvp")}
-                className={`px-4 py-2 rounded-md font-medium ${
-                  activeTab === "rsvp"
-                    ? "bg-pink-500 text-white"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:cursor-pointer"
-                }`}
-              >
-                Baby Shower RSVPs
-              </button>
             </div>
           </div>
 
-          {activeTab === "registry" && <RegistryManager />}
           {activeTab === "photos" && <PhotoGalleryManager />}
           {activeTab === "users" && <UserManager />}
           {activeTab === "email" && <ZohoManager />}
-          {activeTab === "rsvp" && <RsvpManager />}
         </div>
       </div>
     </div>

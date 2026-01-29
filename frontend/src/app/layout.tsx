@@ -8,9 +8,9 @@ import "./globals.css";
 const tgnd = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Clara's Baby Registry",
+  title: "Clara's World",
   description:
-    "Welcome to Clara&apos;s world! Baby registry and photo gallery.",
+    "Welcome to Clara&apos;s world! Share photos and updates with family and friends.",
 };
 
 export default function RootLayout({

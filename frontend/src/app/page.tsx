@@ -5,28 +5,11 @@ import Image from "next/image";
 import Link from "next/link";
 import dayjs from "dayjs";
 import { PiTreeStructureLight } from "react-icons/pi";
-import { BsBagHeartFill, BsEnvelope } from "react-icons/bs";
+import { BsEnvelope } from "react-icons/bs";
 import { BiSolidPhotoAlbum } from "react-icons/bi";
 import { MdPeopleOutline } from "react-icons/md";
 
 export default function Home() {
-  const dueDate = "2025-12-19"; // December 19, 2025
-
-  const durationInMonths = dayjs(dueDate).diff(dayjs(), "months");
-  const durationInDays = dayjs(dueDate).diff(dayjs(), "days");
-  let durationText = "";
-  if (durationInMonths > 0) {
-    const leftoverDays = dayjs(dueDate).diff(
-      dayjs().add(durationInMonths, "months"),
-      "days",
-    );
-    durationText = `${durationInMonths} months`;
-    if (leftoverDays > 0) {
-      durationText += ` and ${leftoverDays} days`;
-    }
-  } else {
-    durationText = `${durationInDays} days`;
-  }
 
   return (
     <div className="mb-16">
@@ -41,7 +24,7 @@ export default function Home() {
             <div className="relative mb-8">
               <Image
                 src="/main.jpg"
-                alt="Clara's Baby Registry"
+                alt="Clara"
                 width={200}
                 height={200}
                 priority
@@ -54,49 +37,20 @@ export default function Home() {
             </h1>
 
             <p className="text-xl max-w-2xl text-center text-gray-600 dark:text-gray-300 leading-relaxed mx-auto">
-              We are so excited to welcome our precious daughter Clara into this
-              world! Here you can find our baby registry, browse photos of our
-              journey, and share in our joy.
+              Welcome to Clara&apos;s world! We are so excited to share our
+              journey with family and friends. Here you can browse photos and
+              updates as Clara grows and we navigate this amazing adventure
+              together.
               <br />
               <br />
               This website is our way of keeping friends and family connected
-              during this special time. Whether you&apos;re here to help with
-              our registry or just want to see how we&apos;re doing, we&apos;re
-              grateful for your love and support.
+              during this special time. We&apos;re grateful for your love and
+              support as we watch Clara grow!
             </p>
-          </div>
-
-          {/* Countdown Timer */}
-          <div className="w-full max-w-2xl mx-auto mb-12">
-            <h2 className="text-2xl font-semibold text-center mb-6 text-gray-800 dark:text-gray-200">
-              Counting Down to Clara&apos;s Arrival
-            </h2>
-            <div className="text-center">
-              <div className="bg-gradient-to-br from-pink-500 to-purple-500 text-white text-2xl font-bold py-4 px-2 rounded-lg shadow-lg">
-                <div className="mt-2 capitalize">{durationText}</div>
-              </div>
-            </div>
           </div>
 
           {/* Quick Actions */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl mx-auto mb-12">
-            <Link href="/registry" className="group">
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-8 rounded-xl border-2 border-blue-200 hover:border-blue-300 transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1">
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                    <BsBagHeartFill className="w-8 h-8 text-white" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-blue-800 mb-2">
-                    Baby Registry
-                  </h3>
-                  <p className="text-blue-600">
-                    Help us prepare for Clara&apos;s arrival with items from our
-                    carefully curated registry
-                  </p>
-                </div>
-              </div>
-            </Link>
-
             <Link href="/photos" className="group">
               <div className="bg-gradient-to-br from-pink-50 to-pink-100 p-8 rounded-xl border-2 border-pink-200 hover:border-pink-300 transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1">
                 <div className="text-center">

@@ -48,8 +48,6 @@ function LoginForm() {
         return "the home page";
       case "/admin":
         return "the admin page";
-      case "/registry":
-        return "the registry";
       case "/photos":
         return "the photo gallery";
       default:
@@ -65,7 +63,7 @@ function LoginForm() {
             Sign in to your account
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-            Access the registry and photo gallery
+            Access the photo gallery and updates
           </p>
           {returnTo !== "/" && (
             <p className="mt-2 text-center text-sm text-pink-600 dark:text-pink-400">
