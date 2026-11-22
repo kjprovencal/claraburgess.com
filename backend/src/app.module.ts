@@ -9,6 +9,7 @@ import { AdminModule } from './admin/admin.module';
 import { PhotosModule } from './photos/photos.module';
 import { SeedModule } from './seed/seed.module';
 import { BabyShowerModule } from './baby-shower/baby-shower.module';
+import { BirthdayModule } from './birthday/birthday.module';
 import { getDatabaseConfig } from './config/database.config';
 
 @Module({
@@ -29,6 +30,7 @@ import { getDatabaseConfig } from './config/database.config';
     AdminModule,
     SeedModule,
     BabyShowerModule,
+    BirthdayModule,
   ],
   controllers: [AppController],
   providers: [AppService],
