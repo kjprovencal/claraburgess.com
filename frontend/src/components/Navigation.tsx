@@ -67,6 +67,16 @@ export default function Navigation() {
           >
             About Us
           </Link>
+          <Link
+            href="/birthday"
+            className={`transition-all duration-200 hover:text-pink-600 ${
+              isActive("/birthday")
+                ? "text-pink-600"
+                : "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
+            }`}
+          >
+            Birthday
+          </Link>
           {user ? (
             <>
               <Link
@@ -190,6 +200,17 @@ export default function Navigation() {
                   }`}
                 >
                   About Us
+                </Link>
+                <Link
+                  href="/birthday"
+                  onClick={closeMobileMenu}
+                  className={`block py-2 px-3 rounded-lg transition-all duration-200 ${
+                    isActive("/birthday")
+                      ? "bg-pink-50 dark:bg-pink-900/20 text-pink-600"
+                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                  }`}
+                >
+                  Birthday
                 </Link>
                 {user ? (
                   <>
